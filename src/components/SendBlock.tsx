@@ -10,6 +10,7 @@ export const SendBlock: React.FC = () => {
     const [amount, setAmount] = useState<string>('');
     const [asset, setAsset] = useState<string>(assets[0]);
     const [dealType, setDealType] = useState<string>(dealTypes[0]);
+    const [partnerAddress, setPartnerAddress] = useState<string>('');
 
     const willSend = useMemo(() => {
         const a = parseFloat(amount);
@@ -19,7 +20,7 @@ export const SendBlock: React.FC = () => {
     }, [amount, dealType]);
 
     return (
-        <div className="bg-white p-4 border">
+        <div className="bg-white p-4 border rounded">
             <h2 className="italic font-bold mb-4">отправляю</h2>
             <InputField
                 label="количество"
@@ -44,6 +45,11 @@ export const SendBlock: React.FC = () => {
                 value={willSend}
                 onChange={() => { }}
                 readOnly
+            />
+            <InputField
+                label="адрес партнёра"
+                value={partnerAddress}
+                onChange={setPartnerAddress}
             />
         </div>
     );
