@@ -5,93 +5,79 @@ import { SelectField } from './SelectField';
 import { CreateDealButton } from './CreateDealButton';
 import { CommissionSection } from './CommissionSection';
 import { assets } from '../constants/assets';
+import { useT } from '../i18n';
 
-export const SendBlock: React.FC = () => {
-    // Формула расчёта получаемой суммы
+interface SendBlockProps {
+    asset: string;
+    onAssetChange: (asset: string) => void;
+}
+
+export const SendBlock: React.FC<SendBlockProps> = ({ asset, onAssetChange }) => {
+    const t = useT();
     const calculateReceive = (a: number, asset: string) =>
         asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
 
-    // Начальное значение amount = 1000
     const [amount, setAmount] = useState<string>('1000');
-    // Начальное willReceive рассчитываем сразу
-    const [willReceive, setWillReceive] = useState<string>(() => {
-        const initial = calculateReceive(1000, assets[0]);
-        return initial.toFixed(6);
-    });
-    const [asset, setAsset] = useState<string>(assets[0]);
+    const [willReceive, setWillReceive] = useState<string>(
+        calculateReceive(1000, asset).toFixed(6)
+    );
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
     const handleAmountChange = (val: string) => {
         setAmount(val);
         const a = parseFloat(val);
-        if (isNaN(a)) {
-            setWillReceive('');
-        } else {
-            setWillReceive(calculateReceive(a, asset).toFixed(6));
-        }
+        setWillReceive(isNaN(a) ? '' : calculateReceive(a, asset).toFixed(6));
     };
 
     const handleWillReceiveChange = (val: string) => {
         setWillReceive(val);
         const w = parseFloat(val);
-        if (isNaN(w)) {
-            setAmount('');
-        } else {
-            // Обратная формула
-            const orig =
-                asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+        if (!isNaN(w)) {
+            const orig = asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
             setAmount(orig.toFixed(6));
         }
     };
 
     const handleAssetChange = (val: string) => {
-        setAsset(val);
+        onAssetChange(val);
         const a = parseFloat(amount);
-        if (!isNaN(a)) {
-            setWillReceive(calculateReceive(a, val).toFixed(6));
-        }
+        setWillReceive(isNaN(a) ? '' : calculateReceive(a, val).toFixed(6));
     };
 
     return (
-        <div className="bg-white p-4 border rounded">
-            <h2 className="italic font-bold mb-4">отправляю</h2>
+        <div className="bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+            <h2 className="text-xl font-semibold text-indigo-600 mb-4">{t('sending')}</h2>
 
             <InputField
-                label="Будет отправлено"
+                label={t('willSend')}
                 type="number"
                 value={amount}
                 onChange={handleAmountChange}
             />
-
             <SelectField
-                label="актив"
-                options={assets as string[]}
+                label={t('asset')}
+                options={assets}
                 value={asset}
                 onChange={handleAssetChange}
             />
-
             <InputField
-                label="Будет получено партнером"
+                label={t('willReceivePartner')}
                 type="number"
                 value={willReceive}
                 onChange={handleWillReceiveChange}
             />
-
             <InputField
-                label="адрес партнёра"
+                label={t('partnerAddress')}
                 value={partnerAddress}
                 onChange={setPartnerAddress}
             />
 
-            {/* Блок комиссии */}
             <CommissionSection asset={asset} amount={amount} />
 
             <CreateDealButton
                 willSend={amount}
                 partnerAddress={partnerAddress}
-                onResult={res =>
-                    console.log('Результат транзакции через TonConnect:', res)
-                }
+                onResult={res => console.log('Result:', res)}
             />
         </div>
     );

@@ -3,19 +3,18 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 import { TonApiClient } from '@ton-api/client';
 import { Address, fromNano } from '@ton/core';
+import { useT } from '../i18n';
 
 interface HeaderProps {
     title?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-    title = 'Smart Exchange',
-}) => {
+export const Header: React.FC<HeaderProps> = ({ title }) => {
+    const t = useT();
     const address = useTonAddress();
     const [balance, setBalance] = useState<string>('');
     const [isTestnet, setIsTestnet] = useState<boolean>(false);
 
-    // Пересоздаём клиента при смене сети, без apiKey
     const api = useMemo(
         () =>
             new TonApiClient({
@@ -29,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
             setBalance('');
             return;
         }
-
+        setBalance('—');
         api.accounts
             .getAccount(Address.parse(address))
             .then(account => {
@@ -37,32 +36,33 @@ export const Header: React.FC<HeaderProps> = ({
                 setBalance(fromNano(nano));
             })
             .catch(() => {
-                setBalance('');
+                setBalance('—');
             });
     }, [address, api]);
 
     const toggleNetwork = () => {
+        setBalance('—');
         setIsTestnet(prev => !prev);
     };
 
     return (
-        <header className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 shadow rounded space-y-2 sm:space-y-0">
+        <header className="flex flex-col sm:flex-row justify-between items-center bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-lg space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-4">
-                <h1 className="text-2xl font-bold">{title}</h1>
-                <label className="flex items-center space-x-2">
+                <h1 className="text-3xl font-extrabold text-indigo-600">{title ?? t('title')}</h1>
+                <label className="flex items-center space-x-2 text-sm text-gray-600">
                     <input
                         type="checkbox"
                         checked={isTestnet}
                         onChange={toggleNetwork}
-                        className="h-4 w-4"
+                        className="h-4 w-4 accent-indigo-500"
                     />
-                    <span className="text-sm">testnet</span>
+                    <span>{t('testnet')}</span>
                 </label>
             </div>
             <div className="flex items-center space-x-4">
                 {address && balance && (
-                    <div className="text-gray-700">
-                        Баланс: {balance} TON
+                    <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">
+                        {t('balance')}: {balance} TON
                     </div>
                 )}
                 <TonConnectButton />

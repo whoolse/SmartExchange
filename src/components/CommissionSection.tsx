@@ -1,5 +1,6 @@
 // src/components/CommissionSection.tsx
 import React from 'react';
+import { useT } from '../i18n';
 import { CommissionLine } from './CommissionLine';
 
 interface CommissionSectionProps {
@@ -11,6 +12,7 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
     asset,
     amount,
 }) => {
+    const t = useT();
     const parsedAmount = parseFloat(amount);
     const serviceFee = !isNaN(parsedAmount) ? parsedAmount * 0.001 : 0;
     const networkFee = asset === 'TON' ? 0.105 : 0.07;
@@ -20,19 +22,19 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
         return (
             <>
                 <CommissionLine
-                    label="комиссия сети"
+                    label={t('networkFee')}
                     value={networkFee}
                     decimals={3}
                     suffix="TON"
                 />
                 <CommissionLine
-                    label="комиссия сервиса"
+                    label={t('serviceFee')}
                     value={serviceFee}
                     decimals={5}
                     suffix="TON"
                 />
                 <CommissionLine
-                    label="общая комиссия"
+                    label={t('totalFee')}
                     value={totalFee}
                     decimals={5}
                     suffix="TON"
@@ -45,13 +47,13 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
     return (
         <>
             <CommissionLine
-                label={`комиссия в ${asset}`}
+                label={t('commissionInAsset').replace('{{asset}}', asset)}
                 value={serviceFee}
                 decimals={5}
                 suffix={asset}
             />
             <CommissionLine
-                label="комиссия сети"
+                label={t('networkFee')}
                 value={networkFee}
                 decimals={3}
                 suffix="TON"
