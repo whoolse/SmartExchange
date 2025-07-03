@@ -3,80 +3,95 @@ import React, { useState } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CreateDealButton } from './CreateDealButton';
-import { CommissionLine } from './CommissionLine';
+import { CommissionSection } from './CommissionSection';
 import { assets } from '../constants/assets';
 
 export const SendBlock: React.FC = () => {
-    const [amount, setAmount] = useState<string>('');
-    const [willReceive, setWillReceive] = useState<string>('');
+    // Формула расчёта получаемой суммы
+    const calculateReceive = (a: number, asset: string) =>
+        asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
+
+    // Начальное значение amount = 1000
+    const [amount, setAmount] = useState<string>('1000');
+    // Начальное willReceive рассчитываем сразу
+    const [willReceive, setWillReceive] = useState<string>(() => {
+        const initial = calculateReceive(1000, assets[0]);
+        return initial.toFixed(6);
+    });
     const [asset, setAsset] = useState<string>(assets[0]);
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
     const handleAmountChange = (val: string) => {
         setAmount(val);
         const a = parseFloat(val);
-        setWillReceive(!isNaN(a) ? (a / 1.01).toFixed(5) : '');
+        if (isNaN(a)) {
+            setWillReceive('');
+        } else {
+            setWillReceive(calculateReceive(a, asset).toFixed(6));
+        }
     };
 
     const handleWillReceiveChange = (val: string) => {
         setWillReceive(val);
         const w = parseFloat(val);
-        setAmount(!isNaN(w) ? (w * 1.01).toFixed(5) : '');
+        if (isNaN(w)) {
+            setAmount('');
+        } else {
+            // Обратная формула
+            const orig =
+                asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+            setAmount(orig.toFixed(6));
+        }
     };
 
-    const networkFee = asset === 'TON' ? 0.105 : 0.07;
-    const serviceFee = parseFloat(amount) * 0.001 || 0;
-    const totalFee = networkFee + serviceFee;
+    const handleAssetChange = (val: string) => {
+        setAsset(val);
+        const a = parseFloat(amount);
+        if (!isNaN(a)) {
+            setWillReceive(calculateReceive(a, val).toFixed(6));
+        }
+    };
 
     return (
         <div className="bg-white p-4 border rounded">
             <h2 className="italic font-bold mb-4">отправляю</h2>
 
             <InputField
-                label="будет отправлено"
+                label="Будет отправлено"
                 type="number"
                 value={amount}
                 onChange={handleAmountChange}
             />
+
             <SelectField
                 label="актив"
                 options={assets as string[]}
                 value={asset}
-                onChange={setAsset}
+                onChange={handleAssetChange}
             />
+
             <InputField
-                label="будет получено"
+                label="Будет получено партнером"
                 type="number"
                 value={willReceive}
                 onChange={handleWillReceiveChange}
             />
+
             <InputField
                 label="адрес партнёра"
                 value={partnerAddress}
                 onChange={setPartnerAddress}
             />
 
-            <CommissionLine
-                label="комиссия сети"
-                value={networkFee}
-                decimals={3}
-            />
-            <CommissionLine
-                label="комиссия сервиса"
-                value={serviceFee}
-                decimals={5}
-            />
-            <CommissionLine
-                label="общая комиссия"
-                value={totalFee}
-                decimals={5}
-                bold
-            />
+            {/* Блок комиссии */}
+            <CommissionSection asset={asset} amount={amount} />
 
             <CreateDealButton
                 willSend={amount}
                 partnerAddress={partnerAddress}
-                onResult={res => console.log('Результат транзакции через TonConnect:', res)}
+                onResult={res =>
+                    console.log('Результат транзакции через TonConnect:', res)
+                }
             />
         </div>
     );
