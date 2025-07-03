@@ -10,13 +10,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@orbs-network/ton-access": "^2.3.3",
     "@tailwindcss/vite": "^4.1.11",
+    "@ton/core": "^0.61.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/sandbox": "^0.34.0",
+    "@ton/test-utils": "^0.8.0",
+    "@ton/ton": "^15.3.0",
     "@tonconnect/ui-react": "^2.2.0",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.10",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",

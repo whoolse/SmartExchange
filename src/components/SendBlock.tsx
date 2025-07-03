@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
+import { TonSendTransaction } from './TonSendTransaction';
 
 const assets = ['TON', 'ETH', 'BTC'];
 const dealTypes = ['без комиссии', 'с комиссией'];
@@ -12,7 +13,7 @@ export const SendBlock: React.FC = () => {
     const [dealType, setDealType] = useState<string>(dealTypes[0]);
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
-    const willSend = useMemo(() => {
+    const tonValue = useMemo(() => {
         const a = parseFloat(amount);
         if (isNaN(a)) return '';
         const factor = dealType === dealTypes[0] ? 1.01 : 1.1;
@@ -42,7 +43,7 @@ export const SendBlock: React.FC = () => {
             />
             <InputField
                 label="будет отправлено"
-                value={willSend}
+                value={tonValue}
                 onChange={() => { }}
                 readOnly
             />
@@ -51,6 +52,20 @@ export const SendBlock: React.FC = () => {
                 value={partnerAddress}
                 onChange={setPartnerAddress}
             />
+            <TonSendTransaction
+                tonValue={tonValue}
+                partnerAddress={partnerAddress}
+                onResult={res => console.log('Результат транзакции:', res)}
+            >
+                {send => (
+                    <button
+                        onClick={send}
+                        className="mt-2 px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                    >
+                        отправить
+                    </button>
+                )}
+            </TonSendTransaction>
         </div>
     );
 };
