@@ -13,7 +13,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
-      <Header title="My Ton App" />
+      <Header title="Smart Exchange" />
 
       {/* <TonWallet /> */}
 

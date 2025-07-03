@@ -3,14 +3,16 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 import { TonApiClient } from '@ton-api/client';
 import { Address, fromNano } from '@ton/core';
-import { useT } from '../i18n';
+import { useLang, useT } from '../i18n';
 
 interface HeaderProps {
     title?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
+    const { lang, setLang } = useLang();
     const t = useT();
+
     const address = useTonAddress();
     const [balance, setBalance] = useState<string>('');
     const [isTestnet, setIsTestnet] = useState<boolean>(false);
@@ -45,6 +47,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         setIsTestnet(prev => !prev);
     };
 
+    const toggleLang = () => {
+        setLang(lang === 'ru' ? 'en' : 'ru');
+    };
+
     return (
         <header className="flex flex-col sm:flex-row justify-between items-center bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-lg space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-4">
@@ -58,6 +64,13 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                     />
                     <span>{t('testnet')}</span>
                 </label>
+                {/* Кнопка переключения языка */}
+                <button
+                    onClick={toggleLang}
+                    className="ml-4 px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
+                >
+                    {lang === 'ru' ? 'EN' : 'RU'}
+                </button>
             </div>
             <div className="flex items-center space-x-4">
                 {address && balance && (

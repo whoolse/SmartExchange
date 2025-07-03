@@ -1,8 +1,18 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+// src/i18n.tsx
+import React, { createContext, useContext, ReactNode, useState } from 'react';
 
 export type Lang = 'ru' | 'en';
 
-export const LangContext = createContext<Lang>('ru');
+interface LangContextType {
+    lang: Lang;
+    setLang: (lang: Lang) => void;
+}
+
+// Контекст языка с возможностью переключения
+export const LangContext = createContext<LangContextType>({
+    lang: 'ru',
+    setLang: () => { },
+});
 
 const translations: Record<Lang, Record<string, string>> = {
     ru: {
@@ -15,46 +25,54 @@ const translations: Record<Lang, Record<string, string>> = {
         asset: 'Актив',
         partnerAddress: 'Адрес партнёра',
         createDeal: 'Создать сделку',
-        idDeal: 'ID сделки',
-        getDeal: 'Получить',
-        testnet: 'Testnet',
+        idDeal: 'Exchange ID',
+        getDeal: 'Get',
+        testnet: 'testnet',
         balance: 'Баланс',
         networkFee: 'Комиссия сети',
         serviceFee: 'Комиссия сервиса',
-        totalFee: 'Общая комиссия',
-        commissionInAsset: 'Комиссия сервиса',
+        totalFee: 'Total',
+        commissionInAsset: 'Комиссия',
     },
     en: {
         title: 'Smart Exchange',
-        sending: 'I want to send',
-        receiving: 'I want to get',
+        sending: 'I Want to Send',
+        receiving: 'I Want to Get',
         willSend: 'Sent',
-        willReceivePartner: 'Partner will get',
-        willReceiveMe: 'Will be received by me',
+        willReceivePartner: 'Partner Will Get',
+        willReceiveMe: 'Will Be Received by Me',
         asset: 'Asset',
-        partnerAddress: 'Partner address',
-        createDeal: 'Create exchange',
+        partnerAddress: 'Partner Address',
+        createDeal: 'Create Exchange',
         idDeal: 'Exchange ID',
         getDeal: 'Get',
-        testnet: 'Testnet',
+        testnet: 'testnet',
         balance: 'Balance',
-        networkFee: 'Blockchain fee',
-        serviceFee: 'Service commission',
+        networkFee: 'Blockchain Fee',
+        serviceFee: 'Service Commission',
         totalFee: 'Total',
-        commissionInAsset: 'Service сommission',
-    }
+        commissionInAsset: 'Commission',
+    },
 };
 
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const browserLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+    const initialLang: Lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+    const [lang, setLang] = useState<Lang>(initialLang);
+
     return (
-        <LangContext.Provider value={browserLang}>
+        <LangContext.Provider value={{ lang, setLang }}>
             {children}
         </LangContext.Provider>
     );
 };
 
+// Хук для доступа к языку и функции переключения
+export function useLang() {
+    return useContext(LangContext);
+}
+
+// Хук для получения перевода по ключу
 export function useT() {
-    const lang = useContext(LangContext);
+    const { lang } = useContext(LangContext);
     return (key: string) => translations[lang][key] ?? key;
 }

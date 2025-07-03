@@ -17,7 +17,9 @@ export const SendBlock: React.FC<SendBlockProps> = ({ asset, onAssetChange }) =>
     const calculateReceive = (a: number, asset: string) =>
         asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
 
+    // По умолчанию отправляемое значение = 1000
     const [amount, setAmount] = useState<string>('1000');
+    // И сразу рассчитываем «Будет получено партнером»
     const [willReceive, setWillReceive] = useState<string>(
         calculateReceive(1000, asset).toFixed(6)
     );
@@ -33,7 +35,8 @@ export const SendBlock: React.FC<SendBlockProps> = ({ asset, onAssetChange }) =>
         setWillReceive(val);
         const w = parseFloat(val);
         if (!isNaN(w)) {
-            const orig = asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+            const orig =
+                asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
             setAmount(orig.toFixed(6));
         }
     };
@@ -54,18 +57,21 @@ export const SendBlock: React.FC<SendBlockProps> = ({ asset, onAssetChange }) =>
                 value={amount}
                 onChange={handleAmountChange}
             />
+
             <SelectField
                 label={t('asset')}
                 options={assets}
                 value={asset}
                 onChange={handleAssetChange}
             />
+
             <InputField
                 label={t('willReceivePartner')}
                 type="number"
                 value={willReceive}
                 onChange={handleWillReceiveChange}
             />
+
             <InputField
                 label={t('partnerAddress')}
                 value={partnerAddress}
