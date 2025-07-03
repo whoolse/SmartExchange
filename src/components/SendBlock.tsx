@@ -1,71 +1,83 @@
 // src/components/SendBlock.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
-import { TonSendTransaction } from './TonSendTransaction';
-
-const assets = ['TON', 'ETH', 'BTC'];
-const dealTypes = ['без комиссии', 'с комиссией'];
+import { CreateDealButton } from './CreateDealButton';
+import { CommissionLine } from './CommissionLine';
+import { assets } from '../constants/assets';
 
 export const SendBlock: React.FC = () => {
     const [amount, setAmount] = useState<string>('');
+    const [willReceive, setWillReceive] = useState<string>('');
     const [asset, setAsset] = useState<string>(assets[0]);
-    const [dealType, setDealType] = useState<string>(dealTypes[0]);
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
-    const tonValue = useMemo(() => {
-        const a = parseFloat(amount);
-        if (isNaN(a)) return '';
-        const factor = dealType === dealTypes[0] ? 1.01 : 1.1;
-        return (a * factor).toFixed(2);
-    }, [amount, dealType]);
+    const handleAmountChange = (val: string) => {
+        setAmount(val);
+        const a = parseFloat(val);
+        setWillReceive(!isNaN(a) ? (a / 1.01).toFixed(5) : '');
+    };
+
+    const handleWillReceiveChange = (val: string) => {
+        setWillReceive(val);
+        const w = parseFloat(val);
+        setAmount(!isNaN(w) ? (w * 1.01).toFixed(5) : '');
+    };
+
+    const networkFee = asset === 'TON' ? 0.105 : 0.07;
+    const serviceFee = parseFloat(amount) * 0.001 || 0;
+    const totalFee = networkFee + serviceFee;
 
     return (
         <div className="bg-white p-4 border rounded">
             <h2 className="italic font-bold mb-4">отправляю</h2>
+
             <InputField
-                label="количество"
+                label="будет отправлено"
                 type="number"
                 value={amount}
-                onChange={setAmount}
+                onChange={handleAmountChange}
             />
             <SelectField
                 label="актив"
-                options={assets}
+                options={assets as string[]}
                 value={asset}
                 onChange={setAsset}
             />
-            <SelectField
-                label="тип сделки"
-                options={dealTypes}
-                value={dealType}
-                onChange={setDealType}
-            />
             <InputField
-                label="будет отправлено"
-                value={tonValue}
-                onChange={() => { }}
-                readOnly
+                label="будет получено"
+                type="number"
+                value={willReceive}
+                onChange={handleWillReceiveChange}
             />
             <InputField
                 label="адрес партнёра"
                 value={partnerAddress}
                 onChange={setPartnerAddress}
             />
-            <TonSendTransaction
-                tonValue={tonValue}
+
+            <CommissionLine
+                label="комиссия сети"
+                value={networkFee}
+                decimals={3}
+            />
+            <CommissionLine
+                label="комиссия сервиса"
+                value={serviceFee}
+                decimals={5}
+            />
+            <CommissionLine
+                label="общая комиссия"
+                value={totalFee}
+                decimals={5}
+                bold
+            />
+
+            <CreateDealButton
+                willSend={amount}
                 partnerAddress={partnerAddress}
-                onResult={res => console.log('Результат транзакции:', res)}
-            >
-                {send => (
-                    <button
-                        onClick={send}
-                        className="mt-2 px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                    >
-                        отправить
-                    </button>
-                )}
-            </TonSendTransaction>
+                onResult={res => console.log('Результат транзакции через TonConnect:', res)}
+            />
         </div>
     );
 };

@@ -5,7 +5,6 @@ import { SendBlock } from './components/SendBlock';
 import { ReceiveBlock } from './components/ReceiveBlock';
 import { DealControl } from './components/DealControl';
 import { Header } from './components/Header';
-import { CreateDealButton } from './components/CreateDealButton';
 
 const App: React.FC = () => {
   const [dealData, setDealData] = useState<any>(null);
@@ -16,9 +15,6 @@ const App: React.FC = () => {
       <div className="grid grid-cols-2 gap-6">
         <SendBlock />
         <ReceiveBlock />
-      </div>
-      <div className="mt-4">
-        <CreateDealButton />
       </div>
       <DealControl
         apiUrl="https://api.example.com/deals"

@@ -5,7 +5,7 @@ interface InputFieldProps {
   label: string;
   type?: React.HTMLInputTypeAttribute;
   value: string;
-  onChange: (v: string) => void;
+  onChange?: (v: string) => void;
   readOnly?: boolean;
 }
 
@@ -22,7 +22,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       type={type}
       value={value}
       readOnly={readOnly}
-      onChange={e => onChange(e.target.value)}
+      onChange={e => onChange ? onChange(e.target.value) : undefined}
       className={`mt-1 block w-full border rounded px-2 py-1${
         readOnly ? ' bg-gray-50' : ''
       }`}

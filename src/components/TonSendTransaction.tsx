@@ -4,14 +4,14 @@ import { useTonConnectUI } from '@tonconnect/ui-react';                         
 import { toNano } from '@ton/core';                                             // Утилита конвертации в нанотоны 
 
 export interface TonSendTransactionProps {
-    tonValue: string;
+    willSend: string;
     partnerAddress: string;
     onResult?: (result: any) => void;
     children: (send: () => Promise<void>) => React.ReactNode;
 }
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
-    tonValue: willSend,
+    willSend,
     partnerAddress,
     onResult,
     children,
