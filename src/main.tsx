@@ -9,7 +9,7 @@ import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <TonConnectUIProvider manifestUrl="https://tontest.skillcap.net/tonconnect-manifest.json">
+    <TonConnectUIProvider manifestUrl="https://smart-ex.cc/tonconnect-manifest.json">
       {/* <SandboxProvider> */}
         <App />
       {/* </SandboxProvider> */}
