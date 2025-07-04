@@ -1,8 +1,8 @@
 // src/components/SendBlock.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTonAddress } from '@tonconnect/ui-react';
-import { fromNano } from '@ton/core';
-import { type JettonsBalances } from '@ton-api/client';
+import { Address } from '@ton/core';
+import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
@@ -16,7 +16,6 @@ interface SendBlockProps {
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
-    /** Переданные из JettonsList балансы джеттонов */
     jettonBalances: JettonsBalances['balances'];
 }
 
@@ -28,38 +27,67 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     jettonBalances,
 }) => {
     const t = useT();
+    const address = useTonAddress();
     const { balance: tonBalance } = useBalance();
 
-    // Доступные активы: TON + пересечение глобального списка и userJettons
-    const availableAssets = React.useMemo(() => {
-        const filtered = assets.filter(a => userJettons.includes(a));
-        return ['TON', ...filtered.filter(a => a !== 'TON')];
-    }, [userJettons]);
-
-    const calcReceive = (a: number, asset: string) =>
-        asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
-    const calcAmount = (w: number, asset: string) =>
-        asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+    const client = useMemo(
+        () => new TonApiClient({ baseUrl: 'https://tonapi.io' }),
+        []
+    );
 
     const [amount, setAmount] = useState('1000');
-    const [willReceive, setWillReceive] = useState(
-        calcReceive(1000, asset).toFixed(6)
-    );
+    const [willReceive, setWillReceive] = useState('');
     const [partnerAddress, setPartnerAddress] = useState('');
     const [errAmt, setErrAmt] = useState(false);
     const [errRec, setErrRec] = useState(false);
     const [errPar, setErrPar] = useState(true);
 
+    // Доступные активы: TON + пересечение глобального списка и userJettons
+    const availableAssets = useMemo(() => {
+        const filtered = assets.filter(a => userJettons.includes(a));
+        return ['TON', ...filtered.filter(a => a !== 'TON')];
+    }, [userJettons]);
+
+    // Рассчёт комиссий
+    const calcReceive = (a: number, asset: string) =>
+        asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
+    const calcAmount = (w: number, asset: string) =>
+        asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+
+    // Максимальный баланс для выбранного актива
+    const maxBalance = useMemo(() => {
+        if (asset === 'TON') {
+            const mb = parseFloat(tonBalance);
+            return isNaN(mb) ? 0 : mb;
+        }
+        const jb = jettonBalances.find(j => j.jetton.symbol === asset);
+        if (!jb) return 0;
+        const raw = jb.balance.toString();
+        const d = jb.jetton.decimals;
+        let display: string;
+        if (raw.length > d) {
+            const intPart = raw.slice(0, -d);
+            const fracPart = raw.slice(-d).padStart(d, '0').replace(/0+$/, '');
+            display = fracPart ? `${intPart}.${fracPart}` : intPart;
+        } else {
+            const frac = raw.padStart(d, '0').replace(/0+$/, '');
+            display = frac ? `0.${frac}` : '0';
+        }
+        const mb = parseFloat(display);
+        return isNaN(mb) ? 0 : mb;
+    }, [asset, tonBalance, jettonBalances]);
+
+    // Обработчики полей
     const onAmountChange = (val: string) => {
         setAmount(val);
         const a = parseFloat(val);
         if (!isNaN(a)) {
-            setWillReceive(calcReceive(a, asset).toFixed(6));
-            setErrAmt(false);
+            setErrAmt(a > maxBalance);
             setErrRec(false);
+            setWillReceive(calcReceive(a, asset).toFixed(6));
         } else {
-            setWillReceive('');
             setErrAmt(true);
+            setWillReceive('');
         }
     };
 
@@ -67,12 +95,12 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         setWillReceive(val);
         const w = parseFloat(val);
         if (!isNaN(w)) {
-            setAmount(calcAmount(w, asset).toFixed(6));
             setErrRec(false);
             setErrAmt(false);
+            setAmount(calcAmount(w, asset).toFixed(6));
         } else {
-            setAmount('');
             setErrRec(true);
+            setAmount('');
         }
     };
 
@@ -83,40 +111,33 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
     const onAssetSelect = (val: string) => {
         onAssetChange(val);
+        // При смене актива пересчитаем amount->willReceive
         const a = parseFloat(amount);
         if (!isNaN(a)) {
+            setErrAmt(a > maxBalance);
             setWillReceive(calcReceive(a, val).toFixed(6));
         }
     };
 
     const fillMax = () => {
-        if (asset === 'TON') {
-            setAmount(tonBalance);
-            const a = parseFloat(tonBalance);
-            if (!isNaN(a)) setWillReceive(calcReceive(a, asset).toFixed(6));
-        } else {
-            const jb = jettonBalances.find(j => j.jetton.symbol === asset);
-            if (jb) {
-                const raw = jb.balance.toString();
-                // Конвертация баланса джеттона, учитывая decimals
-                const intPart = raw.slice(0, -jb.jetton.decimals) || '0';
-                const fracPart = raw
-                    .slice(-jb.jetton.decimals)
-                    .padStart(jb.jetton.decimals, '0')
-                    .replace(/0+$/, '');
-                const display = fracPart ? `${intPart}.${fracPart}` : intPart;
-                setAmount(display);
-                const m = parseFloat(display);
-                if (!isNaN(m)) setWillReceive(calcReceive(m, asset).toFixed(6));
-            }
-        }
+        const a = maxBalance;
+        setAmount(a.toString());
+        setErrAmt(false);
+        setErrRec(false);
+        setWillReceive(calcReceive(a, asset).toFixed(6));
     };
 
     const isDisabled = disableCreate || errAmt || errRec || errPar;
 
+    useEffect(() => {
+        // Инициализация willReceive при загрузке
+        const a0 = parseFloat(amount);
+        if (!isNaN(a0)) setWillReceive(calcReceive(a0, asset).toFixed(6));
+    }, [asset]);
+
     return (
-        <div className="bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
-            <h2 className="text-xl font-semibold text-indigo-600 mb-4">{t('sending')}</h2>
+        <div className="bg-white p-6 rounded-2xl shadow my-4">
+            <h2 className="text-xl font-semibold mb-4">{t('sending')}</h2>
 
             <SelectField
                 label={t('asset')}
