@@ -6,11 +6,16 @@ import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useT } from '../i18n';
 
 interface JettonsListProps {
-    /** Опционально передаёт в App список символов джеттонов */
+    /** Символы джеттонов пользователя */
     onJettons?: React.Dispatch<React.SetStateAction<string[]>>;
+    /** Полные данные балансов джеттонов */
+    onJettonBalances?: React.Dispatch<React.SetStateAction<JettonsBalances['balances']>>;
 }
 
-export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
+export const JettonsList: React.FC<JettonsListProps> = ({
+    onJettons,
+    onJettonBalances,
+}) => {
     const t = useT();
     const address = useTonAddress();
     const [jettons, setJettons] = useState<JettonsBalances['balances']>([]);
@@ -29,6 +34,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
         if (!address) {
             setJettons([]);
             onJettons?.([]);
+            onJettonBalances?.([]);
             return;
         }
         setError(null);
@@ -38,13 +44,16 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
                 const arr = response.balances ?? [];
                 setJettons(arr);
                 onJettons?.(arr.map(j => j.jetton.symbol));
+                onJettonBalances?.(arr);
             })
             .catch(err => {
                 console.error('Error fetching jettons:', err);
                 setError(t('noJettons'));
                 onJettons?.([]);
+                onJettonBalances?.([]);
             });
-    }, [address, client, onJettons]); // убрали t из зависимостей
+        // Убираем t, onJettons и onJettonBalances из зависимостей, чтобы эффект не перезапускался бесконечно
+    }, [address, client]);
 
     if (!address) {
         return <p className="text-gray-600">{t('connectWallet')}</p>;
@@ -67,22 +76,18 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
                     <span>{t('testnet')}</span>
                 </label>
             </div>
-            {jettons.length === 0 ? (
-                <p className="text-gray-600">{t('noJettons')}</p>
-            ) : (
-                <ul className="space-y-2">
-                    {jettons.map(j => (
-                        <li key={j.jetton.address.toString()} className="flex justify-between">
-                            <span>
-                                {j.jetton.symbol} ({j.jetton.name})
-                            </span>
-                            <span>
-                                {fromNano(j.balance)} {j.jetton.symbol}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <ul className="space-y-2">
+                {jettons.map(j => (
+                    <li key={j.jetton.address.toString()} className="flex justify-between">
+                        <span>
+                            {j.jetton.symbol} ({j.jetton.name})
+                        </span>
+                        <span>
+                            {fromNano(j.balance)} {j.jetton.symbol}
+                        </span>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };

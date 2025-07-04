@@ -5,6 +5,7 @@ import { SendBlock } from './components/SendBlock';
 import { ReceiveBlock } from './components/ReceiveBlock';
 import { DealControl } from './components/DealControl';
 import { JettonsList } from './components/JettonsList';
+import { type JettonsBalances } from '@ton-api/client';
 
 const DEFAULT_SEND_ASSET = 'TON';
 const DEFAULT_RECEIVE_ASSET = 'USDT';
@@ -15,8 +16,9 @@ const App: React.FC = () => {
   const [receiveAsset, setReceiveAsset] = useState<string>(DEFAULT_RECEIVE_ASSET);
   const [isReceiveValid, setIsReceiveValid] = useState<boolean>(true);
   const [userJettons, setUserJettons] = useState<string[]>([]);
+  const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
 
-  // Сбрасываем выбранные активы только при инициализации списка jettons
+  // Инициализация выбранных активов при первой загрузке jettons
   useEffect(() => {
     if (userJettons.length === 0) return;
     if (!userJettons.includes(sendAsset)) {
@@ -32,7 +34,10 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <Header title="Smart Exchange" />
 
-      <JettonsList onJettons={setUserJettons} />
+      <JettonsList
+        onJettons={setUserJettons}
+        onJettonBalances={setJettonBalances}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SendBlock
@@ -46,6 +51,7 @@ const App: React.FC = () => {
           }}
           disableCreate={!isReceiveValid}
           userJettons={userJettons}
+          jettonBalances={jettonBalances}
         />
 
         <ReceiveBlock
@@ -61,10 +67,7 @@ const App: React.FC = () => {
         />
       </div>
 
-      <DealControl
-        apiUrl="https://api.example.com/deals"
-        onDealData={setDealData}
-      />
+      <DealControl apiUrl="https://api.example.com/deals" onDealData={setDealData} />
     </div>
   );
 };

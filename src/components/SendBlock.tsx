@@ -1,8 +1,8 @@
 // src/components/SendBlock.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useTonAddress } from '@tonconnect/ui-react';
-import { Address, fromNano } from '@ton/core';
-import { TonApiClient, type JettonsBalances } from '@ton-api/client';
+import { fromNano } from '@ton/core';
+import { type JettonsBalances } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
@@ -16,6 +16,8 @@ interface SendBlockProps {
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
+    /** Переданные из JettonsList балансы джеттонов */
+    jettonBalances: JettonsBalances['balances'];
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
@@ -23,33 +25,13 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     onAssetChange,
     disableCreate = false,
     userJettons,
+    jettonBalances,
 }) => {
     const t = useT();
-    const address = useTonAddress();
     const { balance: tonBalance } = useBalance();
 
-    const client = useMemo(
-        () => new TonApiClient({ baseUrl: 'https://tonapi.io' }),
-        []
-    );
-
-    const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
-
-    useEffect(() => {
-        if (!address) {
-            setJettonBalances([]);
-            return;
-        }
-        client.accounts
-            .getAccountJettonsBalances(Address.parse(address))
-            .then((res: JettonsBalances) => {
-                setJettonBalances(res.balances ?? []);
-            })
-            .catch(() => setJettonBalances([]));
-    }, [address, client]);
-
-    // пересечение глобального assets и userJettons, плюс TON всегда
-    const availableAssets = useMemo(() => {
+    // Доступные активы: TON + пересечение глобального списка и userJettons
+    const availableAssets = React.useMemo(() => {
         const filtered = assets.filter(a => userJettons.includes(a));
         return ['TON', ...filtered.filter(a => a !== 'TON')];
     }, [userJettons]);
@@ -115,9 +97,16 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         } else {
             const jb = jettonBalances.find(j => j.jetton.symbol === asset);
             if (jb) {
-                const raw = fromNano(jb.balance);
-                setAmount(raw);
-                const m = parseFloat(raw);
+                const raw = jb.balance.toString();
+                // Конвертация баланса джеттона, учитывая decimals
+                const intPart = raw.slice(0, -jb.jetton.decimals) || '0';
+                const fracPart = raw
+                    .slice(-jb.jetton.decimals)
+                    .padStart(jb.jetton.decimals, '0')
+                    .replace(/0+$/, '');
+                const display = fracPart ? `${intPart}.${fracPart}` : intPart;
+                setAmount(display);
+                const m = parseFloat(display);
                 if (!isNaN(m)) setWillReceive(calcReceive(m, asset).toFixed(6));
             }
         }
@@ -126,8 +115,8 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     const isDisabled = disableCreate || errAmt || errRec || errPar;
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('sending')}</h2>
+        <div className="bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+            <h2 className="text-xl font-semibold text-indigo-600 mb-4">{t('sending')}</h2>
 
             <SelectField
                 label={t('asset')}
@@ -176,7 +165,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 willSend={amount}
                 partnerAddress={partnerAddress}
                 disabled={isDisabled}
-                onResult={res => console.log(res)}
             />
         </div>
     );
