@@ -26,6 +26,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
         >
             {send => (
                 <button
+                    type="button"
                     onClick={() => !disabled && send()}
                     disabled={disabled}
                     className={`mt-4 w-full px-4 py-2 ${disabled

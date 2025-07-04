@@ -3,19 +3,19 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { TonConnectButton, useTonAddress } from '@tonconnect/ui-react';
 import { TonApiClient } from '@ton-api/client';
 import { Address, fromNano } from '@ton/core';
-import { useLang, useT } from '../i18n';
+import { useT } from '../i18n';
+import { useBalance } from '../contexts/BalanceContext';
 
 interface HeaderProps {
     title?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
-    const { lang, setLang } = useLang();
     const t = useT();
-
     const address = useTonAddress();
-    const [balance, setBalance] = useState<string>('');
-    const [isTestnet, setIsTestnet] = useState<boolean>(false);
+    const { balance, setBalance } = useBalance();
+    // По умолчанию Testnet включён
+    const [isTestnet, setIsTestnet] = useState<boolean>(true);
 
     const api = useMemo(
         () =>
@@ -27,9 +27,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
     useEffect(() => {
         if (!address) {
-            setBalance('');
+            setBalance('0');
             return;
         }
+        // Пока идёт загрузка — показываем прочерк
         setBalance('—');
         api.accounts
             .getAccount(Address.parse(address))
@@ -40,40 +41,26 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             .catch(() => {
                 setBalance('—');
             });
-    }, [address, api]);
-
-    const toggleNetwork = () => {
-        setBalance('—');
-        setIsTestnet(prev => !prev);
-    };
-
-    const toggleLang = () => {
-        setLang(lang === 'ru' ? 'en' : 'ru');
-    };
+    }, [address, api, setBalance]);
 
     return (
         <header className="flex flex-col sm:flex-row justify-between items-center bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-lg space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-4">
-                <h1 className="text-3xl font-extrabold text-indigo-600">{title ?? t('title')}</h1>
+                <h1 className="text-3xl font-extrabold text-indigo-600">
+                    {title ?? t('title')}
+                </h1>
                 <label className="flex items-center space-x-2 text-sm text-gray-600">
                     <input
                         type="checkbox"
                         checked={isTestnet}
-                        onChange={toggleNetwork}
+                        onChange={() => setIsTestnet(prev => !prev)}
                         className="h-4 w-4 accent-indigo-500"
                     />
                     <span>{t('testnet')}</span>
                 </label>
-                {/* Кнопка переключения языка */}
-                <button
-                    onClick={toggleLang}
-                    className="ml-4 px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
-                >
-                    {lang === 'ru' ? 'EN' : 'RU'}
-                </button>
             </div>
             <div className="flex items-center space-x-4">
-                {address && balance && (
+                {address && (
                     <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">
                         {t('balance')}: {balance} TON
                     </div>

@@ -5,7 +5,7 @@ interface SelectFieldProps {
     label: string;
     options: string[];
     value: string;
-    onChange: (v: string) => void;
+    onChange: (val: string) => void;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -14,18 +14,18 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     value,
     onChange,
 }) => (
-    <label className="block mb-2">
-        <span>{label}</span>
+    <div className="mb-4">
+        <label className="block mb-1 font-medium">{label}</label>
         <select
             value={value}
             onChange={e => onChange(e.target.value)}
-            className="mt-1 block w-full border rounded px-2 py-1"
+            className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
         >
-            {options.map(o => (
-                <option key={o} value={o}>
-                    {o}
+            {options.map(opt => (
+                <option key={opt} value={opt}>
+                    {opt}
                 </option>
             ))}
         </select>
-    </label>
+    </div>
 );

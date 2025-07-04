@@ -6,7 +6,8 @@ import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useT } from '../i18n';
 
 interface JettonsListProps {
-    onJettons?: (symbols: string[]) => void;
+    /** Опционально передаёт в App список символов джеттонов */
+    onJettons?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
@@ -17,9 +18,10 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
     const [isTestnet, setIsTestnet] = useState<boolean>(true);
 
     const client = useMemo(
-        () => new TonApiClient({
-            baseUrl: isTestnet ? 'https://testnet.tonapi.io' : 'https://tonapi.io',
-        }),
+        () =>
+            new TonApiClient({
+                baseUrl: isTestnet ? 'https://testnet.tonapi.io' : 'https://tonapi.io',
+            }),
         [isTestnet]
     );
 
@@ -39,11 +41,10 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
             })
             .catch(err => {
                 console.error('Error fetching jettons:', err);
-                setError('Не удалось загрузить джеттоны');
+                setError(t('noJettons'));
                 onJettons?.([]);
             });
-        // eslint-disable-next-line
-    }, [address, client]);
+    }, [address, client, onJettons]); // убрали t из зависимостей
 
     if (!address) {
         return <p className="text-gray-600">{t('connectWallet')}</p>;
@@ -56,31 +57,30 @@ export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
         <div className="bg-white p-4 rounded shadow">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">{t('yourJettons')}</h3>
-                <button
-                    onClick={() => setIsTestnet(prev => !prev)}
-                    className="px-2 py-1 bg-indigo-500 text-white rounded"
-                >
-                    {isTestnet ? 'Mainnet' : 'Testnet'}
-                </button>
+                <label className="flex items-center space-x-2 text-sm text-gray-700">
+                    <input
+                        type="checkbox"
+                        checked={isTestnet}
+                        onChange={() => setIsTestnet(prev => !prev)}
+                        className="h-4 w-4 accent-indigo-500"
+                    />
+                    <span>{t('testnet')}</span>
+                </label>
             </div>
-
             {jettons.length === 0 ? (
                 <p className="text-gray-600">{t('noJettons')}</p>
             ) : (
                 <ul className="space-y-2">
-                    {jettons.map(j => {
-                        const displayAmount = fromNano(j.balance);
-                        return (
-                            <li key={j.jetton.address.toString()} className="flex justify-between">
-                                <span>
-                                    {j.jetton.symbol} ({j.jetton.name})
-                                </span>
-                                <span>
-                                    {displayAmount} {j.jetton.symbol}
-                                </span>
-                            </li>
-                        );
-                    })}
+                    {jettons.map(j => (
+                        <li key={j.jetton.address.toString()} className="flex justify-between">
+                            <span>
+                                {j.jetton.symbol} ({j.jetton.name})
+                            </span>
+                            <span>
+                                {fromNano(j.balance)} {j.jetton.symbol}
+                            </span>
+                        </li>
+                    ))}
                 </ul>
             )}
         </div>
