@@ -9,12 +9,14 @@ import { assets } from '../constants/assets';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
+    userJettons: string[];
     asset: string;
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
+    userJettons,
     asset,
     onAssetChange,
     disableCreate = false,
@@ -80,6 +82,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     };
 
     const isDisabled = disableCreate || errorAmount || errorWillReceive || errorPartner;
+    let availableAssets = assets.filter(a => userJettons.includes(a) || a == "TON")
 
     return (
         <div className="bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
@@ -97,7 +100,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
             <SelectField
                 label={t('asset')}
-                options={assets}
+                options={availableAssets}
                 value={asset}
                 onChange={handleAssetChange}
             />

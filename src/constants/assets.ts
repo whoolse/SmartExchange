@@ -8,7 +8,9 @@ export const assets = [
     'STORM',
     'DOGS',
     'CATI',
-    'HMSTR'
+    'HMSTR',
+    "SE2",
+    "SE1"
 ];
 
 export type Asset = typeof assets[number];

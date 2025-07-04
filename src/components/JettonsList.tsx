@@ -5,7 +5,11 @@ import { Address, fromNano } from '@ton/core';
 import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useT } from '../i18n';
 
-export const JettonsList: React.FC = () => {
+interface JettonsListProps {
+    onJettons?: (symbols: string[]) => void;
+}
+
+export const JettonsList: React.FC<JettonsListProps> = ({ onJettons }) => {
     const t = useT();
     const address = useTonAddress();
     const [jettons, setJettons] = useState<JettonsBalances['balances']>([]);
@@ -13,28 +17,32 @@ export const JettonsList: React.FC = () => {
     const [isTestnet, setIsTestnet] = useState<boolean>(true);
 
     const client = useMemo(
-        () =>
-            new TonApiClient({
-                baseUrl: isTestnet ? 'https://testnet.tonapi.io' : 'https://tonapi.io',
-            }),
+        () => new TonApiClient({
+            baseUrl: isTestnet ? 'https://testnet.tonapi.io' : 'https://tonapi.io',
+        }),
         [isTestnet]
     );
 
     useEffect(() => {
         if (!address) {
             setJettons([]);
+            onJettons?.([]);
             return;
         }
         setError(null);
         client.accounts
             .getAccountJettonsBalances(Address.parse(address))
             .then((response: JettonsBalances) => {
-                setJettons(response.balances ?? []);
+                const arr = response.balances ?? [];
+                setJettons(arr);
+                onJettons?.(arr.map(j => j.jetton.symbol));
             })
             .catch(err => {
                 console.error('Error fetching jettons:', err);
                 setError('Не удалось загрузить джеттоны');
+                onJettons?.([]);
             });
+        // eslint-disable-next-line
     }, [address, client]);
 
     if (!address) {
