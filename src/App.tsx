@@ -4,16 +4,25 @@ import { Header } from './components/Header';
 import { SendBlock } from './components/SendBlock';
 import { ReceiveBlock } from './components/ReceiveBlock';
 import { DealControl } from './components/DealControl';
+import { JettonsList } from './components/JettonsList';
 
 const App: React.FC = () => {
   const [dealData, setDealData] = useState<any>(null);
   const [sendAsset, setSendAsset] = useState<string>('TON');
   const [receiveAsset, setReceiveAsset] = useState<string>('USDT');
   const [isReceiveValid, setIsReceiveValid] = useState<boolean>(true);
+  const [isTestnet, setIsTestnet] = useState<boolean>(true); // общая смена сети
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
-      <Header title="Smart Exchange" />
+      <Header
+        title="Smart Exchange"
+        isTestnet={isTestnet}
+        onToggleNetwork={() => setIsTestnet(prev => !prev)}
+      />
+
+      {/* JettonsList реагирует на общий флаг сети */}
+      <JettonsList isTestnet={isTestnet} />
 
       <div className="grid grid-cols-2 gap-6">
         <SendBlock
