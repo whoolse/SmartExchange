@@ -2,31 +2,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useTonAddress } from '@tonconnect/ui-react';
 import { Address, fromNano } from '@ton/core';
-import { TonApiClient } from '@ton-api/client';
+import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useT } from '../i18n';
-
-interface JettonInfo {
-    balance: bigint | string; // баланс в минимальных единицах
-    jetton: {
-        address: Address;
-        decimals: number;
-        image: string;
-        name: string;
-        symbol: string;
-        score: number;
-        verification: string;
-    };
-    walletAddress: {
-        address: Address;
-        isScam: boolean;
-        isWallet: boolean;
-    };
-}
 
 export const JettonsList: React.FC = () => {
     const t = useT();
     const address = useTonAddress();
-    const [jettons, setJettons] = useState<JettonInfo[]>([]);
+    const [jettons, setJettons] = useState<JettonsBalances['balances']>([]);
     const [error, setError] = useState<string | null>(null);
     const [isTestnet, setIsTestnet] = useState<boolean>(true);
 
@@ -46,12 +28,12 @@ export const JettonsList: React.FC = () => {
         setError(null);
         client.accounts
             .getAccountJettonsBalances(Address.parse(address))
-            .then((response: any) => {
-                setJettons(response.balances as JettonInfo[]);
+            .then((response: JettonsBalances) => {
+                setJettons(response.balances ?? []);
             })
             .catch(err => {
                 console.error('Error fetching jettons:', err);
-                setError(t('noJettons'));
+                setError('Не удалось загрузить джеттоны');
             });
     }, [address, client]);
 
@@ -79,8 +61,7 @@ export const JettonsList: React.FC = () => {
             ) : (
                 <ul className="space-y-2">
                     {jettons.map(j => {
-                        const displayAmount = fromNano(j.balance)
-
+                        const displayAmount = fromNano(j.balance);
                         return (
                             <li key={j.jetton.address.toString()} className="flex justify-between">
                                 <span>

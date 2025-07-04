@@ -1,5 +1,6 @@
 // src/components/SendBlock.tsx
 import React, { useState } from 'react';
+import { Address } from '@ton/core';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
@@ -20,8 +21,12 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 }) => {
     const t = useT();
 
+    // Прямой расчёт (отправляю -> получит партнер)
     const calculateReceive = (a: number, asset: string) =>
         asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
+    // Обратный расчёт (получит партнер -> отправляю)
+    const calculateAmount = (w: number, asset: string) =>
+        asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
 
     const [amount, setAmount] = useState<string>('1000');
     const [willReceive, setWillReceive] = useState<string>(
@@ -29,23 +34,40 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     );
     const [partnerAddress, setPartnerAddress] = useState<string>('');
     const [errorAmount, setErrorAmount] = useState<boolean>(false);
+    const [errorWillReceive, setErrorWillReceive] = useState<boolean>(false);
     const [errorPartner, setErrorPartner] = useState<boolean>(true);
 
     const handleAmountChange = (val: string) => {
         setAmount(val);
         const a = parseFloat(val);
         if (!isNaN(a)) {
-            setWillReceive(calculateReceive(a, asset).toFixed(6));
+            const willGet = calculateReceive(a, asset);
+            setWillReceive(willGet.toFixed(6));
             setErrorAmount(false);
+            setErrorWillReceive(false);
         } else {
             setWillReceive('');
             setErrorAmount(true);
         }
     };
 
+    // Теперь можно редактировать поле "Будет получено партнером"
+    const handleWillReceiveChange = (val: string) => {
+        setWillReceive(val);
+        const w = parseFloat(val);
+        if (!isNaN(w)) {
+            const send = calculateAmount(w, asset);
+            setAmount(send.toFixed(6));
+            setErrorWillReceive(false);
+            setErrorAmount(false);
+        } else {
+            setAmount('');
+            setErrorWillReceive(true);
+        }
+    };
+
     const handlePartnerChange = (val: string) => {
         setPartnerAddress(val);
-        // Если есть любой непустой ввод — считаем валидным
         setErrorPartner(val.trim() === '');
     };
 
@@ -57,7 +79,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
-    const isDisabled = disableCreate || errorAmount || errorPartner;
+    const isDisabled = disableCreate || errorAmount || errorWillReceive || errorPartner;
 
     return (
         <div className="bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
@@ -84,7 +106,8 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 label={t('willReceivePartner')}
                 type="number"
                 value={willReceive}
-                onChange={() => { }}
+                onChange={handleWillReceiveChange}
+                error={errorWillReceive}
             />
 
             <InputField

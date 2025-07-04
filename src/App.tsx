@@ -17,12 +17,12 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <Header
         title="Smart Exchange"
-        isTestnet={isTestnet}
-        onToggleNetwork={() => setIsTestnet(prev => !prev)}
+        // isTestnet={isTestnet}
+        // onToggleNetwork={() => setIsTestnet(prev => !prev)}
       />
 
       {/* JettonsList реагирует на общий флаг сети */}
-      <JettonsList isTestnet={isTestnet} />
+      <JettonsList />
 
       <div className="grid grid-cols-2 gap-6">
         <SendBlock
