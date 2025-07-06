@@ -3,35 +3,54 @@ import React from 'react';
 import { useT } from '../i18n';
 import { TonSendTransaction } from './TonSendTransaction';
 
-interface CreateDealButtonProps {
-    willSend: string;
+export interface CreateDealButtonProps {
+    /** Код актива, который отправляем */
+    sendAsset: string;
+    /** Сумма отправки */
+    sendAmount: string;
+    /** Код актива, который получаем */
+    receiveAsset: string;
+    /** Сумма получения партнёром */
+    receiveAmount: string;
+    /** Адрес партнёра */
     partnerAddress: string;
-    onResult?: (res: any) => void;
+    /** Блокировка кнопки */
     disabled?: boolean;
+    /** Обработчик результата транзакции */
+    onResult?: (res: any) => void;
 }
 
 export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
-    willSend,
+    sendAsset,
+    sendAmount,
+    receiveAsset,
+    receiveAmount,
     partnerAddress,
-    onResult,
     disabled = false,
+    onResult,
 }) => {
     const t = useT();
 
     return (
         <TonSendTransaction
-            willSend={willSend}
+            sendAsset={sendAsset}
+            sendAmount={sendAmount}
+            receiveAsset={receiveAsset}
+            receiveAmount={receiveAmount}
             partnerAddress={partnerAddress}
             onResult={onResult}
         >
             {send => (
                 <button
                     type="button"
-                    onClick={() => !disabled && send()}
+                    onClick={() => {
+                        if (disabled) return;
+                        send();
+                    }}
                     disabled={disabled}
                     className={`mt-4 w-full px-4 py-2 ${disabled
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-green-500 hover:bg-green-600'
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-green-500 hover:bg-green-600'
                         } text-white rounded transition`}
                 >
                     {t('createDeal')}

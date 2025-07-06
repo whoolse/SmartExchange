@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
   const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
 
-  // Инициализация выбранных активов при первой загрузке jettons
+  // Инициализация выбранных активов при первой загрузке списка джеттонов
   useEffect(() => {
     if (userJettons.length === 0) return;
     if (!userJettons.includes(sendAsset)) {
@@ -42,6 +42,7 @@ const App: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SendBlock
           asset={sendAsset}
+          receiveAsset={receiveAsset}
           onAssetChange={val => {
             if (val === receiveAsset) {
               const alt = userJettons.find(a => a !== val) || DEFAULT_RECEIVE_ASSET;
@@ -67,7 +68,10 @@ const App: React.FC = () => {
         />
       </div>
 
-      <DealControl apiUrl="https://api.example.com/deals" onDealData={setDealData} />
+      <DealControl
+        apiUrl="https://api.example.com/deals"
+        onDealData={setDealData}
+      />
     </div>
   );
 };
