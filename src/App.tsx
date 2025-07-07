@@ -18,12 +18,16 @@ const App: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
   const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
 
-  // Инициализация выбранных активов при первой загрузке списка джеттонов
+  // Сбрасываем receiveAsset, но сохраняем sendAsset='TON' по умолчанию
   useEffect(() => {
     if (userJettons.length === 0) return;
-    if (!userJettons.includes(sendAsset)) {
+
+    // Если current sendAsset не TON и отсутствует в userJettons, сбросить
+    if (sendAsset !== DEFAULT_SEND_ASSET && !userJettons.includes(sendAsset)) {
       setSendAsset(userJettons[0]);
     }
+
+    // Если receiveAsset недоступен или совпадает с sendAsset, сбросить receiveAsset
     if (!userJettons.includes(receiveAsset) || receiveAsset === sendAsset) {
       const alt = userJettons.find(a => a !== sendAsset) || userJettons[0];
       setReceiveAsset(alt);
@@ -68,10 +72,7 @@ const App: React.FC = () => {
         />
       </div>
 
-      <DealControl
-        apiUrl="https://api.example.com/deals"
-        onDealData={setDealData}
-      />
+      <DealControl apiUrl="https://api.example.com/deals" onDealData={setDealData} />
     </div>
   );
 };

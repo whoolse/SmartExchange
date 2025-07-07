@@ -1,49 +1,50 @@
 // src/components/SendBlock.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTonAddress } from '@tonconnect/ui-react';
-import { Address, fromNano } from '@ton/core';
+import { Address } from '@ton/core';
 import { TonApiClient, type JettonsBalances } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets } from '../constants/constants';
+import { assets, tonApiBaseUrl } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
     /** Актив, который отправляем */
-    asset: string;
-    /** Обработчик изменения актива */
+    asset?: string;
+    /** Актив, который получаем */
+    receiveAsset: string;
+    /** Функция-обработчик при смене отправляемого актива */
     onAssetChange: (asset: string) => void;
-    /** Заблокировать кнопку */
+    /** Заблокировать кнопку создания сделки */
     disableCreate?: boolean;
-    /** Символы джеттонов пользователя */
+    /** Символы джеттонов, доступные пользователю */
     userJettons: string[];
     /** Балансы джеттонов пользователя */
     jettonBalances: JettonsBalances['balances'];
-    /** Актив, который получаем */
-    receiveAsset: string;
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
-    asset,
+    asset = 'TON',
+    receiveAsset,
     onAssetChange,
     disableCreate = false,
     userJettons,
     jettonBalances,
-    receiveAsset,
 }) => {
     const t = useT();
     const address = useTonAddress();
     const { balance: tonBalance } = useBalance();
 
+    // Клиент TonAPI с базовым URL из констант
     const client = useMemo(
-        () => new TonApiClient({ baseUrl: 'https://tonapi.io' }),
+        () => new TonApiClient({ baseUrl: tonApiBaseUrl }),
         []
     );
 
-    // Доступные активы: TON + пересечение глобального списка и userJettons
+    // Доступные активы: TON всегда + пересечение глобального списка и userJettons
     const availableAssets = useMemo(() => {
         const filtered = assets.filter(a => userJettons.includes(a));
         return ['TON', ...filtered.filter(a => a !== 'TON')];
@@ -55,7 +56,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     const calcAmount = (w: number, asset: string) =>
         asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
 
-    // Состояния полей
+    // Локальные состояния полей
     const [amount, setAmount] = useState<string>('1000');
     const [willReceive, setWillReceive] = useState<string>(
         calcReceive(1000, asset).toFixed(6)
@@ -63,7 +64,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     const [partnerAddress, setPartnerAddress] = useState<string>('');
     const [errAmt, setErrAmt] = useState<boolean>(false);
     const [errRec, setErrRec] = useState<boolean>(false);
-    const [errPar, setErrPar] = useState<boolean>(true);
 
     // Максимальный баланс для выбранного актива
     const maxBalance = useMemo(() => {
@@ -76,13 +76,15 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         const raw = jb.balance.toString();
         const d = jb.jetton.decimals;
         const intPart = raw.length > d ? raw.slice(0, -d) : '0';
-        const fracPart = (raw.length > d ? raw.slice(-d) : raw).padStart(d, '0').replace(/0+$/, '');
+        const fracPart = (raw.length > d ? raw.slice(-d) : raw)
+            .padStart(d, '0')
+            .replace(/0+$/, '');
         const display = fracPart ? `${intPart}.${fracPart}` : intPart;
         const mb = parseFloat(display);
         return isNaN(mb) ? 0 : mb;
     }, [asset, tonBalance, jettonBalances]);
 
-    // Обработчики
+    // Обработчики изменения полей
     const onAmountChange = (val: string) => {
         setAmount(val);
         const a = parseFloat(val);
@@ -111,7 +113,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
     const onPartnerChange = (val: string) => {
         setPartnerAddress(val);
-        setErrPar(val.trim() === '');
     };
 
     const onAssetSelect = (val: string) => {
@@ -131,7 +132,15 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         setWillReceive(calcReceive(a, asset).toFixed(6));
     };
 
-    const isDisabled = disableCreate || errAmt || errRec || errPar;
+    const isDisabled = disableCreate || errAmt || errRec;
+
+    // При смене актива пересчитываем willReceive по умолчанию
+    useEffect(() => {
+        const a0 = parseFloat(amount);
+        if (!isNaN(a0)) {
+            setWillReceive(calcReceive(a0, asset).toFixed(6));
+        }
+    }, [asset]);
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
@@ -177,7 +186,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 label={t('partnerAddress')}
                 value={partnerAddress}
                 onChange={onPartnerChange}
-                error={errPar}
             />
 
             <CreateDealButton
