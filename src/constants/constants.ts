@@ -14,4 +14,7 @@ export const assets = [
 ];
 
 export type Asset = typeof assets[number];
-  
+
+export const myContractAddress = "kQBa5jkSDTIB4TPwPoY89DKVnO_fmegu0TupPANBCef5_VVD"
+
+export const tonApiBaseUrl = "https://testnet.tonapi.io"

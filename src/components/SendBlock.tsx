@@ -8,7 +8,7 @@ import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets } from '../constants/assets';
+import { assets } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
