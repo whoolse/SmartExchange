@@ -108,7 +108,7 @@ async function sendJetton(
         messages: [
             {
                 address: myJettonWallet.toString(),
-                amount: toNano('0.1').toString(),
+                amount: toNano('0.4').toString(),
                 // payload: createCell()
                 payload: payload.toBoc().toString("base64"),
             },
@@ -153,15 +153,9 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                 expectedCurrencyName: receiveAsset,
                 partnerAddress,
             };
-
+            console.log(dealParams);
             await sendJetton(dealParams, tonConnectUI, Address.parse(address!));
-            console.log('Отправлено через TonConnect:', {
-                sendAsset,
-                sendAmount,
-                receiveAsset,
-                receiveAmount,
-                partnerAddress,
-            });
+     
             onResult?.({ success: true });
         } catch (e) {
             console.error('Ошибка sendTransaction:', e);

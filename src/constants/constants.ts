@@ -25,6 +25,6 @@ export const assets = Object.keys(currencies) as Array<keyof typeof currencies>;
 
 export type Asset = typeof assets[number];
 
-export const myContractAddress = 'kQBa5jkSDTIB4TPwPoY89DKVnO_fmegu0TupPANBCef5_VVD';
+export const myContractAddress = 'kQBR41QekKkKo28_N9y1TEdOoe-ZXUuCTU5ZIAbWQGgCCWEV';
 
 export const tonApiBaseUrl = 'https://testnet.tonapi.io';
