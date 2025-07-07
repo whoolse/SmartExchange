@@ -53,6 +53,14 @@ async function getJettonWalletAddressFromTonapi(
     return Address.parse(data.decoded.jetton_wallet_address);
 }
 
+function createCell():string {
+    const body = beginCell()
+        .storeUint(0, 32) // write 32 zero bits to indicate that a text comment will follow
+        .storeStringTail("TEST") // write our text comment
+        .endCell();
+    return body.toBoc().toString("base64")
+}
+
 async function sendJetton(
     dealParams: DealParameters,
     tonConnectUI: TonConnectUI,
@@ -73,7 +81,7 @@ async function sendJetton(
 
     const forwardPayload = beginCell()
         .storeUint(dealId, 32)
-        .storeCoins(toNano(expectedAmount.toString()))
+        .storeCoins(toNano(expectedAmount))
         .storeUint(expectedCurrencyId, 16)
         .endCell();
 
@@ -101,7 +109,8 @@ async function sendJetton(
             {
                 address: myJettonWallet.toString(),
                 amount: toNano('0.1').toString(),
-                payload: payload.toBoc().toString(),
+                // payload: createCell()
+                payload: payload.toBoc().toString("base64"),
             },
         ],
     };
@@ -120,12 +129,12 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
 }) => {
     const [tonConnectUI] = useTonConnectUI();
     const address = useTonAddress();
-
     const send = async () => {
         if (!tonConnectUI) {
             console.error('TonConnect UI не инициализирован');
             return;
         }
+        console.log('TonSendTransaction')
 
         let amountNano: string;
         try {

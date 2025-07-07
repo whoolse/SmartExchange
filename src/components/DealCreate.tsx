@@ -20,18 +20,17 @@ export const DealCreate: React.FC<DealCreateProps> = ({
     const [receiveAsset, setReceiveAsset] = useState<string>(DEFAULT_RECEIVE_ASSET);
     const [isReceiveValid, setIsReceiveValid] = useState<boolean>(true);
 
-    // При первом получении списка джеттонов и при его изменении
+    // При изменении списка jettons:
+    // 1) Если sendAsset больше недоступен — сбросить на TON
+    // 2) Если receiveAsset совпадает с sendAsset — сбросить на USDT (вне зависимости от userJettons)
     useEffect(() => {
         if (userJettons.length === 0) return;
 
-        // Если отправляемый актив стал недоступен и не TON — сбрасываем на TON
-        if (sendAsset !== DEFAULT_SEND_ASSET && !userJettons.includes(sendAsset)) {
+        if (!userJettons.includes(sendAsset)) {
             setSendAsset(DEFAULT_SEND_ASSET);
         }
-        // Если актив для получения недоступен или совпадает с отправляемым — сбрасываем
-        if (!userJettons.includes(receiveAsset) || receiveAsset === sendAsset) {
-            const alt = userJettons.find(a => a !== sendAsset) || DEFAULT_RECEIVE_ASSET;
-            setReceiveAsset(alt);
+        if (receiveAsset === sendAsset) {
+            setReceiveAsset(DEFAULT_RECEIVE_ASSET);
         }
     }, [userJettons]);
 
@@ -42,8 +41,7 @@ export const DealCreate: React.FC<DealCreateProps> = ({
                 receiveAsset={receiveAsset}
                 onAssetChange={val => {
                     if (val === receiveAsset) {
-                        const alt = userJettons.find(a => a !== val) || DEFAULT_RECEIVE_ASSET;
-                        setReceiveAsset(alt);
+                        setReceiveAsset(DEFAULT_RECEIVE_ASSET);
                     }
                     setSendAsset(val);
                 }}
@@ -56,8 +54,7 @@ export const DealCreate: React.FC<DealCreateProps> = ({
                 asset={receiveAsset}
                 onAssetChange={val => {
                     if (val === sendAsset) {
-                        const alt = userJettons.find(a => a !== val) || DEFAULT_SEND_ASSET;
-                        setSendAsset(alt);
+                        setSendAsset(DEFAULT_SEND_ASSET);
                     }
                     setReceiveAsset(val);
                 }}

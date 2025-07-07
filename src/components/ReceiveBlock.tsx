@@ -38,6 +38,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 
     const handleAssetChange = (val: string) => {
         onAssetChange(val);
+        console.log('Asset changed to:', val);
         // amount remains unchanged; willReceive will update via calcReceive
     };
 
