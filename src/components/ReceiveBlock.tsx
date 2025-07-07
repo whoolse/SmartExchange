@@ -19,53 +19,32 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 }) => {
     const t = useT();
 
-    const calcReceive = (a: number, asset: string) =>
-        asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
-    const calcAmount = (w: number, asset: string) =>
-        asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+    const calcReceive = (a: number, assetKey: string) =>
+        assetKey === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
 
-    const [amount, setAmount] = useState('1000');
-    const [willReceive, setWillReceive] = useState(
-        calcReceive(1000, asset).toFixed(6)
-    );
-    const [errAmt, setErrAmt] = useState(false);
-    const [errRec, setErrRec] = useState(false);
+    const [amount, setAmount] = useState<string>('1000');
+    const [errAmt, setErrAmt] = useState<boolean>(false);
 
+    // Notify parent about validity
     useEffect(() => {
-        onValidate?.(!!amount && !!willReceive && !errAmt && !errRec);
-    }, [amount, willReceive, errAmt, errRec, onValidate]);
+        onValidate?.(!errAmt && amount.trim() !== '');
+    }, [amount, errAmt, onValidate]);
 
-    const onAmountChange = (val: string) => {
+    const handleAmountChange = (val: string) => {
         setAmount(val);
-        const a = parseFloat(val);
-        if (!isNaN(a)) {
-            setWillReceive(calcReceive(a, asset).toFixed(6));
-            setErrAmt(false);
-        } else {
-            setWillReceive('');
-            setErrAmt(true);
-        }
+        const n = parseFloat(val);
+        setErrAmt(isNaN(n) || n <= 0);
     };
 
-    const onReceiveChange = (val: string) => {
-        setWillReceive(val);
-        const w = parseFloat(val);
-        if (!isNaN(w)) {
-            setAmount(calcAmount(w, asset).toFixed(6));
-            setErrRec(false);
-        } else {
-            setAmount('');
-            setErrRec(true);
-        }
-    };
-
-    const onAssetSelect = (val: string) => {
+    const handleAssetChange = (val: string) => {
         onAssetChange(val);
-        const a = parseFloat(amount);
-        if (!isNaN(a)) {
-            setWillReceive(calcReceive(a, val).toFixed(6));
-        }
+        // amount remains unchanged; willReceive will update via calcReceive
     };
+
+    const receivedValue = (() => {
+        const n = parseFloat(amount);
+        return !isNaN(n) ? calcReceive(n, asset).toFixed(6) : '';
+    })();
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
@@ -75,14 +54,14 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                 label={t('asset')}
                 options={assets}
                 value={asset}
-                onChange={onAssetSelect}
+                onChange={handleAssetChange}
             />
 
             <InputField
                 label={t('willSend')}
                 type="number"
                 value={amount}
-                onChange={onAmountChange}
+                onChange={handleAmountChange}
                 error={errAmt}
             />
 
@@ -91,9 +70,10 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
             <InputField
                 label={t('willReceiveMe')}
                 type="number"
-                value={willReceive}
-                onChange={onReceiveChange}
-                error={errRec}
+                value={receivedValue}
+                onChange={() => { }}
+                error={false}
+                readOnly
             />
         </div>
     );
