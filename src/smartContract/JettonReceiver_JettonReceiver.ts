@@ -768,7 +768,7 @@ export function storeAddDealWithTon(src: AddDealWithTon) {
     return (builder: Builder) => {
         const b_0 = builder;
         b_0.storeUint(121, 32);
-        b_0.storeUint(src.dealId, 128);
+        b_0.storeUint(src.dealId, 32);
         b_0.storeUint(src.expectedJettonId, 32);
         b_0.storeCoins(src.expectedAmount);
     };
@@ -777,7 +777,7 @@ export function storeAddDealWithTon(src: AddDealWithTon) {
 export function loadAddDealWithTon(slice: Slice) {
     const sc_0 = slice;
     if (sc_0.loadUint(32) !== 121) { throw Error('Invalid prefix'); }
-    const _dealId = sc_0.loadUintBig(128);
+    const _dealId = sc_0.loadUintBig(32);
     const _expectedJettonId = sc_0.loadUintBig(32);
     const _expectedAmount = sc_0.loadCoins();
     return { $$type: 'AddDealWithTon' as const, dealId: _dealId, expectedJettonId: _expectedJettonId, expectedAmount: _expectedAmount };
@@ -878,14 +878,14 @@ export function storeCancelDeal(src: CancelDeal) {
     return (builder: Builder) => {
         const b_0 = builder;
         b_0.storeUint(123, 32);
-        b_0.storeUint(src.dealId, 128);
+        b_0.storeUint(src.dealId, 32);
     };
 }
 
 export function loadCancelDeal(slice: Slice) {
     const sc_0 = slice;
     if (sc_0.loadUint(32) !== 123) { throw Error('Invalid prefix'); }
-    const _dealId = sc_0.loadUintBig(128);
+    const _dealId = sc_0.loadUintBig(32);
     return { $$type: 'CancelDeal' as const, dealId: _dealId };
 }
 
@@ -1216,6 +1216,53 @@ export function dictValueParserClearDeals(): DictionaryValue<ClearDeals> {
     }
 }
 
+export type SetTonFee = {
+    $$type: 'SetTonFee';
+    fee: bigint;
+}
+
+export function storeSetTonFee(src: SetTonFee) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(130, 32);
+        b_0.storeCoins(src.fee);
+    };
+}
+
+export function loadSetTonFee(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 130) { throw Error('Invalid prefix'); }
+    const _fee = sc_0.loadCoins();
+    return { $$type: 'SetTonFee' as const, fee: _fee };
+}
+
+export function loadTupleSetTonFee(source: TupleReader) {
+    const _fee = source.readBigNumber();
+    return { $$type: 'SetTonFee' as const, fee: _fee };
+}
+
+export function loadGetterTupleSetTonFee(source: TupleReader) {
+    const _fee = source.readBigNumber();
+    return { $$type: 'SetTonFee' as const, fee: _fee };
+}
+
+export function storeTupleSetTonFee(source: SetTonFee) {
+    const builder = new TupleBuilder();
+    builder.writeNumber(source.fee);
+    return builder.build();
+}
+
+export function dictValueParserSetTonFee(): DictionaryValue<SetTonFee> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetTonFee(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetTonFee(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type TactJettonWalletStateInit = {
     $$type: 'TactJettonWalletStateInit';
     balance: bigint;
@@ -1398,6 +1445,7 @@ export type DealInfo = {
     senderAddress: Address;
     sendedAmount: bigint;
     sendedCurrencyId: bigint;
+    partnerWillReceive: bigint;
     expectedCurrencyId: bigint;
     expectedAmount: bigint;
     myJettonWallet: Address | null;
@@ -1410,6 +1458,7 @@ export function storeDealInfo(src: DealInfo) {
         b_0.storeAddress(src.senderAddress);
         b_0.storeCoins(src.sendedAmount);
         b_0.storeUint(src.sendedCurrencyId, 16);
+        b_0.storeCoins(src.partnerWillReceive);
         b_0.storeUint(src.expectedCurrencyId, 16);
         b_0.storeCoins(src.expectedAmount);
         b_0.storeAddress(src.myJettonWallet);
@@ -1422,33 +1471,36 @@ export function loadDealInfo(slice: Slice) {
     const _senderAddress = sc_0.loadAddress();
     const _sendedAmount = sc_0.loadCoins();
     const _sendedCurrencyId = sc_0.loadUintBig(16);
+    const _partnerWillReceive = sc_0.loadCoins();
     const _expectedCurrencyId = sc_0.loadUintBig(16);
     const _expectedAmount = sc_0.loadCoins();
     const _myJettonWallet = sc_0.loadMaybeAddress();
     const _partnerAddressString = sc_0.loadBit() ? sc_0.loadStringRefTail() : null;
-    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
+    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, partnerWillReceive: _partnerWillReceive, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
 }
 
 export function loadTupleDealInfo(source: TupleReader) {
     const _senderAddress = source.readAddress();
     const _sendedAmount = source.readBigNumber();
     const _sendedCurrencyId = source.readBigNumber();
+    const _partnerWillReceive = source.readBigNumber();
     const _expectedCurrencyId = source.readBigNumber();
     const _expectedAmount = source.readBigNumber();
     const _myJettonWallet = source.readAddressOpt();
     const _partnerAddressString = source.readStringOpt();
-    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
+    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, partnerWillReceive: _partnerWillReceive, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
 }
 
 export function loadGetterTupleDealInfo(source: TupleReader) {
     const _senderAddress = source.readAddress();
     const _sendedAmount = source.readBigNumber();
     const _sendedCurrencyId = source.readBigNumber();
+    const _partnerWillReceive = source.readBigNumber();
     const _expectedCurrencyId = source.readBigNumber();
     const _expectedAmount = source.readBigNumber();
     const _myJettonWallet = source.readAddressOpt();
     const _partnerAddressString = source.readStringOpt();
-    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
+    return { $$type: 'DealInfo' as const, senderAddress: _senderAddress, sendedAmount: _sendedAmount, sendedCurrencyId: _sendedCurrencyId, partnerWillReceive: _partnerWillReceive, expectedCurrencyId: _expectedCurrencyId, expectedAmount: _expectedAmount, myJettonWallet: _myJettonWallet, partnerAddressString: _partnerAddressString };
 }
 
 export function storeTupleDealInfo(source: DealInfo) {
@@ -1456,6 +1508,7 @@ export function storeTupleDealInfo(source: DealInfo) {
     builder.writeAddress(source.senderAddress);
     builder.writeNumber(source.sendedAmount);
     builder.writeNumber(source.sendedCurrencyId);
+    builder.writeNumber(source.partnerWillReceive);
     builder.writeNumber(source.expectedCurrencyId);
     builder.writeNumber(source.expectedAmount);
     builder.writeAddress(source.myJettonWallet);
@@ -1582,7 +1635,7 @@ function initJettonReceiver_init_args(src: JettonReceiver_init_args) {
 }
 
 async function JettonReceiver_init(jettonTransferGas: bigint, sendTonFee: bigint) {
-    const __code = Cell.fromHex('b5ee9c7241023801000e39000228ff008e88f4a413f4bcf2c80bed5320e303ed43d9010f02027102040193bc73076a268690000c70b7a027a027d007d007d007d006903fd206903aac0360cc711408080eb80408080eb802c816880fc2136b6a221c105312d004105a39de0382c0238f16d9e3648c030004f828020120050d020166060b02012007090192a9c2ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c91080002270192aac0ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c910a0008f8276f1001c3af1e76a268690000c70b7a027a027d007d007d007d006903fd206903aac0360cc711408080eb80408080eb802c816880fc2136b6a221c105312d004105a39de0382c0238f12a846d9e36489037491836cc90377968403793b783f11037491836ef400c007e80202a0259f40f6fa192306ddf206e92306d8e2ad0fa40fa00d30fd30ffa00d72c01916d93fa4001e201d2000193d401d0916de21716151443306c176f07e20193b99a5ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c9180e00022802f83001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e20a925f0ae07029d74920c21f963129d70b1f01de2182107362d09cbae30221c079101301f85b088020d721d33f31fa00fa408200f26b5337bef2f481010bf8422a5959f40b6fa192306ddf206e92306d9ed0fa40d30fd401d043306c136f03e28123ff216eb3f2f4206ef2d0806f23303101d31f810dff21c701b3f2f4fa00d30ff8425e24164330126d547654547654260f11160f0e11150e0d11140d0c11130c1102fe0b11120b0a11110a091110090811170807111807db3c54688054688054688054688020561801561701561701561701561701561701561f011121ed41ed43ed44ed45ed47915bed67ed65ed64ed63ed6180117fed118e1d0dd430d007111007106f105e104d103c4ba01049107810571036454013ed41edf101f2ff561080201f1201f82959f40e6fa1318e82db3c8e4b060504431380205027c855605067ce5004fa0212cb0fcb0f01fa0201206e9430cf84809201cee2216eb39701c8cec901f400947032ca00e2c9103b12206e953059f45b30944133f417e208e2c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed541503fe8f7d5b088020d721d37fd31ffa0030f842f8416f24135f03544534016d6d2e80202959f40e6fa1318e53060504431380205027c855605067ce5004fa0212cb0fcb0f01fa0201206e9430cf84809201cee2216eb39701c8cec901f400947032ca00e2c9103912206e953059f45b30944133f417e2081057104610354430e30d14372901240e11100e10df10ce10bd10ac109b108adb3c1504f2561080202959f40f6fa192306ddf206e92306d8e2ad0fa40fa00d30fd30ffa00d72c01916d93fa4001e201d2000193d401d0916de21716151443306c176f07e2206ef2d0806f2753a4ba9353b3ba9170e2216eb38e9721206ef2d080018e8a2edb3c01f90101f901ba923070e2dee30f547edc53ed561d561d161a1d1e0242fa44c88b111801ce028307a0a9380758cb07cbffc9d020db3c01c8cecec9d0db3c17180094c8ce8b20000801cec9d0709421c701b38e2a01d30783069320c2008e1b03aa005323b091a4de03ab0023840fbc9903840fb0811021b203dee8303101e8318307a90c01c8cb07cb07c9d001a08d10105090d1115191d2125292d3135393d4145494d5155595d61656985898d9195999da1a5a9adb1b5b9bdc1c5c9cdd1d5d9dde1e5e8c0c4c8ccd0d4d8dce0e4b57e0c89522d749c2178ae86c21c9d019009a02d307d307d30703aa0f02aa0712b101b120ab11803fb0aa02523078d7245004ce23ab0b803fb0aa02523078d72401ce23ab05803fb0aa02523078d72401ce03803fb0aa02522078d7245003ce017e08111708071116070611150605111405041113040311120302111102011110010f56155615561556155615561556155614561456145614561456235623db3c1b029810235f036c33343603c00010ae109d108c107b106e105d104c103b4ec0db3c1dba8e960ac000107a10691058104710364540134bb0db3c1aba936c3870e210891078106710561045103441301c1c001e9225a1de8103e822a1a88103e8a904004408111708071116070611150605111405041113040311120302111102011110010f7003ea0f11100f0e11100e0d11100d0c11100c0b11100b0a11100a091110090811100807111007db3c098eac071117070611160605111505041114040311130302111202011111011110108f105d104c103b4a18509755058e9d6c993939393939398b96e6f74206d6174636884980476045404130db3ce21f252704bc5b34c86f00016f8c6d6f8c8bd73656e646564416d6f756e743a8db3c038e22c821c10098802d01cb0701a301de019a7aa90ca630541220c000e63068a592cb07e4da11c9d013db3c8d04081cd95b99195912995d1d1bdb92590ea0db3c0123232320048e8ada11c9d0db3c8d0488195e1c1958dd195912995d1d1bdb92590ea0db3c018e22c821c10098802d01cb0701a301de019a7aa90ca630541220c000e63068a592cb07e4da11c9d0212323220044c821c10098802d01cb0701a301de019a7aa90ca630541220c000e63068a592cb07e404a8db3c8d0408195e1c1958dd1959105b5bdd5b9d0ea0db3c018e22c821c10098802d01cb0701a301de019a7aa90ca630541220c000e63068a592cb07e4da11c9d0db3c6f2201c993216eb396016f2259ccc9e831d02323232400b620d74a21d7499720c20022c200b18e48036f22807f22cf31ab02a105ab025155b60820c2009a20aa0215d71803ce4014de596f025341a1c20099c8016f025044a1aa028e123133c20099d430d020d74a21d749927020e2e2e85f030104db3c2702f00811170807111607061115060511140504111304031112030211110201111001543fdc547dcb561c561c561c561c561c561c561c561c561cdb3c0811160807111507061114060511130504111204031111030211100250fe107d106c105b104a103948701117165005044313db3c50988020f45b300855062626022c185f0833338e87206ef2d080db3c8e853026a0db3ce2312f01748b964756d70286172672988d0a919a5b194818dbdb9d1c9858dd1ccbda995d1d1bdb97dc9958d95a5d995c8b9d1858dd0e8c8d4d0e8e4ea0db3c28003e226e8e108b46e756c6c833fe1430fe1430fe143099fe1430fe1430fe1430e204dae021c07e8f5e5b088020d721fa40d30fd430d010891079106910591049103949abdb3c5449bc0281010b5023c855205023cecb0f01c8cecdc910374190206e953059f45930944133f413e2f842c8cf8508ce70cf0b6ec98042fb00105807103645404330e021c07ce30221c07d35372a2b01f65b088020d721fa00d72c01916d93fa4001e231509adb3cf8422b6eb398300a206ef2d0800a913be250a9726d40037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb00f842c8cf8508ce70cf0b6ec98042fb005516c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed543504b2e30221c07be30221c07f8ec65b088020d721fa4030107810671056104510344139db3c509781010bf4593007085505c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e03a20810081ba2c2e353403fc5b088020d721fa00fa40d72c01916d93fa4001e23110891079106910591049103949abdb3c2781010b2c59f40b6fa192306ddf206e92306d9ed0fa40d30fd401d043306c136f03e28123ff016eb3f2f4f8422c6eb398300b206ef2d0800b913ce2108b107a1069105810471036453304db3cf842c8cf8508ce70cf0b6ec935312d004e8042fb00c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed5404fe5b088020d721d37f302780202259f40f6fa192306ddf206e92306d8e2ad0fa40fa00d30fd30ffa00d72c01916d93fa4001e201d2000193d401d0916de21716151443306c176f07e2815199216eb3f2f4206ef2d0806f27135f038200f12bf84215c70514f2f424ba8e8831f8425114a1db3ce30e50078020f45b30f842c8892f3032330038736d40037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb000144f84202206ef2d08010ab109a10891078106710561045103cdb3c50891716151443303100bc821005f5e10071802af8286d706dc8f400c9d0104610581049c8556082100f8a7ea55008cb1f16cb3f5004fa0212ce01206e9430cf84809201cee2f40001fa02cec9433040037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb000001420070cf16ce70cf0b6ec98042fb00081057104610354430c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed5404e28ead303810685515db3c6d39c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e0208306ba8ead303810685515db3c6d38c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e0c00009c12119b0e302106855153535363700168200e594f84223c705f2f4004e10685515c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed540046c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed549f3cb560');
+    const __code = Cell.fromHex('b5ee9c7241023201000d06000228ff008e88f4a413f4bcf2c80bed5320e303ed43d9010f02027102040193bc73076a268690000c70b7a027a027d007d007d007d006903fd206903aac0360cc711408080eb80408080eb802c816880fc2136b6a221c105312d004105a39de0382c0238f16d9e3648c030004f828020120050d020166060b02012007090192a9c2ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c91080002270192aac0ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c910a0008f8276f1001c3af1e76a268690000c70b7a027a027d007d007d007d006903fd206903aac0360cc711408080eb80408080eb802c816880fc2136b6a221c105312d004105a39de0382c0238f12a846d9e36489037491836cc903779684037943784711037491836ef400c008480202a0259f40f6fa192306ddf206e92306d8e2dd0fa40fa00d30ffa00d30ffa00d72c01916d93fa4001e201d2000193d401d0916de2181716151443306c186f08e20193b99a5ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e2db3c6c9180e00022802f83001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e16f404f404fa00fa00fa00fa00d207fa40d20755806c198e22810101d700810101d7005902d101f8426d6d4443820a625a00820b473bc070580471e20a925f0ae07029d74920c21f963129d70b1f01de2182107362d09cbae30221c079101302f85b088020d721d33f31fa00fa408200f26b5337bef2f481010bf8422a5959f40b6fa192306ddf206e92306d9ed0fa40d30fd401d043306c136f03e28123ff216eb3f2f4206ef2d0806f23303101d31f810dff21c701b3f2f4108b107a1069105b104a10394bcd2a70db3c0efa00d30ff842106d105e041111041f43301b1101fa1034126d546dd0546dd0546dd0561401561601561a01561a01561101561101561101561101561101561101561101ed41ed43ed44ed45ed47915bed67ed65ed64ed63ed6180127fed118e200fd430d00c11110c0b11100b10af109e108d5e47107910671056104510344130ed41edf101f2ff561180202a59f40e6fa1311201f28e82db3c8e4f07060504431380205028c855705078ce5005fa0213cb0f01fa02cb0f01fa0201206e9430cf84809201cee2216eb39701c8cec901f400947032ca00e2c9103b12206e953059f45b30944133f417e208e2c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed541404fe8ffb5b088020d721d31fd31ffa0030f8416f24135f03f84225108c107b106a1059104c103b4ade2a7fdb3c105e104b103f40cd016d6d2b80202e59f40e6fa1318e960b11110b0a11100a109f108e10ad10ac109a1089db3ce30ec87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e0211b14232404e8561180202a59f40f6fa192306ddf206e92306d8e2dd0fa40fa00d30ffa00d30ffa00d72c01916d93fa4001e201d2000193d401d0916de2181716151443306c186f08e2206ef2d0806f2853b5ba9353d3ba9170e2216eb38e9821206ef2d080018e8b5610db3c01f90101f901ba923070e2dee30f15191c1d0242fa44c88b111801ce028307a0a9380758cb07cbffc9d020db3c01c8cecec9d0db3c16170094c8ce8b20000801cec9d0709421c701b38e2a01d30783069320c2008e1b03aa005323b091a4de03ab0023840fbc9903840fb0811021b203dee8303101e8318307a90c01c8cb07cb07c9d001a08d10105090d1115191d2125292d3135393d4145494d5155595d61656985898d9195999da1a5a9adb1b5b9bdc1c5c9cdd1d5d9dde1e5e8c0c4c8ccd0d4d8dce0e4b57e0c89522d749c2178ae86c21c9d018009a02d307d307d30703aa0f02aa0712b101b120ab11803fb0aa02523078d7245004ce23ab0b803fb0aa02523078d72401ce23ab05803fb0aa02523078d72401ce03803fb0aa02522078d7245003ce0188081119080711180706111706051116050411150403111403021113020111120111115618561856185618561856185618561856175617561756175617561756175628db3c1a02b210245f046c3334343603c00010ae109d108c107b106e105d104c103b4ec0db3c1bba8e970bc000107a10691058104710364540103b102bdb3c1aba9e3839391068104710364513504270e210891078106710561045103441301b1b00228103e823a112a88103e8a904019225a1de0046081119080711180706111706051116050411150403111403021113020111120111117003d28f3f88c88258c000000000000000000000000101cb67ccc970fb00081119080711180706111706051116050411150403111403021113020111120111115577db3c8ea56c99393939393939393988c88258c000000000000000000000000101cb67ccc970fb005570e21e1f22001a000000006d616b65206465616c03f608111908071118070611170605111605041115040311140302111302011112011111547fed547fed2f562056205620562056205620562056205620db3c08111808071117070611160605111505041114040311130302111202011111011110108f107e106d105c104b103a49801119171615144330db3c509880202020210230195f096c33028e8801206ef2d080db3c8e853126a0db3ce22c2a000cf45b30085506001a000000006e6f74206d6174636800a807060504431380205028c855705078ce5005fa0213cb0f01fa02cb0f01fa0201206e9430cf84809201cee2216eb39701c8cec901f400947032ca00e2c910354160206e953059f45b30944133f417e25e7040040304d6c07e8f5e5b088020d721fa40d30fd430d010891079106910591049103949abdb3c5449bc0281010b5023c855205023cecb0f01c8cecdc910374190206e953059f45930944133f413e2f842c8cf8508ce70cf0b6ec98042fb00105807103645404330e021c07ce30221c07d3031252601f65b088020d721fa00d72c01916d93fa4001e231509adb3cf8422b6eb398300a206ef2d0800a913be250a9726d40037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb00f842c8cf8508ce70cf0b6ec98042fb005516c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed543004aee30221c07be30221810082ba8ec55b088020d721fa0030107810671056104510344139db3c3410781067105610455502c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e021c07f2729302e03fc5b088020d721fa00fa40d72c01916d93fa4001e23110891079106910591049103949abdb3c2781010b2c59f40b6fa192306ddf206e92306d9ed0fa40d30fd401d043306c136f03e28123ff016eb3f2f4f8422c6eb398300b206ef2d0800b913ce2108b107a1069105810471036453304db3cf842c8cf8508ce70cf0b6ec9302c28004e8042fb00c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed5403fc5b088020d721d31f302780202259f40f6fa192306ddf206e92306d8e2dd0fa40fa00d30ffa00d30ffa00d72c01916d93fa4001e201d2000193d401d0916de2181716151443306c186f08e2815199216eb3f2f4206ef2d0806f28145f048200f12bf84215c70514f2f424ba8e8831f8425114a1db3ce30e50078020f45b302a2b2d0038736d40037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb000144f84202206ef2d08010ab109a10891078106710561045103cdb3c50891716151443302c00bc821005f5e10071802af8286d706dc8f400c9d0104610581049c8556082100f8a7ea55008cb1f16cb3f5004fa0212ce01206e9430cf84809201cee2f40001fa02cec9433040037fc8cf8580ca00cf8440ce01fa02806acf40f400c901fb000078f842c8cf8508ce70cf0b6ec98042fb00081057104610354430c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed5403fe8ec65b088020d721fa4030107810671056104510344139db3c509781010bf4593007085505c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e03a20810081ba8ead303810685515db3c6d39c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e030302f02d2208306ba8ead303810685515db3c6d38c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e0c00009c12119b08e2710685515c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed54e010685515303100168200e594f84223c705f2f40046c87f01ca0055805089f40016f4005004fa0258fa0201fa0201fa02ca07ceca07c9ed542d4dcc6f');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initJettonReceiver_init_args({ $$type: 'JettonReceiver_init_args', jettonTransferGas, sendTonFee })(builder);
@@ -1693,19 +1746,20 @@ const JettonReceiver_types: ABIType[] = [
     { "name": "BasechainAddress", "header": null, "fields": [{ "name": "hash", "type": { "kind": "simple", "type": "int", "optional": true, "format": 257 } }] },
     { "name": "JettonNotification", "header": 1935855772, "fields": [{ "name": "queryId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 64 } }, { "name": "amount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "sender", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "forwardPayload", "type": { "kind": "simple", "type": "slice", "optional": false, "format": "remainder" } }] },
     { "name": "JettonTransfer", "header": 260734629, "fields": [{ "name": "queryId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 64 } }, { "name": "amount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "destination", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "responseDestination", "type": { "kind": "simple", "type": "address", "optional": true } }, { "name": "customPayload", "type": { "kind": "simple", "type": "cell", "optional": true } }, { "name": "forwardTonAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "forwardPayload", "type": { "kind": "simple", "type": "slice", "optional": false, "format": "remainder" } }] },
-    { "name": "AddDealWithTon", "header": 121, "fields": [{ "name": "dealId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 128 } }, { "name": "expectedJettonId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 32 } }, { "name": "expectedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }] },
+    { "name": "AddDealWithTon", "header": 121, "fields": [{ "name": "dealId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 32 } }, { "name": "expectedJettonId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 32 } }, { "name": "expectedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }] },
     { "name": "StringData", "header": 122, "fields": [{ "name": "valueInt", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 128 } }, { "name": "valueString", "type": { "kind": "simple", "type": "string", "optional": false } }] },
-    { "name": "CancelDeal", "header": 123, "fields": [{ "name": "dealId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 128 } }] },
+    { "name": "CancelDeal", "header": 123, "fields": [{ "name": "dealId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 32 } }] },
     { "name": "WithdrawTon", "header": 124, "fields": [{ "name": "value", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "destination", "type": { "kind": "simple", "type": "address", "optional": true } }] },
     { "name": "WithdrawJetton", "header": 125, "fields": [{ "name": "value", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "contractJettonWallet", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "destination", "type": { "kind": "simple", "type": "address", "optional": true } }] },
     { "name": "AddJetton", "header": 126, "fields": [{ "name": "myAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "id", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "name", "type": { "kind": "simple", "type": "string", "optional": false } }] },
     { "name": "DeleteJetton", "header": 127, "fields": [{ "name": "address", "type": { "kind": "simple", "type": "address", "optional": false } }] },
     { "name": "ClearJettons", "header": 128, "fields": [] },
     { "name": "ClearDeals", "header": 129, "fields": [] },
+    { "name": "SetTonFee", "header": 130, "fields": [{ "name": "fee", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }] },
     { "name": "TactJettonWalletStateInit", "header": null, "fields": [{ "name": "balance", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "owner", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "minter", "type": { "kind": "simple", "type": "address", "optional": false } }] },
     { "name": "JettonData", "header": null, "fields": [{ "name": "myAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "id", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "name", "type": { "kind": "simple", "type": "string", "optional": false } }] },
     { "name": "JettonWalletData", "header": null, "fields": [{ "name": "balance", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "ownerAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "jettonMasterAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "jettonWalletCode", "type": { "kind": "simple", "type": "cell", "optional": false } }] },
-    { "name": "DealInfo", "header": null, "fields": [{ "name": "senderAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "sendedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "sendedCurrencyId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "expectedCurrencyId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "expectedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "myJettonWallet", "type": { "kind": "simple", "type": "address", "optional": true } }, { "name": "partnerAddressString", "type": { "kind": "simple", "type": "string", "optional": true } }] },
+    { "name": "DealInfo", "header": null, "fields": [{ "name": "senderAddress", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "sendedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "sendedCurrencyId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "partnerWillReceive", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "expectedCurrencyId", "type": { "kind": "simple", "type": "uint", "optional": false, "format": 16 } }, { "name": "expectedAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "myJettonWallet", "type": { "kind": "simple", "type": "address", "optional": true } }, { "name": "partnerAddressString", "type": { "kind": "simple", "type": "string", "optional": true } }] },
     { "name": "JettonReceiver$Data", "header": null, "fields": [{ "name": "deals", "type": { "kind": "dict", "key": "uint", "keyFormat": 32, "value": "DealInfo", "valueFormat": "ref" } }, { "name": "jettons", "type": { "kind": "dict", "key": "address", "value": "JettonData", "valueFormat": "ref" } }, { "name": "jettonTransferGas", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "minimalForwardTonAmount", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "sendTonFee", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "sendTonStandartFee", "type": { "kind": "simple", "type": "uint", "optional": false, "format": "coins" } }, { "name": "tonId", "type": { "kind": "simple", "type": "int", "optional": false, "format": 8 } }, { "name": "owner", "type": { "kind": "simple", "type": "address", "optional": false } }, { "name": "commission", "type": { "kind": "simple", "type": "int", "optional": false, "format": 8 } }] },
 ]
 
@@ -1721,6 +1775,7 @@ const JettonReceiver_opcodes = {
     "DeleteJetton": 127,
     "ClearJettons": 128,
     "ClearDeals": 129,
+    "SetTonFee": 130,
 }
 
 const JettonReceiver_getters: ABIGetter[] = [
@@ -1746,6 +1801,7 @@ const JettonReceiver_receivers: ABIReceiver[] = [
     { "receiver": "internal", "message": { "kind": "typed", "type": "WithdrawTon" } },
     { "receiver": "internal", "message": { "kind": "typed", "type": "WithdrawJetton" } },
     { "receiver": "internal", "message": { "kind": "typed", "type": "CancelDeal" } },
+    { "receiver": "internal", "message": { "kind": "typed", "type": "SetTonFee" } },
     { "receiver": "internal", "message": { "kind": "typed", "type": "DeleteJetton" } },
     { "receiver": "internal", "message": { "kind": "typed", "type": "ClearDeals" } },
     { "receiver": "internal", "message": { "kind": "typed", "type": "ClearJettons" } },
@@ -1788,7 +1844,7 @@ export class JettonReceiver implements Contract {
         this.init = init;
     }
 
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean | null | undefined }, message: JettonNotification | AddDealWithTon | AddJetton | WithdrawTon | WithdrawJetton | CancelDeal | DeleteJetton | ClearDeals | ClearJettons | null | Slice) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean | null | undefined }, message: JettonNotification | AddDealWithTon | AddJetton | WithdrawTon | WithdrawJetton | CancelDeal | SetTonFee | DeleteJetton | ClearDeals | ClearJettons | null | Slice) {
 
         let body: Cell | null = null;
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'JettonNotification') {
@@ -1808,6 +1864,9 @@ export class JettonReceiver implements Contract {
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'CancelDeal') {
             body = beginCell().store(storeCancelDeal(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetTonFee') {
+            body = beginCell().store(storeSetTonFee(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'DeleteJetton') {
             body = beginCell().store(storeDeleteJetton(message)).endCell();

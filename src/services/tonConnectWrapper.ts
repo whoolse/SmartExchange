@@ -69,8 +69,7 @@ export class TonConnectWrapper {
 
     async sendTon(
         dealParams: DealParameters,
-        tonConnectUI: TonConnectUI,
-        myAddress: Address
+        tonConnectUI: TonConnectUI
     ) {
         const {
             dealId,
@@ -86,8 +85,9 @@ export class TonConnectWrapper {
             $$type: 'AddDealWithTon',
             dealId: BigInt(dealId),
             expectedAmount: toNano(expectedAmount),
-            expectedJettonId: toNano(expectedJettonId)
+            expectedJettonId: expectedJettonId
         };
+        console.log(transferMsg)
         const payload = beginCell().store(storeAddDealWithTon(transferMsg)).endCell().toBoc().toString("base64");
 
         const validUntil = Math.floor(Date.now() / 1000) + 60;

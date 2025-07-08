@@ -5,7 +5,7 @@ import { ReceiveBlock } from './ReceiveBlock';
 import { type JettonsBalances } from '@ton-api/client';
 
 const DEFAULT_SEND_ASSET = 'TON';
-const DEFAULT_RECEIVE_ASSET = 'USDT';
+const DEFAULT_RECEIVE_ASSET = 'SE2';
 
 interface DealCreateProps {
     userJettons: string[];
@@ -18,7 +18,7 @@ export const DealCreate: React.FC<DealCreateProps> = ({
 }) => {
     const [sendAsset, setSendAsset] = useState<string>(DEFAULT_SEND_ASSET);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEFAULT_RECEIVE_ASSET);
-    const [receiveAmount, setReceiveAmount] = useState<string>('1000');
+    const [receiveAmount, setReceiveAmount] = useState<string>('10');
     const [isReceiveValid, setIsReceiveValid] = useState<boolean>(true);
 
     useEffect(() => {
@@ -51,7 +51,6 @@ export const DealCreate: React.FC<DealCreateProps> = ({
 
             <ReceiveBlock
                 asset={receiveAsset}
-                amount={receiveAmount}
                 onAmountChange={setReceiveAmount}
                 onAssetChange={val => {
                     if (val === sendAsset) {

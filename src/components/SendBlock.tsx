@@ -14,7 +14,6 @@ import { useT } from '../i18n';
 interface SendBlockProps {
     asset: string;
     receiveAsset: string;
-    /** Сумма, рассчитанная в блоке «Получаю» */
     receiveAmount: string;
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
@@ -33,13 +32,12 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 }) => {
     const t = useT();
     const { balance: tonBalance } = useBalance();
-
     const client = useMemo(
         () => new TonApiClient({ baseUrl: tonApiBaseUrl }),
         []
     );
 
-    // Максимальный баланс
+    // максимальный баланс выбранного актива
     const maxBalance = useMemo(() => {
         if (asset === 'TON') {
             const mb = parseFloat(tonBalance);
@@ -56,19 +54,18 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
-    // Доступные активы
+    // доступные активы для отправки: TON всегда + пересечение с userJettons
     const availableAssets = useMemo(() => {
         const filtered = assets.filter(a => userJettons.includes(a));
         return ['TON', ...filtered.filter(a => a !== 'TON')];
     }, [userJettons]);
 
-    // Формулы
-    const calcReceive = (a: number) =>
-        asset === 'TON' ? a * 0.999 - 0.105 : a * 0.999;
-    const calcAmount = (w: number) =>
-        asset === 'TON' ? (w + 0.105) / 0.999 : w / 0.999;
+    // расчёт «Будет получено партнёром» и обратный
+    const calcReceive = (n: number) =>
+        asset === 'TON' ? n * 0.999 - 0.105 : n * 0.999;
+    const calcSend = (r: number) =>
+        asset === 'TON' ? (r + 0.105) / 0.999 : r / 0.999;
 
-    // Локальные стэйты для блока «Отправляю»
     const [amount, setAmount] = useState<string>('1000');
     const [willReceive, setWillReceive] = useState<string>(
         calcReceive(1000).toFixed(6)
@@ -76,27 +73,27 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     const [errAmt, setErrAmt] = useState<boolean>(false);
     const [errRec, setErrRec] = useState<boolean>(false);
 
-    // При изменении amount пересчитываем willReceive
+    // при изменении «Будет отправлено»
     const onAmountChange = (val: string) => {
         setAmount(val);
-        const num = parseFloat(val);
-        const invalid = isNaN(num) || num <= 0 || num > maxBalance;
+        const n = parseFloat(val);
+        const invalid = isNaN(n) || n <= 0 || n > maxBalance;
         setErrAmt(invalid);
         if (!invalid) {
-            setWillReceive(calcReceive(num).toFixed(6));
+            setWillReceive(calcReceive(n).toFixed(6));
             setErrRec(false);
         } else {
             setWillReceive('');
         }
     };
 
-    // При ручном изменении «Будет получено партнером»
+    // при ручном изменении «Будет получено партнёром»
     const onReceiveChange = (val: string) => {
         setWillReceive(val);
-        const num = parseFloat(val);
-        if (!isNaN(num)) {
+        const r = parseFloat(val);
+        if (!isNaN(r)) {
             setErrRec(false);
-            const back = calcAmount(num);
+            const back = calcSend(r);
             setAmount(back.toFixed(6));
             setErrAmt(isNaN(back) || back <= 0 || back > maxBalance);
         } else {
@@ -104,31 +101,31 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
-    // При смене актива
+    // смена актива
     const onAssetSelect = (val: string) => {
         onAssetChange(val);
-        const num = parseFloat(amount);
-        if (!isNaN(num)) {
-            setErrAmt(num <= 0 || num > maxBalance);
-            setWillReceive(calcReceive(num).toFixed(6));
+        const n = parseFloat(amount);
+        if (!isNaN(n)) {
+            setErrAmt(n <= 0 || n > maxBalance);
+            setWillReceive(calcReceive(n).toFixed(6));
         }
     };
 
-    // «Max» кнопка
+    // «max» кнопка
     const fillMax = () => {
-        const num = maxBalance;
-        setAmount(num.toString());
+        const n = maxBalance;
+        setAmount(n.toString());
         setErrAmt(false);
         setErrRec(false);
-        setWillReceive(calcReceive(num).toFixed(6));
+        setWillReceive(calcReceive(n).toFixed(6));
     };
 
-    // При смене asset или maxBalance
+    // при изменении asset или maxBalance пересчитываем
     useEffect(() => {
-        const num = parseFloat(amount);
-        if (!isNaN(num)) {
-            setErrAmt(num <= 0 || num > maxBalance);
-            setWillReceive(calcReceive(num).toFixed(6));
+        const n = parseFloat(amount);
+        if (!isNaN(n)) {
+            setErrAmt(n <= 0 || n > maxBalance);
+            setWillReceive(calcReceive(n).toFixed(6));
         }
     }, [asset, maxBalance]);
 
@@ -178,7 +175,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 sendAsset={asset}
                 sendAmount={amount}
                 receiveAsset={receiveAsset}
-                /** expectedAmount теперь берётся из блока ReceiveBlock */
                 receiveAmount={receiveAmount}
                 partnerAddress=""
                 disabled={isDisabled}

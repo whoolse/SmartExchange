@@ -75,7 +75,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
 
         try {
             const dealParams: DealParameters = {
-                dealId: 1,
+                dealId: 2,
                 sendedCurrencyName: sendAsset,
                 sendedAmount: +sendAmount,
                 expectedAmount: +receiveAmount,
@@ -84,7 +84,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
             };
             console.log(dealParams);
             if (sendAsset == "TON")
-                await tonConnectWrapper.sendTon(dealParams, tonConnectUI, Address.parse(address!))
+                await tonConnectWrapper.sendTon(dealParams, tonConnectUI)
             else
                 await tonConnectWrapper.sendJetton(dealParams, tonConnectUI, Address.parse(address!));
      

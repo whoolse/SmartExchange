@@ -8,76 +8,72 @@ import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
     asset: string;
-    /** Текущее значение «Будет получено мною» из родителя */
-    amount: string;
-    /** Коллбэк при изменении «Будет получено мною» */
-    onAmountChange: (val: string) => void;
     onAssetChange: (asset: string) => void;
+    onAmountChange: (val: string) => void;
     onValidate?: (valid: boolean) => void;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     asset,
-    amount,
-    onAmountChange,
     onAssetChange,
+    onAmountChange,
     onValidate,
 }) => {
     const t = useT();
 
-    const serviceFactor = 0.999;                    // 1 - 0.001
-    const networkFee = asset === 'TON' ? 0.105 : 0.07;
+    const serviceFactor = 0.999;
+    const networkFee = asset === 'TON' ? 0.105 : 0;
 
-    // send→receive и receive→send
-    const calcReceive = (send: number) =>
-        asset === 'TON' ? send * serviceFactor - networkFee : send * serviceFactor;
-    const calcSend = (recv: number) =>
-        asset === 'TON' ? (recv + networkFee) / serviceFactor : recv / serviceFactor;
+    // расчёты
+    const calcReceive = (send: number) => send * serviceFactor - networkFee;
+    const calcSend = (recv: number) => (recv + networkFee) / serviceFactor;
 
-    // Локальное состояние полей
-    const [recvVal, setRecvVal] = useState<string>(amount);
-    const [sendVal, setSendVal] = useState<string>(() => {
-        const n = parseFloat(amount);
-        return !isNaN(n) ? calcSend(n).toFixed(6) : '';
-    });
-    const [errRecv, setErrRecv] = useState<boolean>(false);
+    // стартовые значения
+    const [sendVal, setSendVal] = useState<string>('10');
+    const [recvVal, setRecvVal] = useState<string>(
+        calcReceive(10).toFixed(6)
+    );
     const [errSend, setErrSend] = useState<boolean>(false);
+    const [errRecv, setErrRecv] = useState<boolean>(false);
 
-    // Инициализация при смене asset (только один раз на asset)
+    // при монтировании сообщаем родителю первоначальное количество
     useEffect(() => {
-        const n = parseFloat(amount);
-        if (!isNaN(n)) {
-            setRecvVal(amount);
-            setErrRecv(false);
-            const s = calcSend(n);
-            setSendVal(s.toFixed(6));
-            setErrSend(false);
-        } else {
-            setRecvVal('');
-            setSendVal('');
-            setErrRecv(true);
-            setErrSend(true);
+        onAmountChange(recvVal);
+        onValidate?.(!errSend && !errRecv);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // при смене актива — пересчитываем из sendVal
+    useEffect(() => {
+        const s = parseFloat(sendVal);
+        if (!isNaN(s)) {
+            const r = calcReceive(s);
+            setRecvVal(r.toFixed(6));
+            setErrSend(s < 0);
+            setErrRecv(r < 0);
+            onAmountChange(r.toFixed(6));
         }
     }, [asset]);
 
-    // Валидация блока
+    // валидация на изменения полей
     useEffect(() => {
         const valid =
-            !errRecv &&
             !errSend &&
+            !errRecv &&
+            sendVal.trim() !== '' &&
             recvVal.trim() !== '' &&
+            !isNaN(parseFloat(sendVal)) &&
             !isNaN(parseFloat(recvVal));
         onValidate?.(valid);
-    }, [recvVal, errRecv, errSend, onValidate]);
+    }, [sendVal, recvVal, errSend, errRecv, onValidate]);
 
     const handleSendChange = (val: string) => {
         setSendVal(val);
-        const n = parseFloat(val);
-        if (!isNaN(n) && n >= 0) {
+        const s = parseFloat(val);
+        if (!isNaN(s) && s >= 0) {
+            const r = calcReceive(s);
             setErrSend(false);
-            const r = calcReceive(n);
+            setErrRecv(r < 0);
             setRecvVal(r.toFixed(6));
-            setErrRecv(false);
             onAmountChange(r.toFixed(6));
         } else {
             setErrSend(true);
@@ -89,18 +85,18 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 
     const handleReceiveChange = (val: string) => {
         setRecvVal(val);
-        const n = parseFloat(val);
-        if (!isNaN(n) && n >= 0) {
+        const r = parseFloat(val);
+        if (!isNaN(r) && r >= 0) {
+            const s = calcSend(r);
             setErrRecv(false);
-            const s = calcSend(n);
+            setErrSend(s < 0);
             setSendVal(s.toFixed(6));
-            setErrSend(false);
             onAmountChange(val);
         } else {
             setErrRecv(true);
             setErrSend(true);
             setSendVal('');
-            onAmountChange(val);
+            onAmountChange('');
         }
     };
 
