@@ -16,6 +16,7 @@ import {
     tonApiBaseUrl,
     currencies,
 } from '../constants/constants';
+import { TonConnectWrapper } from '../services/tonConnectWrapper';
 
 interface TonSendTransactionProps {
     /** Код актива, который отправляем */
@@ -34,7 +35,7 @@ interface TonSendTransactionProps {
     children: (send: () => Promise<void>) => React.ReactNode;
 }
 
-interface DealParameters {
+export interface DealParameters {
     dealId: number;
     sendedAmount: number;
     sendedCurrencyName: string;
@@ -43,80 +44,8 @@ interface DealParameters {
     partnerAddress?: string;
 }
 
-async function getJettonWalletAddressFromTonapi(
-    masterAddress: string,
-    walletAddress: Address
-): Promise<Address> {
-    const url = `${tonApiBaseUrl}/v2/blockchain/accounts/${masterAddress}/methods/get_wallet_address?args=${walletAddress.toString()}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return Address.parse(data.decoded.jetton_wallet_address);
-}
 
-function createCell():string {
-    const body = beginCell()
-        .storeUint(0, 32) // write 32 zero bits to indicate that a text comment will follow
-        .storeStringTail("TEST") // write our text comment
-        .endCell();
-    return body.toBoc().toString("base64")
-}
-
-async function sendJetton(
-    dealParams: DealParameters,
-    tonConnectUI: TonConnectUI,
-    myAddress: Address
-) {
-    const {
-        dealId,
-        sendedAmount,
-        sendedCurrencyName,
-        expectedAmount,
-        expectedCurrencyName,
-        partnerAddress,
-    } = dealParams;
-
-    const expectedCurrencyId = currencies[expectedCurrencyName].id;
-    const jettonMasterAddress = currencies[sendedCurrencyName].masterAddress;
-    const jettonTransferAmount = toNano(sendedAmount.toString());
-
-    const forwardPayload = beginCell()
-        .storeUint(dealId, 32)
-        .storeCoins(toNano(expectedAmount))
-        .storeUint(expectedCurrencyId, 16)
-        .endCell();
-
-    const myJettonWallet = await getJettonWalletAddressFromTonapi(
-        jettonMasterAddress,
-        myAddress
-    );
-
-    const transferMsg: JettonTransfer = {
-        $$type: 'JettonTransfer',
-        queryId: 0n,
-        amount: jettonTransferAmount,
-        responseDestination: myAddress,
-        forwardTonAmount: toNano('0.1'),
-        forwardPayload: forwardPayload.asSlice(),
-        destination: Address.parse(myContractAddress),
-        customPayload: null,
-    };
-    const payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell();
-
-    const validUntil = Math.floor(Date.now() / 1000) + 60;
-    const transaction: SendTransactionRequest = {
-        validUntil,
-        messages: [
-            {
-                address: myJettonWallet.toString(),
-                amount: toNano('0.4').toString(),
-                // payload: createCell()
-                payload: payload.toBoc().toString("base64"),
-            },
-        ],
-    };
-
-    await tonConnectUI.sendTransaction(transaction);
-}
+const tonConnectWrapper = new TonConnectWrapper()
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
     sendAsset,
@@ -154,7 +83,10 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                 partnerAddress,
             };
             console.log(dealParams);
-            await sendJetton(dealParams, tonConnectUI, Address.parse(address!));
+            if (sendAsset == "TON")
+                await tonConnectWrapper.sendTon(dealParams, tonConnectUI, Address.parse(address!))
+            else
+                await tonConnectWrapper.sendJetton(dealParams, tonConnectUI, Address.parse(address!));
      
             onResult?.({ success: true });
         } catch (e) {
