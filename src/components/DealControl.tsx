@@ -1,10 +1,34 @@
 // src/components/DealControl.tsx
+import { Address, TupleReader } from '@ton/core';
 import React, { useState } from 'react';
+import { loadTupleDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
+import { MethodExecutionResult, TonApiClient } from '@ton-api/client';
+import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
+import { fromNano } from '@ton/core';
+import { currencies } from '../constants/constants';
 
 interface DealControlProps {
     apiUrl: string;
     onDealData: (data: any) => void;
 }
+
+const ta = new TonApiClient({
+    baseUrl: tonApiBaseUrl
+});
+
+async function getDealById(dealId: string) {
+    const res = await getFromContract('dealById', dealId);
+    let source = new TupleReader(res.stack)
+    const result_p = source.readTupleOpt();
+    const result = result_p ? loadTupleDealInfo(result_p) : null;
+    return result
+}
+
+async function getFromContract(name: string, arg ?: string): Promise < MethodExecutionResult > {
+    let query = arg ? { args: [arg] } : undefined
+    return await ta.blockchain.execGetMethodForBlockchainAccount(Address.parse(myContractAddress), name, query);
+}
+
 
 export const DealControl: React.FC<DealControlProps> = ({
     apiUrl,
@@ -18,10 +42,9 @@ export const DealControl: React.FC<DealControlProps> = ({
         if (!dealId) return;
         try {
             setError(null);
-            const res = await fetch(`${apiUrl}/${dealId}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            onDealData(data);
+            const res = await getDealById(dealId);
+            console.log(res)
+            onDealData(res);
         } catch (e: any) {
             console.error(e);
             setError(e.message || 'Unknown error');

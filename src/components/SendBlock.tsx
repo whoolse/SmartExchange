@@ -1,20 +1,21 @@
 // src/components/SendBlock.tsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { useTonAddress } from '@tonconnect/ui-react';
-import { Address } from '@ton/core';
 import { TonApiClient, type JettonsBalances } from '@ton-api/client';
+import { useTonAddress } from '@tonconnect/ui-react';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets, tonApiBaseUrl, networkFee, serviceComission } from '../constants/constants';
+import { assets, tonApiBaseUrl, serviceComission, networkFee } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
     asset: string;
     receiveAsset: string;
     receiveAmount: string;
+    initialSendAmount?: string;
+    initialReceiveAmount?: string;
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
@@ -25,6 +26,8 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     asset,
     receiveAsset,
     receiveAmount,
+    initialSendAmount,
+    initialReceiveAmount,
     onAssetChange,
     disableCreate = false,
     userJettons,
@@ -37,7 +40,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         []
     );
 
-    // максимальный баланс выбранного актива
     const maxBalance = useMemo(() => {
         if (asset === 'TON') {
             const mb = parseFloat(tonBalance);
@@ -54,31 +56,31 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
-    // доступные активы для отправки: TON всегда + пересечение с userJettons
     const availableAssets = useMemo(() => {
         const filtered = assets.filter(a => userJettons.includes(a));
         return ['TON', ...filtered.filter(a => a !== 'TON')];
     }, [userJettons]);
 
-    // расчёт «Будет получено партнёром» и обратный
-    const calcReceive = (send: number) =>
-        asset === 'TON'
-            ? send * serviceComission - networkFee
-            : send * serviceComission;
-    const calcSend = (recv: number) =>
-        asset === 'TON'
-            ? (recv + networkFee) / serviceComission
-            : recv / serviceComission;
+    const calcReceive = (n: number) =>
+        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
+    const calcSend = (r: number) =>
+        asset === 'TON' ? (r + networkFee) / serviceComission : r / serviceComission;
 
-
-    const [amount, setAmount] = useState<string>('1000');
+    const [amount, setAmount] = useState<string>(initialSendAmount ?? '1000');
     const [willReceive, setWillReceive] = useState<string>(
-        calcReceive(1000).toFixed(6)
+        initialReceiveAmount ??
+        calcReceive(parseFloat(initialSendAmount ?? '1000')).toFixed(6)
     );
     const [errAmt, setErrAmt] = useState<boolean>(false);
     const [errRec, setErrRec] = useState<boolean>(false);
 
-    // при изменении «Будет отправлено»
+    useEffect(() => {
+        if (initialSendAmount !== undefined) {
+            setAmount(initialSendAmount);
+            setWillReceive(initialReceiveAmount ?? '');
+        }
+    }, [initialSendAmount, initialReceiveAmount]);
+
     const onAmountChange = (val: string) => {
         setAmount(val);
         const n = parseFloat(val);
@@ -92,7 +94,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
-    // при ручном изменении «Будет получено партнёром»
     const onReceiveChange = (val: string) => {
         setWillReceive(val);
         const r = parseFloat(val);
@@ -106,7 +107,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
-    // смена актива
     const onAssetSelect = (val: string) => {
         onAssetChange(val);
         const n = parseFloat(amount);
@@ -116,7 +116,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
-    // «max» кнопка
     const fillMax = () => {
         const n = maxBalance;
         setAmount(n.toString());
@@ -125,7 +124,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         setWillReceive(calcReceive(n).toFixed(6));
     };
 
-    // при изменении asset или maxBalance пересчитываем
     useEffect(() => {
         const n = parseFloat(amount);
         if (!isNaN(n)) {
@@ -180,7 +178,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 sendAsset={asset}
                 sendAmount={amount}
                 receiveAsset={receiveAsset}
-                receiveAmount={receiveAmount}
+                receiveAmount={willReceive}
                 partnerAddress=""
                 disabled={isDisabled}
             />

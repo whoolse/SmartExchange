@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
-import { assets, tonApiBaseUrl, networkFee, serviceComission } from '../constants/constants';
+import { assets, serviceComission, networkFee } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
@@ -11,6 +11,8 @@ interface ReceiveBlockProps {
     onAssetChange: (asset: string) => void;
     onAmountChange: (val: string) => void;
     onValidate?: (valid: boolean) => void;
+    initialSendAmount?: string;
+    initialReceiveAmount?: string;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
@@ -18,35 +20,29 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     onAssetChange,
     onAmountChange,
     onValidate,
+    initialSendAmount = '10',
+    initialReceiveAmount,
 }) => {
     const t = useT();
 
-    // Формулы расчёта по тому же принципу, что в SendBlock:
-    // для TON: (n - 0.1%) - networkFee, иначе только (n - 0.1%)
-    const calcReceive = (send: number) =>
-        asset === 'TON'
-            ? send * serviceComission - networkFee
-            : send * serviceComission;
-    const calcSend = (recv: number) =>
-        asset === 'TON'
-            ? (recv + networkFee) / serviceComission
-            : recv / serviceComission;
+    const calcReceive = (n: number) =>
+        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
+    const calcSend = (r: number) =>
+        asset === 'TON' ? (r + networkFee) / serviceComission : r / serviceComission;
 
-    // стартовые значения
-    const [sendVal, setSendVal] = useState<string>('10');
+    const [sendVal, setSendVal] = useState<string>(initialSendAmount);
     const [recvVal, setRecvVal] = useState<string>(
-        calcReceive(10).toFixed(6)
+        initialReceiveAmount ??
+        calcReceive(parseFloat(initialSendAmount)).toFixed(6)
     );
     const [errSend, setErrSend] = useState<boolean>(false);
     const [errRecv, setErrRecv] = useState<boolean>(false);
 
-    // при монтировании сообщаем родителю первоначальное количество
     useEffect(() => {
         onAmountChange(recvVal);
         onValidate?.(!errSend && !errRecv);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // при смене актива — пересчитываем из sendVal
     useEffect(() => {
         const s = parseFloat(sendVal);
         if (!isNaN(s)) {
@@ -58,7 +54,6 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
         }
     }, [asset]);
 
-    // валидация на изменения полей
     useEffect(() => {
         const valid =
             !errSend &&
@@ -77,8 +72,9 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
             const r = calcReceive(s);
             setErrSend(false);
             setErrRecv(r < 0);
-            setRecvVal(r.toFixed(6));
-            onAmountChange(r.toFixed(6));
+            const rStr = r.toFixed(6);
+            setRecvVal(rStr);
+            onAmountChange(rStr);
         } else {
             setErrSend(true);
             setErrRecv(true);
@@ -94,7 +90,8 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
             const s = calcSend(r);
             setErrRecv(false);
             setErrSend(s < 0);
-            setSendVal(s.toFixed(6));
+            const sStr = s.toFixed(6);
+            setSendVal(sStr);
             onAmountChange(val);
         } else {
             setErrRecv(true);

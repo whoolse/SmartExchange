@@ -25,10 +25,6 @@ const App: React.FC = () => {
         jettonBalances={jettonBalances}
       />
 
-      <DealControl
-        apiUrl="https://api.example.com/deals"
-        onDealData={setDealData}
-      />
     </div>
   );
 };
