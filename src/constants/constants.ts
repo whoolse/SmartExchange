@@ -25,6 +25,12 @@ export const assets = Object.keys(currencies) as Array<keyof typeof currencies>;
 
 export type Asset = typeof assets[number];
 
-export const myContractAddress = 'kQBD8m21YO_oaQJxFDRPW9a5pMi2HVCntoWivjKnEbL83njN';
+export const myContractAddress = 'kQDDQfgiIO5K12M_VApgv2B_Lb2L-dowzBqdNF1tfRm0eKz6';
 
 export const tonApiBaseUrl = 'https://testnet.tonapi.io';
+
+/** Коэффициент сервисной комиссии (1 - 0.001 = 0.999) */
+export const serviceComission = 0.999;
+
+/** Сетевая комиссия для TON (фиксированная) */
+export const networkFee = 0.018;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
-import { assets } from '../constants/constants';
+import { assets, tonApiBaseUrl, networkFee, serviceComission } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
@@ -21,12 +21,16 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 }) => {
     const t = useT();
 
-    const serviceFactor = 0.999;
-    const networkFee = asset === 'TON' ? 0.105 : 0;
-
-    // расчёты
-    const calcReceive = (send: number) => send * serviceFactor - networkFee;
-    const calcSend = (recv: number) => (recv + networkFee) / serviceFactor;
+    // Формулы расчёта по тому же принципу, что в SendBlock:
+    // для TON: (n - 0.1%) - networkFee, иначе только (n - 0.1%)
+    const calcReceive = (send: number) =>
+        asset === 'TON'
+            ? send * serviceComission - networkFee
+            : send * serviceComission;
+    const calcSend = (recv: number) =>
+        asset === 'TON'
+            ? (recv + networkFee) / serviceComission
+            : recv / serviceComission;
 
     // стартовые значения
     const [sendVal, setSendVal] = useState<string>('10');

@@ -8,7 +8,7 @@ import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets, tonApiBaseUrl } from '../constants/constants';
+import { assets, tonApiBaseUrl, networkFee, serviceComission } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
@@ -61,10 +61,15 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     }, [userJettons]);
 
     // расчёт «Будет получено партнёром» и обратный
-    const calcReceive = (n: number) =>
-        asset === 'TON' ? n * 0.999 - 0.105 : n * 0.999;
-    const calcSend = (r: number) =>
-        asset === 'TON' ? (r + 0.105) / 0.999 : r / 0.999;
+    const calcReceive = (send: number) =>
+        asset === 'TON'
+            ? send * serviceComission - networkFee
+            : send * serviceComission;
+    const calcSend = (recv: number) =>
+        asset === 'TON'
+            ? (recv + networkFee) / serviceComission
+            : recv / serviceComission;
+
 
     const [amount, setAmount] = useState<string>('1000');
     const [willReceive, setWillReceive] = useState<string>(

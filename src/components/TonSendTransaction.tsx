@@ -75,7 +75,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
 
         try {
             const dealParams: DealParameters = {
-                dealId: 2,
+                dealId: 3,
                 sendedCurrencyName: sendAsset,
                 sendedAmount: +sendAmount,
                 expectedAmount: +receiveAmount,

@@ -2,6 +2,7 @@
 import React from 'react';
 import { useT } from '../i18n';
 import { CommissionLine } from './CommissionLine';
+import { assets, tonApiBaseUrl, networkFee as networkFeeConst, serviceComission } from '../constants/constants';
 
 interface CommissionSectionProps {
     asset: string;
@@ -15,7 +16,7 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
     const t = useT();
     const parsedAmount = parseFloat(amount);
     const serviceFee = !isNaN(parsedAmount) ? parsedAmount * 0.001 : 0;
-    const networkFee = asset === 'TON' ? 0.105 : 0.07;
+    const networkFee = asset === 'TON' ? networkFeeConst : 0.07;
     const totalFee = networkFee + serviceFee;
 
     if (asset === 'TON') {
