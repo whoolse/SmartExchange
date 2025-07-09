@@ -1,5 +1,6 @@
 // src/components/DealCreate.tsx
 import React, { useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Address, fromNano } from '@ton/core';
 import { assets, currencies } from '../constants/constants';
 import { SendBlock } from './SendBlock';
@@ -26,6 +27,9 @@ export const DealCreate: React.FC<{
     userJettons: string[];
     jettonBalances: JettonsBalances['balances'];
 }> = ({ userJettons, jettonBalances }) => {
+    // Получаем параметр :id из URL
+    const { id: initialDealId } = useParams<{ id: string }>();
+
     const [sendAsset, setSendAsset] = useState<string>(DEF_SEND);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEF_RECEIVE);
 
@@ -37,7 +41,7 @@ export const DealCreate: React.FC<{
 
     const [validRec, setValidRec] = useState<boolean>(true);
 
-    // TON + те, что у пользователя
+    // Формируем список доступных отправляемых активов
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
         const l = ['TON', ...f.filter(a => a !== 'TON')];
@@ -46,16 +50,18 @@ export const DealCreate: React.FC<{
     }, [userJettons, sendAsset]);
 
     const onDealData = (info: DealInfo) => {
+        // Обновляем состояние на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
-        let expectedAmount = +fromNano(info.expectedAmount);
-        let expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
-        let sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
+        const expectedAmount = +fromNano(info.expectedAmount);
+        const expectedCurrency = getCurrencyKeyById(info.expectedCurrencyId);
+        const sendedCurrency = getCurrencyKeyById(info.sendedCurrencyId);
+
         setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
         setSendAsset(expectedCurrency);
         setReceiveAsset(sendedCurrency);
     };
 
-    // Автопереключение, если дублируют
+    // Авто-переключение, если пользователь выбирает уже выбранный актив в другом блоке
     const handleSA = (a: string) => {
         if (a === receiveAsset) {
             const idx = sendList.indexOf(a);
@@ -76,13 +82,10 @@ export const DealCreate: React.FC<{
             <SendBlock
                 asset={sendAsset}
                 receiveAsset={receiveAsset}
-
                 sendAmount={sendAmount}
                 onSendAmountChange={setSendAmount}
-
                 partnerReceive={partnerReceive}
                 onPartnerReceiveChange={setPartnerReceive}
-
                 onAssetChange={handleSA}
                 disableCreate={!validRec}
                 userJettons={userJettons}
@@ -91,18 +94,18 @@ export const DealCreate: React.FC<{
 
             <ReceiveBlock
                 asset={receiveAsset}
-
                 sendAmount={recSend}
                 onSendAmountChange={setRecSend}
-
                 receiveAmount={recReceive}
                 onReceiveAmountChange={setRecReceive}
-
                 onAssetChange={handleRA}
                 onValidate={setValidRec}
             />
 
-            <DealControl apiUrl="" onDealData={onDealData} />
+            <DealControl
+                onDealData={onDealData}
+                initialDealId={initialDealId}
+            />
         </div>
     );
 };

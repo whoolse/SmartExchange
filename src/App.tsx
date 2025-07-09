@@ -1,11 +1,12 @@
 // src/App.tsx
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { JettonsList } from './components/JettonsList';
 import { DealCreate } from './components/DealCreate';
 import { type JettonsBalances } from '@ton-api/client';
 
-const App: React.FC = () => {
+const AppPage: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
   const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
 
@@ -22,9 +23,17 @@ const App: React.FC = () => {
         userJettons={userJettons}
         jettonBalances={jettonBalances}
       />
-
     </div>
   );
 };
+
+const App: React.FC = () => (
+  <Routes>
+    {/* Главная страница */}
+    <Route path="/" element={<AppPage />} />
+    {/* Одна и та же страница, но с :id в URL — DealCreate сам его подхватит */}
+    <Route path="/deals/:id" element={<AppPage />} />
+  </Routes>
+);
 
 export default App;

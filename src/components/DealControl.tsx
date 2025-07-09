@@ -8,8 +8,8 @@ import { fromNano } from '@ton/core';
 import { currencies } from '../constants/constants';
 
 interface DealControlProps {
-    apiUrl: string;
     onDealData: (data: any) => void;
+    initialDealId?: string;
 }
 
 const ta = new TonApiClient({
@@ -31,11 +31,24 @@ async function getFromContract(name: string, arg ?: string): Promise < MethodExe
 
 
 export const DealControl: React.FC<DealControlProps> = ({
-    apiUrl,
     onDealData,
+    initialDealId
 }) => {
     const [dealId, setDealId] = useState<string>('3');
     const [error, setError] = useState<string | null>(null);
+    
+    React.useEffect(() => {
+        if (initialDealId) {
+            setError(null);
+            setDealId(initialDealId);
+            getDealById(initialDealId)
+                .then(res => onDealData(res))
+                .catch((e: any) => {
+                    console.error(e);
+                    setError(e.message || 'Unknown error');
+                });
+        }
+    }, [initialDealId, onDealData]);
 
     const handleFetch = async () => {
         console.log('handle press')
