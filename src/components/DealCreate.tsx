@@ -1,14 +1,26 @@
 // src/components/DealCreate.tsx
 import React, { useState, useMemo } from 'react';
-import { fromNano } from '@ton/core';
+import { Address, fromNano } from '@ton/core';
 import { assets, currencies } from '../constants/constants';
 import { SendBlock } from './SendBlock';
 import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
 import { type JettonsBalances } from '@ton-api/client';
+import { calcBack, getCurrencyKeyById } from '../utils/utils';
 
 const DEF_SEND = 'TON';
 const DEF_RECEIVE = 'USDT';
+
+interface DealInfo {
+    senderAddress: Address;
+    sendedAmount: number;
+    sendedCurrencyId: number;
+    partnerWillReceive: number;
+    expectedCurrencyId: number;
+    expectedAmount: number;
+    myJettonWallet: Address | null;
+    partnerAddressString: string | null;
+}
 
 export const DealCreate: React.FC<{
     userJettons: string[];
@@ -33,27 +45,14 @@ export const DealCreate: React.FC<{
         return l;
     }, [userJettons, sendAsset]);
 
-    const onDealData = (info: any) => {
-        setSendAmount("777");
-        setRecSend("888");
-        return
-
-        const mapId = (id: bigint) =>
-            Object.entries(currencies).find(([_, c]) => BigInt(c.id) === id)?.[0] || DEF_SEND;
-        const sentA = mapId(info.expectedCurrencyId);
-        const recvA = mapId(info.sendedCurrencyId);
-        const sAmt = fromNano(info.expectedAmount as bigint);
-        const pAmt = fromNano(info.partnerWillReceive as bigint);
-        const rSend = fromNano(info.sendedAmount as bigint);
-        const rRec = fromNano(info.expectedAmount as bigint);
-
-        setSendAsset(sentA);
-        setSendAmount(sAmt);
-        setPartnerReceive(pAmt);
-
-        setReceiveAsset(recvA);
-        setRecSend(rSend);
-        setRecReceive(rRec);
+    const onDealData = (info: DealInfo) => {
+        setRecSend(fromNano(info.sendedAmount));
+        let expectedAmount = +fromNano(info.expectedAmount);
+        let expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
+        let sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
+        setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
+        setSendAsset(expectedCurrency);
+        setReceiveAsset(sendedCurrency);
     };
 
     // Автопереключение, если дублируют

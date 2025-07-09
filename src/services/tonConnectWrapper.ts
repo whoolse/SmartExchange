@@ -1,3 +1,5 @@
+// src/services/tonConnectWrapper.tsx
+
 import { Address, beginCell, toNano } from "@ton/core";
 import { currencies, myContractAddress, tonApiBaseUrl } from "../constants/constants";
 import { SendTransactionRequest, TonConnectUI } from "@tonconnect/ui-react";

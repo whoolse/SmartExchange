@@ -3,8 +3,9 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
-import { assets, serviceComission, networkFee } from '../constants/constants';
+import { assets } from '../constants/constants';
 import { useT } from '../i18n';
+import { calcPartner, calcBack } from "../utils/utils"
 
 interface ReceiveBlockProps {
     asset: string;
@@ -28,14 +29,6 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     const t = useT();
     const lastChange = useRef<'send' | 'receive' | ''>('');
 
-    // Расчётные формулы
-    const calcReceiveMe = (n: number) =>
-        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
-    const calcSendBack = (r: number) =>
-        asset === 'TON'
-            ? (r + networkFee) / serviceComission
-            : r / serviceComission;
-
     // Валидация полей
     useEffect(() => {
         const valid =
@@ -46,12 +39,12 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
         onValidate?.(valid);
     }, [sendAmount, receiveAmount, onValidate]);
 
-    // Пересчёт «будет получено мною» при изменении sendAmount **если** это было не ручное изменение receiveAmount
+    // Пересчёт «будет получено мною» при изменении sendAmount, если это было не ручное изменение receiveAmount
     useEffect(() => {
         if (lastChange.current !== 'receive') {
             const n = parseFloat(sendAmount);
             if (!isNaN(n)) {
-                onReceiveAmountChange(calcReceiveMe(n).toFixed(6));
+                onReceiveAmountChange(calcPartner(n, asset).toFixed(6));
             } else {
                 onReceiveAmountChange('');
             }
@@ -69,7 +62,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
         onReceiveAmountChange(val);
         const r = parseFloat(val);
         if (!isNaN(r)) {
-            onSendAmountChange(calcSendBack(r).toFixed(6));
+            onSendAmountChange(calcBack(r, asset).toFixed(6));
         }
     };
 
@@ -96,7 +89,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
             <CommissionSection asset={asset} amount={sendAmount} />
 
             <InputField
-                label={t('willReceiveMe')}
+                label={t('IWillGet')}
                 type="number"
                 value={receiveAmount}
                 onChange={handleReceiveChange}

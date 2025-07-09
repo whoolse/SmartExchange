@@ -1,4 +1,3 @@
-// src/components/SendBlock.tsx
 import React, { useEffect, useMemo, useRef } from 'react';
 import { TonApiClient } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
@@ -6,8 +5,9 @@ import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets, serviceComission, networkFee } from '../constants/constants';
+import { assets } from '../constants/constants';
 import { useT } from '../i18n';
+import { calcBack, calcPartner } from "../utils/utils";
 
 interface SendBlockProps {
     asset: string;
@@ -64,19 +64,14 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
-    const calcPartner = (n: number) =>
-        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
-    const calcBack = (r: number) =>
-        asset === 'TON'
-            ? (r + networkFee) / serviceComission
-            : r / serviceComission;
+    // Убраны локальные функции CalcPartner и CalcBack
 
     // Пересчёт partnerReceive только если последний change был не 'receive'
     useEffect(() => {
         if (lastChange.current !== 'receive') {
             const n = parseFloat(sendAmount);
             if (!isNaN(n)) {
-                onPartnerReceiveChange(calcPartner(n).toFixed(6));
+                onPartnerReceiveChange(calcPartner(n, asset).toFixed(6));
             } else {
                 onPartnerReceiveChange('');
             }
@@ -103,7 +98,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         onPartnerReceiveChange(val);
         const r = parseFloat(val);
         if (!isNaN(r)) {
-            onSendAmountChange(calcBack(r).toFixed(6));
+            onSendAmountChange(calcBack(r, asset).toFixed(6));
         }
     };
 
