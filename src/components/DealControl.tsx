@@ -29,6 +29,7 @@ async function getFromContract(name: string, arg ?: string): Promise < MethodExe
     return await ta.blockchain.execGetMethodForBlockchainAccount(Address.parse(myContractAddress), name, query);
 }
 
+const fetchedDealIds = new Set<string>();
 
 export const DealControl: React.FC<DealControlProps> = ({
     onDealData,
@@ -36,9 +37,11 @@ export const DealControl: React.FC<DealControlProps> = ({
 }) => {
     const [dealId, setDealId] = useState<string>('3');
     const [error, setError] = useState<string | null>(null);
-    
+    const [hasFetched, setHasFetched] = useState<boolean>(false);
+
     React.useEffect(() => {
-        if (initialDealId) {
+        if (initialDealId && !fetchedDealIds.has(initialDealId)) {
+            fetchedDealIds.add(initialDealId);
             setError(null);
             setDealId(initialDealId);
             getDealById(initialDealId)
@@ -48,7 +51,7 @@ export const DealControl: React.FC<DealControlProps> = ({
                     setError(e.message || 'Unknown error');
                 });
         }
-    }, [initialDealId, onDealData]);
+    }, [initialDealId, hasFetched, onDealData]);
 
     const handleFetch = async () => {
         console.log('handle press')

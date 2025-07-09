@@ -40,6 +40,7 @@ export const DealCreate: React.FC<{
     const [recReceive, setRecReceive] = useState<string>('0');
 
     const [validRec, setValidRec] = useState<boolean>(true);
+    const [dealNotFound, setDealNotFound] = useState<boolean>(false);
 
     // Формируем список доступных отправляемых активов
     const sendList = useMemo(() => {
@@ -49,8 +50,13 @@ export const DealCreate: React.FC<{
         return l;
     }, [userJettons, sendAsset]);
 
-    const onDealData = (info: DealInfo) => {
+    const onDealData = (info: DealInfo | null) => {
         // Обновляем состояние на основе данных из смарт-контракта
+        console.log(info)
+        if (!info) {
+            setDealNotFound(true)
+            return
+        }
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
         const expectedCurrency = getCurrencyKeyById(info.expectedCurrencyId);
@@ -106,6 +112,11 @@ export const DealCreate: React.FC<{
                 onDealData={onDealData}
                 initialDealId={initialDealId}
             />
+            {dealNotFound && (
+                <div className="mt-2 text-red-500">
+                    Сделка не найдена
+                </div>
+            )}
         </div>
     );
 };
