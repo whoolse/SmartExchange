@@ -8,96 +8,87 @@ import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
     asset: string;
-    onAssetChange: (asset: string) => void;
-    onAmountChange: (val: string) => void;
-    onValidate?: (valid: boolean) => void;
+    /** Начальное значение «Будет отправлено» */
     initialSendAmount?: string;
-    initialReceiveAmount?: string;
+    onAssetChange: (asset: string) => void;
+    /** Вызывается при изменении «Будет получено мною» */
+    onAmountChange: (val: string) => void;
+    /** Сообщает родителю о валидности */
+    onValidate?: (valid: boolean) => void;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     asset,
+    initialSendAmount = '10',
     onAssetChange,
     onAmountChange,
     onValidate,
-    initialSendAmount = '10',
-    initialReceiveAmount,
 }) => {
     const t = useT();
 
-    const calcReceive = (n: number) =>
-        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
-    const calcSend = (r: number) =>
-        asset === 'TON' ? (r + networkFee) / serviceComission : r / serviceComission;
+    // Формулы расчёта
+    const calcReceive = (send: number) =>
+        asset === 'TON'
+            ? send * serviceComission - networkFee
+            : send * serviceComission;
+    const calcSend = (recv: number) =>
+        asset === 'TON'
+            ? (recv + networkFee) / serviceComission
+            : recv / serviceComission;
 
+    // Локальное состояние полей
     const [sendVal, setSendVal] = useState<string>(initialSendAmount);
     const [recvVal, setRecvVal] = useState<string>(
-        initialReceiveAmount ??
         calcReceive(parseFloat(initialSendAmount)).toFixed(6)
     );
     const [errSend, setErrSend] = useState<boolean>(false);
     const [errRecv, setErrRecv] = useState<boolean>(false);
 
+    // При монтировании отправляем начальное значение родителю и валидируем
     useEffect(() => {
         onAmountChange(recvVal);
-        onValidate?.(!errSend && !errRecv);
+        onValidate?.(true);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
-        const s = parseFloat(sendVal);
-        if (!isNaN(s)) {
-            const r = calcReceive(s);
-            setRecvVal(r.toFixed(6));
-            setErrSend(s < 0);
-            setErrRecv(r < 0);
-            onAmountChange(r.toFixed(6));
-        }
-    }, [asset]);
-
-    useEffect(() => {
-        const valid =
-            !errSend &&
-            !errRecv &&
-            sendVal.trim() !== '' &&
-            recvVal.trim() !== '' &&
-            !isNaN(parseFloat(sendVal)) &&
-            !isNaN(parseFloat(recvVal));
-        onValidate?.(valid);
-    }, [sendVal, recvVal, errSend, errRecv, onValidate]);
-
+    // Обработчик изменения «Будет отправлено»
     const handleSendChange = (val: string) => {
         setSendVal(val);
         const s = parseFloat(val);
         if (!isNaN(s) && s >= 0) {
             const r = calcReceive(s);
+            const rStr = r.toFixed(6);
             setErrSend(false);
             setErrRecv(r < 0);
-            const rStr = r.toFixed(6);
             setRecvVal(rStr);
             onAmountChange(rStr);
+            onValidate?.(!false && !(r < 0));
         } else {
             setErrSend(true);
             setErrRecv(true);
             setRecvVal('');
             onAmountChange('');
+            onValidate?.(false);
         }
     };
 
+    // Обработчик изменения «Будет получено мною»
     const handleReceiveChange = (val: string) => {
         setRecvVal(val);
         const r = parseFloat(val);
         if (!isNaN(r) && r >= 0) {
             const s = calcSend(r);
+            const sStr = s.toFixed(6);
             setErrRecv(false);
             setErrSend(s < 0);
-            const sStr = s.toFixed(6);
             setSendVal(sStr);
             onAmountChange(val);
+            onValidate?.(!(s < 0) && !false);
         } else {
             setErrRecv(true);
             setErrSend(true);
             setSendVal('');
             onAmountChange('');
+            onValidate?.(false);
         }
     };
 

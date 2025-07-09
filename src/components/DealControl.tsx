@@ -34,7 +34,7 @@ export const DealControl: React.FC<DealControlProps> = ({
     apiUrl,
     onDealData,
 }) => {
-    const [dealId, setDealId] = useState<string>('');
+    const [dealId, setDealId] = useState<string>('3');
     const [error, setError] = useState<string | null>(null);
 
     const handleFetch = async () => {

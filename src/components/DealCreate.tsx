@@ -1,7 +1,7 @@
 // src/components/DealCreate.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { fromNano } from '@ton/core';
-import { currencies } from '../constants/constants';
+import { assets, currencies } from '../constants/constants';
 import { SendBlock } from './SendBlock';
 import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
@@ -21,40 +21,52 @@ export const DealCreate: React.FC<DealCreateProps> = ({
 }) => {
     const [sendAsset, setSendAsset] = useState<string>(DEFAULT_SEND_ASSET);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEFAULT_RECEIVE_ASSET);
-    const [sendAmountInit, setSendAmountInit] = useState<string>('1000');
-    const [receiveAmountInit, setReceiveAmountInit] = useState<string>('10');
+    const [receiveAmount, setReceiveAmount] = useState<string>('1000');
     const [isReceiveValid, setIsReceiveValid] = useState<boolean>(true);
 
-    useEffect(() => {
-        if (!userJettons.length) return;
-        if (!userJettons.includes(sendAsset)) {
-            setSendAsset(DEFAULT_SEND_ASSET);
+    // Send-поля не должны совпадать с Receive-полями: если совпадение — переключаем Receive
+    const handleSendAssetChange = (val: string) => {
+        if (val === receiveAsset) {
+            const filtered = assets.filter(a => userJettons.includes(a));
+            const list = ['TON', ...filtered.filter(a => a !== 'TON')];
+            const idx = list.indexOf(val);
+            const next = list[(idx + 1) % list.length];
+            setReceiveAsset(next);
         }
-        if (!userJettons.includes(receiveAsset) || receiveAsset === sendAsset) {
-            setReceiveAsset(DEFAULT_RECEIVE_ASSET);
-        }
-    }, [userJettons, sendAsset, receiveAsset]);
+        setSendAsset(val);
+    };
 
+    // Receive-поля: аналогично переключаем Send, если совпадают
+    const handleReceiveAssetChange = (val: string) => {
+        if (val === sendAsset) {
+            const filtered = assets.filter(a => userJettons.includes(a));
+            const list = ['TON', ...filtered.filter(a => a !== 'TON')];
+            const idx = list.indexOf(val);
+            const next = list[(idx + 1) % list.length];
+            setSendAsset(next);
+        }
+        setReceiveAsset(val);
+    };
+
+    // Коллбэк для DealControl — заполняет оба блока из ответа dealInfo
     const handleDealData = (dealInfo: any) => {
         const mapIdToAsset = (id: bigint) => {
             const entry = Object.entries(currencies).find(
-                ([, cfg]) => BigInt(cfg.id) === id
+                ([sym, cfg]) => BigInt(cfg.id) === id
             );
             return entry ? entry[0] : DEFAULT_SEND_ASSET;
         };
 
-        const sendedId = dealInfo.sendedCurrencyId as bigint;
-        const expectedId = dealInfo.expectedCurrencyId as bigint;
-        const symbolReceive = mapIdToAsset(sendedId);
-        const symbolSend = mapIdToAsset(expectedId);
+        const sId = dealInfo.sendedCurrencyId as bigint;
+        const eId = dealInfo.expectedCurrencyId as bigint;
+        const sSym = mapIdToAsset(sId);
+        const eSym = mapIdToAsset(eId);
 
-        const initSend = fromNano(dealInfo.expectedAmount as bigint);
-        const initReceive = fromNano(dealInfo.sendedAmount as bigint);
+        const sAmt = fromNano(dealInfo.sendedAmount as bigint);
 
-        setSendAsset(symbolSend);
-        setReceiveAsset(symbolReceive);
-        setSendAmountInit(initSend);
-        setReceiveAmountInit(initReceive);
+        setReceiveAsset(sSym);
+        setReceiveAmount(sAmt);
+        setSendAsset(eSym);
     };
 
     return (
@@ -62,13 +74,8 @@ export const DealCreate: React.FC<DealCreateProps> = ({
             <SendBlock
                 asset={sendAsset}
                 receiveAsset={receiveAsset}
-                receiveAmount={receiveAmountInit}
-                initialSendAmount={sendAmountInit}
-                initialReceiveAmount={receiveAmountInit}
-                onAssetChange={(val) => {
-                    if (val === receiveAsset) setReceiveAsset(DEFAULT_RECEIVE_ASSET);
-                    setSendAsset(val);
-                }}
+                receiveAmount={receiveAmount}
+                onAssetChange={handleSendAssetChange}
                 disableCreate={!isReceiveValid}
                 userJettons={userJettons}
                 jettonBalances={jettonBalances}
@@ -76,13 +83,9 @@ export const DealCreate: React.FC<DealCreateProps> = ({
 
             <ReceiveBlock
                 asset={receiveAsset}
-                initialSendAmount={receiveAmountInit}
-                initialReceiveAmount={receiveAmountInit}
-                onAmountChange={setReceiveAmountInit}
-                onAssetChange={(val) => {
-                    if (val === sendAsset) setSendAsset(DEFAULT_SEND_ASSET);
-                    setReceiveAsset(val);
-                }}
+                initialSendAmount={receiveAmount}
+                onAmountChange={setReceiveAmount}
+                onAssetChange={handleReceiveAssetChange}
                 onValidate={setIsReceiveValid}
             />
 
