@@ -29,9 +29,7 @@ const AppPage: React.FC = () => {
 
 const App: React.FC = () => (
   <Routes>
-    {/* Главная страница */}
     <Route path="/" element={<AppPage />} />
-    {/* Одна и та же страница, но с :id в URL — DealCreate сам его подхватит */}
     <Route path="/deals/:id" element={<AppPage />} />
   </Routes>
 );

@@ -1,7 +1,7 @@
 // src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import App from './App';
 import './index.css';
@@ -13,9 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <TonConnectUIProvider manifestUrl="https://smart-ex.cc/tonconnect-manifest.json">
       <I18nProvider>
         <BalanceProvider>
-          <BrowserRouter>
+          <HashRouter>
             <App />
-          </BrowserRouter>
+          </HashRouter>
         </BalanceProvider>
       </I18nProvider>
     </TonConnectUIProvider>

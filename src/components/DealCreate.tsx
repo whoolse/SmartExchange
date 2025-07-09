@@ -1,6 +1,5 @@
 // src/components/DealCreate.tsx
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { Address, fromNano } from '@ton/core';
 import { assets, currencies } from '../constants/constants';
 import { SendBlock } from './SendBlock';
@@ -27,9 +26,6 @@ export const DealCreate: React.FC<{
     userJettons: string[];
     jettonBalances: JettonsBalances['balances'];
 }> = ({ userJettons, jettonBalances }) => {
-    // Получаем параметр :id из URL
-    const { id: initialDealId } = useParams<{ id: string }>();
-
     const [sendAsset, setSendAsset] = useState<string>(DEF_SEND);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEF_RECEIVE);
 
@@ -40,9 +36,10 @@ export const DealCreate: React.FC<{
     const [recReceive, setRecReceive] = useState<string>('0');
 
     const [validRec, setValidRec] = useState<boolean>(true);
+    // Флаг для случая, когда сделка не найдена
     const [dealNotFound, setDealNotFound] = useState<boolean>(false);
 
-    // Формируем список доступных отправляемых активов
+    // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
         const l = ['TON', ...f.filter(a => a !== 'TON')];
@@ -51,23 +48,26 @@ export const DealCreate: React.FC<{
     }, [userJettons, sendAsset]);
 
     const onDealData = (info: DealInfo | null) => {
-        // Обновляем состояние на основе данных из смарт-контракта
-        console.log(info)
-        if (!info) {
-            setDealNotFound(true)
-            return
+        // Если инфа о сделке отсутствует
+        if (info == null) {
+            setDealNotFound(true);
+            return;
         }
+        setDealNotFound(false);
+        console.log(info)
+        // Обновляем поля на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
-        const expectedCurrency = getCurrencyKeyById(info.expectedCurrencyId);
-        const sendedCurrency = getCurrencyKeyById(info.sendedCurrencyId);
+        const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
+        const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
 
+        console.log(expectedCurrency, sendedCurrency )
         setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
-        setSendAsset(expectedCurrency);
         setReceiveAsset(sendedCurrency);
+        setSendAsset(expectedCurrency);
     };
 
-    // Авто-переключение, если пользователь выбирает уже выбранный актив в другом блоке
+    // Автопереключение, если выбранный asset совпадает с receiveAsset/sendAsset
     const handleSA = (a: string) => {
         if (a === receiveAsset) {
             const idx = sendList.indexOf(a);
@@ -108,10 +108,8 @@ export const DealCreate: React.FC<{
                 onValidate={setValidRec}
             />
 
-            <DealControl
-                onDealData={onDealData}
-                initialDealId={initialDealId}
-            />
+            <DealControl onDealData={onDealData} />
+
             {dealNotFound && (
                 <div className="mt-2 text-red-500">
                     Сделка не найдена

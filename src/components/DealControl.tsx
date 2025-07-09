@@ -1,69 +1,63 @@
 // src/components/DealControl.tsx
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';      // ← обязательно
 import { Address, TupleReader } from '@ton/core';
-import React, { useState } from 'react';
 import { loadTupleDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { MethodExecutionResult, TonApiClient } from '@ton-api/client';
 import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
 import { fromNano } from '@ton/core';
-import { currencies } from '../constants/constants';
 
 interface DealControlProps {
-    onDealData: (data: any) => void;
-    initialDealId?: string;
+    /** Вызывается при получении данных сделки или null */
+    onDealData: (data: any | null) => void;
 }
 
-const ta = new TonApiClient({
-    baseUrl: tonApiBaseUrl
-});
+const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
 
-async function getDealById(dealId: string) {
-    const res = await getFromContract('dealById', dealId);
-    let source = new TupleReader(res.stack)
-    const result_p = source.readTupleOpt();
-    const result = result_p ? loadTupleDealInfo(result_p) : null;
-    return result
-}
-
-async function getFromContract(name: string, arg ?: string): Promise < MethodExecutionResult > {
-    let query = arg ? { args: [arg] } : undefined
-    return await ta.blockchain.execGetMethodForBlockchainAccount(Address.parse(myContractAddress), name, query);
-}
-
+// Чтобы в StrictMode и при HashRouter запрос выполнялся ровно один раз
 const fetchedDealIds = new Set<string>();
 
-export const DealControl: React.FC<DealControlProps> = ({
-    onDealData,
-    initialDealId
-}) => {
-    const [dealId, setDealId] = useState<string>('3');
-    const [error, setError] = useState<string | null>(null);
-    const [hasFetched, setHasFetched] = useState<boolean>(false);
+async function getDealById(dealId: string): Promise<any | null> {
+    const res = await ta.blockchain.execGetMethodForBlockchainAccount(
+        Address.parse(myContractAddress),
+        'dealById',
+        { args: [dealId] }
+    );
+    const reader = new TupleReader(res.stack);
+    const tupleOpt = reader.readTupleOpt();
+    return tupleOpt ? loadTupleDealInfo(tupleOpt) : null;
+}
 
-    React.useEffect(() => {
-        if (initialDealId && !fetchedDealIds.has(initialDealId)) {
-            fetchedDealIds.add(initialDealId);
+export const DealControl: React.FC<DealControlProps> = ({ onDealData }) => {
+    // Возьмём id из URL — работает как с BrowserRouter, так и с HashRouter
+    const { id } = useParams<{ id: string }>();
+    const [dealId, setDealId] = useState<string>(id ?? '');
+    const [error, setError] = useState<string | null>(null);
+
+    // Авто-запрос при первом рендере с id из URL
+    useEffect(() => {
+        if (id && !fetchedDealIds.has(id)) {
+            fetchedDealIds.add(id);
             setError(null);
-            setDealId(initialDealId);
-            getDealById(initialDealId)
+            setDealId(id);
+            getDealById(id)
                 .then(res => onDealData(res))
-                .catch((e: any) => {
+                .catch(e => {
                     console.error(e);
-                    setError(e.message || 'Unknown error');
+                    setError(e.message ?? 'Unknown error');
                 });
         }
-    }, [initialDealId, hasFetched, onDealData]);
+    }, [id, onDealData]);
 
     const handleFetch = async () => {
-        console.log('handle press')
         if (!dealId) return;
         try {
             setError(null);
             const res = await getDealById(dealId);
-            console.log(res)
             onDealData(res);
         } catch (e: any) {
             console.error(e);
-            setError(e.message || 'Unknown error');
+            setError(e.message ?? 'Unknown error');
         }
     };
 
