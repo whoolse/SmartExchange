@@ -32,6 +32,9 @@ const translations: Record<Lang, Record<string, string>> = {
         serviceFee: 'Комиссия сервиса',
         totalFee: 'Общая комиссия',
         commissionInAsset: 'Комиссия',
+        noJettons: 'Нет джетонов',
+        connectWallet: 'Подключить кошелёк',
+        yourJettons: 'Ваши джетоны'
     },
     en: {
         title: 'Smart Exchange',
@@ -50,6 +53,9 @@ const translations: Record<Lang, Record<string, string>> = {
         serviceFee: 'Service Commission',
         totalFee: 'Total comission',
         commissionInAsset: 'Commission',
+        noJettons: 'No Jettons',
+        connectWallet: 'Connect Wallet',
+        yourJettons: 'Your Jettons'
     },
 };
 

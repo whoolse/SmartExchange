@@ -109,17 +109,17 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('I want to send')}</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('sending')}</h2>
 
             <SelectField
-                label={t('Asset')}
+                label={t('asset')}
                 options={assetOptions}
                 value={asset}
                 onChange={onAssetChange}
             />
 
             <InputField
-                label={t('Sent')}
+                label={t('willSend')}
                 type="number"
                 value={sendAmount}
                 onChange={handleSendChange}
@@ -129,7 +129,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
             <CommissionSection asset={asset} amount={sendAmount} />
 
             <InputField
-                label={t('Partner will get')}
+                label={t('willReceivePartner')}
                 type="number"
                 value={partnerReceive}
                 onChange={handleReceiveChange}
