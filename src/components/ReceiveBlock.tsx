@@ -1,5 +1,5 @@
 // src/components/ReceiveBlock.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
@@ -7,118 +7,99 @@ import { assets, serviceComission, networkFee } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
+    /** Актив, который я отправляю */
     asset: string;
-    /** Начальное значение «Будет отправлено» */
-    initialSendAmount?: string;
+    /** Контролируемое значение «Будет отправлено мною» */
+    sendAmount: string;
+    onSendAmountChange: (val: string) => void;
+    /** Контролируемое значение «Будет получено мною» */
+    receiveAmount: string;
+    onReceiveAmountChange: (val: string) => void;
+    /** Смена актива в выпадающем списке */
     onAssetChange: (asset: string) => void;
-    /** Вызывается при изменении «Будет получено мною» */
-    onAmountChange: (val: string) => void;
-    /** Сообщает родителю о валидности */
+    /** Сообщает родителю о валидности полей */
     onValidate?: (valid: boolean) => void;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     asset,
-    initialSendAmount = '10',
+    sendAmount,
+    onSendAmountChange,
+    receiveAmount,
+    onReceiveAmountChange,
     onAssetChange,
-    onAmountChange,
     onValidate,
 }) => {
     const t = useT();
 
-    // Формулы расчёта
-    const calcReceive = (send: number) =>
+    // Формулы пересчёта
+    const calcReceiveMe = (n: number) =>
         asset === 'TON'
-            ? send * serviceComission - networkFee
-            : send * serviceComission;
-    const calcSend = (recv: number) =>
+            ? n * serviceComission - networkFee
+            : n * serviceComission;
+    const calcSendBack = (r: number) =>
         asset === 'TON'
-            ? (recv + networkFee) / serviceComission
-            : recv / serviceComission;
+            ? (r + networkFee) / serviceComission
+            : r / serviceComission;
 
-    // Локальное состояние полей
-    const [sendVal, setSendVal] = useState<string>(initialSendAmount);
-    const [recvVal, setRecvVal] = useState<string>(
-        calcReceive(parseFloat(initialSendAmount)).toFixed(6)
-    );
-    const [errSend, setErrSend] = useState<boolean>(false);
-    const [errRecv, setErrRecv] = useState<boolean>(false);
+    // Опции для селекта
+    const assetOptions = useMemo(() => assets, []);
 
-    // При монтировании отправляем начальное значение родителю и валидируем
+    // Валидация полей
     useEffect(() => {
-        onAmountChange(recvVal);
-        onValidate?.(true);
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        const valid =
+            !isNaN(parseFloat(sendAmount)) &&
+            !isNaN(parseFloat(receiveAmount)) &&
+            sendAmount.trim() !== '' &&
+            receiveAmount.trim() !== '';
+        onValidate?.(valid);
+    }, [sendAmount, receiveAmount, onValidate]);
 
-    // Обработчик изменения «Будет отправлено»
+    // При ручном вводе «Будет отправлено» пересчитываем «Будет получено мною»
     const handleSendChange = (val: string) => {
-        setSendVal(val);
-        const s = parseFloat(val);
-        if (!isNaN(s) && s >= 0) {
-            const r = calcReceive(s);
-            const rStr = r.toFixed(6);
-            setErrSend(false);
-            setErrRecv(r < 0);
-            setRecvVal(rStr);
-            onAmountChange(rStr);
-            onValidate?.(!false && !(r < 0));
+        onSendAmountChange(val);
+        const n = parseFloat(val);
+        if (!isNaN(n)) {
+            onReceiveAmountChange(calcReceiveMe(n).toFixed(6));
         } else {
-            setErrSend(true);
-            setErrRecv(true);
-            setRecvVal('');
-            onAmountChange('');
-            onValidate?.(false);
+            onReceiveAmountChange('');
         }
     };
 
-    // Обработчик изменения «Будет получено мною»
+    // При ручном вводе «Будет получено мною» пересчитываем «Будет отправлено»
     const handleReceiveChange = (val: string) => {
-        setRecvVal(val);
+        onReceiveAmountChange(val);
         const r = parseFloat(val);
-        if (!isNaN(r) && r >= 0) {
-            const s = calcSend(r);
-            const sStr = s.toFixed(6);
-            setErrRecv(false);
-            setErrSend(s < 0);
-            setSendVal(sStr);
-            onAmountChange(val);
-            onValidate?.(!(s < 0) && !false);
-        } else {
-            setErrRecv(true);
-            setErrSend(true);
-            setSendVal('');
-            onAmountChange('');
-            onValidate?.(false);
+        if (!isNaN(r)) {
+            onSendAmountChange(calcSendBack(r).toFixed(6));
         }
     };
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('receiving')}</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('I want to get')}</h2>
 
             <SelectField
-                label={t('asset')}
-                options={assets}
+                label={t('Asset')}
+                options={assetOptions}
                 value={asset}
                 onChange={onAssetChange}
             />
 
             <InputField
-                label={t('willSend')}
+                label={t('Sent')}
                 type="number"
-                value={sendVal}
+                value={sendAmount}
                 onChange={handleSendChange}
-                error={errSend}
             />
 
-            <CommissionSection asset={asset} amount={sendVal} />
+            <CommissionSection asset={asset} amount={sendAmount} />
 
             <InputField
-                label={t('willReceiveMe')}
+                label={t('Received by me')}
                 type="number"
-                value={recvVal}
+                value={receiveAmount}
                 onChange={handleReceiveChange}
-                error={errRecv}
             />
         </div>
     );

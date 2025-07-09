@@ -1,50 +1,57 @@
 // src/components/SendBlock.tsx
-import React, { useState, useMemo } from 'react';
-import { TonApiClient, type JettonsBalances } from '@ton-api/client';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { TonApiClient } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets, tonApiBaseUrl, serviceComission, networkFee } from '../constants/constants';
+import { assets, serviceComission, networkFee } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface SendBlockProps {
     asset: string;
+    sendAmount: string;
+    onSendAmountChange: (val: string) => void;
+    partnerReceive: string;
+    onPartnerReceiveChange: (val: string) => void;
     receiveAsset: string;
-    receiveAmount: string;
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
-    jettonBalances: JettonsBalances['balances'];
+    jettonBalances: any[];
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
     asset,
+    sendAmount,
+    onSendAmountChange,
+    partnerReceive,
+    onPartnerReceiveChange,
     receiveAsset,
-    receiveAmount,
     onAssetChange,
     disableCreate = false,
     userJettons,
     jettonBalances,
 }) => {
     const t = useT();
+    useMemo(() => new TonApiClient({ baseUrl: '' }), []);
     const { balance: tonBalance } = useBalance();
-    const client = useMemo(() => new TonApiClient({ baseUrl: tonApiBaseUrl }), []);
+    const lastChange = useRef<'send' | 'receive' | ''>('');
 
-    // Фильтруем активы: TON всегда + те, что есть у пользователя, и гарантируем текущий asset
-    const availableAssets = useMemo(() => {
+    // Доступные активы
+    const assetOptions = useMemo(() => {
         const filtered = assets.filter(a => userJettons.includes(a));
         const list = ['TON', ...filtered.filter(a => a !== 'TON')];
         if (!list.includes(asset)) list.push(asset);
         return list;
     }, [userJettons, asset]);
 
-    // Максимальный баланс выбранного актива
+    // Максимальный баланс
     const maxBalance = useMemo(() => {
         if (asset === 'TON') {
-            const mb = parseFloat(tonBalance);
-            return isNaN(mb) ? 0 : mb;
+            const n = parseFloat(tonBalance);
+            return isNaN(n) ? 0 : n;
         }
         const jb = jettonBalances.find(j => j.jetton.symbol === asset);
         if (!jb) return 0;
@@ -57,115 +64,85 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
-    const calcReceive = (n: number) =>
+    const calcPartner = (n: number) =>
         asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
-    const calcSend = (r: number) =>
-        asset === 'TON' ? (r + networkFee) / serviceComission : r / serviceComission;
+    const calcBack = (r: number) =>
+        asset === 'TON'
+            ? (r + networkFee) / serviceComission
+            : r / serviceComission;
 
-    // Локальное состояние полей
-    const [amount, setAmount] = useState<string>('0');
-    const [willReceive, setWillReceive] = useState<string>('0');
-    const [errAmt, setErrAmt] = useState<boolean>(false);
-    const [errRec, setErrRec] = useState<boolean>(false);
-
-    // Обработчик изменения «Будет отправлено»
-    const onAmountChange = (val: string) => {
-        setAmount(val);
-        const n = parseFloat(val);
-        const invalid = isNaN(n) || n < 0 || n > maxBalance;
-        setErrAmt(invalid);
-        if (!invalid) {
-            const recv = calcReceive(n);
-            setWillReceive(recv.toFixed(6));
-            setErrRec(false);
-        } else {
-            setWillReceive('');
+    // Пересчёт partnerReceive только если последний change был не 'receive'
+    useEffect(() => {
+        if (lastChange.current !== 'receive') {
+            const n = parseFloat(sendAmount);
+            if (!isNaN(n)) {
+                onPartnerReceiveChange(calcPartner(n).toFixed(6));
+            } else {
+                onPartnerReceiveChange('');
+            }
         }
+        lastChange.current = '';
+    }, [sendAmount, asset, onPartnerReceiveChange]);
+
+    const errSend = (() => {
+        const n = parseFloat(sendAmount);
+        return isNaN(n) || n < 0 || n > maxBalance;
+    })();
+    const errRecv = (() => {
+        const r = parseFloat(partnerReceive);
+        return isNaN(r) || r < 0;
+    })();
+
+    const handleSendChange = (val: string) => {
+        lastChange.current = 'send';
+        onSendAmountChange(val);
     };
 
-    // Обработчик изменения «Будет получено партнером»
-    const onReceiveChange = (val: string) => {
-        setWillReceive(val);
+    const handleReceiveChange = (val: string) => {
+        lastChange.current = 'receive';
+        onPartnerReceiveChange(val);
         const r = parseFloat(val);
         if (!isNaN(r)) {
-            setErrRec(false);
-            const back = calcSend(r);
-            setAmount(back.toFixed(6));
-            setErrAmt(isNaN(back) || back < 0 || back > maxBalance);
-        } else {
-            setErrRec(true);
+            onSendAmountChange(calcBack(r).toFixed(6));
         }
     };
-
-    // При смене валюты пересчитываем только поле willReceive на основе текущего amount
-    const onAssetSelect = (val: string) => {
-        onAssetChange(val);
-        const n = parseFloat(amount);
-        if (!isNaN(n)) {
-            setErrAmt(n < 0 || n > maxBalance);
-            setWillReceive(calcReceive(n).toFixed(6));
-        }
-    };
-
-    // Кнопка «Max» вручную выставляет максимальный баланс
-    const fillMax = () => {
-        const n = maxBalance;
-        setAmount(n.toString());
-        setErrAmt(false);
-        const recv = calcReceive(n);
-        setWillReceive(recv.toFixed(6));
-        setErrRec(false);
-    };
-
-    const isDisabled = disableCreate || errAmt || errRec;
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('sending')}</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('I want to send')}</h2>
 
             <SelectField
-                label={t('asset')}
-                options={availableAssets}
+                label={t('Asset')}
+                options={assetOptions}
                 value={asset}
-                onChange={onAssetSelect}
+                onChange={onAssetChange}
             />
 
-            <div className="mb-4">
-                <InputField
-                    label={t('willSend')}
-                    type="number"
-                    value={amount}
-                    onChange={onAmountChange}
-                    error={errAmt}
-                />
-                <button
-                    type="button"
-                    onClick={fillMax}
-                    className="mt-2 text-sm text-indigo-600 hover:underline"
-                >
-                    {t('max')}
-                </button>
-            </div>
+            <InputField
+                label={t('Sent')}
+                type="number"
+                value={sendAmount}
+                onChange={handleSendChange}
+                error={errSend}
+            />
 
-            <CommissionSection asset={asset} amount={amount} />
+            <CommissionSection asset={asset} amount={sendAmount} />
 
-            <div className="mt-4">
-                <InputField
-                    label={t('willReceivePartner')}
-                    type="number"
-                    value={willReceive}
-                    onChange={onReceiveChange}
-                    error={errRec}
-                />
-            </div>
+            <InputField
+                label={t('Partner will get')}
+                type="number"
+                value={partnerReceive}
+                onChange={handleReceiveChange}
+                error={errRecv}
+            />
 
             <CreateDealButton
                 sendAsset={asset}
-                sendAmount={amount}
+                sendAmount={sendAmount}
                 receiveAsset={receiveAsset}
-                receiveAmount={receiveAmount}
+                receiveAmount={partnerReceive}
                 partnerAddress=""
-                disabled={isDisabled}
+                disabled={disableCreate || errSend || errRecv}
             />
         </div>
     );
