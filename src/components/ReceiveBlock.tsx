@@ -1,5 +1,5 @@
 // src/components/ReceiveBlock.tsx
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
@@ -7,17 +7,12 @@ import { assets, serviceComission, networkFee } from '../constants/constants';
 import { useT } from '../i18n';
 
 interface ReceiveBlockProps {
-    /** Актив, который я отправляю */
     asset: string;
-    /** Контролируемое значение «Будет отправлено мною» */
     sendAmount: string;
     onSendAmountChange: (val: string) => void;
-    /** Контролируемое значение «Будет получено мною» */
     receiveAmount: string;
     onReceiveAmountChange: (val: string) => void;
-    /** Смена актива в выпадающем списке */
     onAssetChange: (asset: string) => void;
-    /** Сообщает родителю о валидности полей */
     onValidate?: (valid: boolean) => void;
 }
 
@@ -31,19 +26,15 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     onValidate,
 }) => {
     const t = useT();
+    const lastChange = useRef<'send' | 'receive' | ''>('');
 
-    // Формулы пересчёта
+    // Расчётные формулы
     const calcReceiveMe = (n: number) =>
-        asset === 'TON'
-            ? n * serviceComission - networkFee
-            : n * serviceComission;
+        asset === 'TON' ? n * serviceComission - networkFee : n * serviceComission;
     const calcSendBack = (r: number) =>
         asset === 'TON'
             ? (r + networkFee) / serviceComission
             : r / serviceComission;
-
-    // Опции для селекта
-    const assetOptions = useMemo(() => assets, []);
 
     // Валидация полей
     useEffect(() => {
@@ -55,25 +46,34 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
         onValidate?.(valid);
     }, [sendAmount, receiveAmount, onValidate]);
 
-    // При ручном вводе «Будет отправлено» пересчитываем «Будет получено мною»
-    const handleSendChange = (val: string) => {
-        onSendAmountChange(val);
-        const n = parseFloat(val);
-        if (!isNaN(n)) {
-            onReceiveAmountChange(calcReceiveMe(n).toFixed(6));
-        } else {
-            onReceiveAmountChange('');
+    // Пересчёт «будет получено мною» при изменении sendAmount **если** это было не ручное изменение receiveAmount
+    useEffect(() => {
+        if (lastChange.current !== 'receive') {
+            const n = parseFloat(sendAmount);
+            if (!isNaN(n)) {
+                onReceiveAmountChange(calcReceiveMe(n).toFixed(6));
+            } else {
+                onReceiveAmountChange('');
+            }
         }
-    };
+        lastChange.current = '';
+    }, [sendAmount, asset, onReceiveAmountChange]);
 
-    // При ручном вводе «Будет получено мною» пересчитываем «Будет отправлено»
+    // Обработчики ручного ввода
+    const handleSendChange = (val: string) => {
+        lastChange.current = 'send';
+        onSendAmountChange(val);
+    };
     const handleReceiveChange = (val: string) => {
+        lastChange.current = 'receive';
         onReceiveAmountChange(val);
         const r = parseFloat(val);
         if (!isNaN(r)) {
             onSendAmountChange(calcSendBack(r).toFixed(6));
         }
     };
+
+    const assetOptions = useMemo(() => assets, []);
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow my-4">
