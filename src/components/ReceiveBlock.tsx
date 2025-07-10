@@ -87,13 +87,19 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                         onChange={handleSendChange}
                     />
                 </div>
-                <InputField
-                    label={t('IWillGet')}
-                    type="number"
-                    value={receiveAmount}
-                    onChange={handleReceiveChange}
-                />
+                <div className="second-row">
+                    <div className="wallet-balance">
+                        {"-"}
+                    </div>
+                    <InputField
+                        label={t('IWillGet')}
+                        type="number"
+                        value={receiveAmount}
+                        onChange={handleReceiveChange}
+                    />
+                </div>
             </div>
+
 
             <CommissionSection asset={asset} amount={sendAmount} />
 

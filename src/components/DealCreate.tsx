@@ -7,6 +7,7 @@ import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
 import { type JettonsBalances } from '@ton-api/client';
 import { calcBack, getCurrencyKeyById } from '../utils/utils';
+import { CreateDealButton } from './CreateDealButton';
 
 const DEF_SEND = 'TON';
 const DEF_RECEIVE = 'USDT';
@@ -38,6 +39,8 @@ export const DealCreate: React.FC<{
     const [validRec, setValidRec] = useState<boolean>(true);
     // Флаг для случая, когда сделка не найдена
     const [dealNotFound, setDealNotFound] = useState<boolean>(false);
+
+    const [disableCreate, setDisableCreate] = useState(false);
 
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
@@ -97,6 +100,7 @@ export const DealCreate: React.FC<{
                     disableCreate={!validRec}
                     userJettons={userJettons}
                     jettonBalances={jettonBalances}
+                    onValidationChange={setDisableCreate}
                 />
                 <div className="exchange-arrow">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -111,8 +115,7 @@ export const DealCreate: React.FC<{
                     onReceiveAmountChange={setRecReceive}
                     onAssetChange={handleRA}
                     onValidate={setValidRec}
-                />
-
+                />            
 
                 {dealNotFound && (
                     <div className="mt-2 text-red-500">
@@ -120,6 +123,14 @@ export const DealCreate: React.FC<{
                     </div>
                 )}
             </div>
+            <CreateDealButton
+                sendAsset={sendAsset}
+                sendAmount={sendAmount}
+                receiveAsset={receiveAsset}
+                receiveAmount={partnerReceive}
+                partnerAddress=""
+                disabled={disableCreate}
+            />
             <DealControl onDealData={onDealData} />
 
         </>

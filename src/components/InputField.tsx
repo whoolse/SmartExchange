@@ -26,8 +26,8 @@ export const InputField: React.FC<InputFieldProps> = ({
       onChange={e => onChange(e.target.value)}
       readOnly={readOnly}
       className={`amount-input ${error
-          ? 'border-red-500 focus:ring-red-300'
-          : 'border-gray-300 focus:ring-indigo-300'
+        ? 'border-red-500 focus:ring-red-300'
+        : 'border-gray-300 focus:ring-indigo-300'
         }`}
     />
   </div>

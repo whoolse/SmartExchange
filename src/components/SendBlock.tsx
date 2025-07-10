@@ -20,6 +20,7 @@ interface SendBlockProps {
     disableCreate?: boolean;
     userJettons: string[];
     jettonBalances: any[];
+    onValidationChange?: (disabled: boolean) => void;
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
@@ -30,7 +31,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     onPartnerReceiveChange,
     receiveAsset,
     onAssetChange,
-    disableCreate = false,
+    onValidationChange,
     userJettons,
     jettonBalances,
 }) => {
@@ -64,6 +65,15 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
+    const errSend = (() => {
+        const n = parseFloat(sendAmount);
+        return isNaN(n) || n < 0 || n > maxBalance;
+    })();
+    const errRecv = (() => {
+        const r = parseFloat(partnerReceive);
+        return isNaN(r) || r < 0;
+    })();
+
     // Убраны локальные функции CalcPartner и CalcBack
 
     // Пересчёт partnerReceive только если последний change был не 'receive'
@@ -79,14 +89,11 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         lastChange.current = '';
     }, [sendAmount, asset, onPartnerReceiveChange]);
 
-    const errSend = (() => {
-        const n = parseFloat(sendAmount);
-        return isNaN(n) || n < 0 || n > maxBalance;
-    })();
-    const errRecv = (() => {
-        const r = parseFloat(partnerReceive);
-        return isNaN(r) || r < 0;
-    })();
+    useEffect(() => {
+        if (onValidationChange) {
+            onValidationChange(errSend || errRecv);
+        }
+    }, [errSend, errRecv, onValidationChange]);
 
     const handleSendChange = (val: string) => {
         lastChange.current = 'send';
@@ -140,14 +147,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
             <CommissionSection asset={asset} amount={sendAmount} />
 
-            <CreateDealButton
-                sendAsset={asset}
-                sendAmount={sendAmount}
-                receiveAsset={receiveAsset}
-                receiveAmount={partnerReceive}
-                partnerAddress=""
-                disabled={disableCreate || errSend || errRecv}
-            />
+ 
         </div>
     );
 };
