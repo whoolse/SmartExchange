@@ -18,14 +18,14 @@ export const InputField: React.FC<InputFieldProps> = ({
   readOnly = false,
   error = false,
 }) => (
-  <div className="mb-4">
-    <label className="block mb-1 font-medium">{label}</label>
+  <div className="amount-input-container">
+    <label className="input-label">{label}</label>
     <input
       type={type}
       value={value}
       onChange={e => onChange(e.target.value)}
       readOnly={readOnly}
-      className={`w-full px-2 py-1 rounded border focus:outline-none focus:ring-2 ${error
+      className={`amount-input ${error
           ? 'border-red-500 focus:ring-red-300'
           : 'border-gray-300 focus:ring-indigo-300'
         }`}

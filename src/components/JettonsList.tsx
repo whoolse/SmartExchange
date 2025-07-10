@@ -63,7 +63,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
     }
 
     return (
-        <div className="bg-white p-4 rounded shadow">
+        <div className="asset-block p-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">{t('yourJettons')}</h3>
                 <label className="flex items-center space-x-2 text-sm text-gray-700">

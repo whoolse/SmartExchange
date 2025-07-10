@@ -61,7 +61,7 @@ export const DealCreate: React.FC<{
         const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
         const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
 
-        console.log(expectedCurrency, sendedCurrency )
+        console.log(expectedCurrency, sendedCurrency)
         setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
         setReceiveAsset(sendedCurrency);
         setSendAsset(expectedCurrency);
@@ -84,37 +84,44 @@ export const DealCreate: React.FC<{
     };
 
     return (
-        <div className="grid md:grid-cols-2 gap-6">
-            <SendBlock
-                asset={sendAsset}
-                receiveAsset={receiveAsset}
-                sendAmount={sendAmount}
-                onSendAmountChange={setSendAmount}
-                partnerReceive={partnerReceive}
-                onPartnerReceiveChange={setPartnerReceive}
-                onAssetChange={handleSA}
-                disableCreate={!validRec}
-                userJettons={userJettons}
-                jettonBalances={jettonBalances}
-            />
+        <>
+            <div className="main-content">
+                <SendBlock
+                    asset={sendAsset}
+                    receiveAsset={receiveAsset}
+                    sendAmount={sendAmount}
+                    onSendAmountChange={setSendAmount}
+                    partnerReceive={partnerReceive}
+                    onPartnerReceiveChange={setPartnerReceive}
+                    onAssetChange={handleSA}
+                    disableCreate={!validRec}
+                    userJettons={userJettons}
+                    jettonBalances={jettonBalances}
+                />
+                <div className="exchange-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"></path>
+                    </svg>
+                </div>
+                <ReceiveBlock
+                    asset={receiveAsset}
+                    sendAmount={recSend}
+                    onSendAmountChange={setRecSend}
+                    receiveAmount={recReceive}
+                    onReceiveAmountChange={setRecReceive}
+                    onAssetChange={handleRA}
+                    onValidate={setValidRec}
+                />
 
-            <ReceiveBlock
-                asset={receiveAsset}
-                sendAmount={recSend}
-                onSendAmountChange={setRecSend}
-                receiveAmount={recReceive}
-                onReceiveAmountChange={setRecReceive}
-                onAssetChange={handleRA}
-                onValidate={setValidRec}
-            />
 
+                {dealNotFound && (
+                    <div className="mt-2 text-red-500">
+                        Сделка не найдена
+                    </div>
+                )}
+            </div>
             <DealControl onDealData={onDealData} />
 
-            {dealNotFound && (
-                <div className="mt-2 text-red-500">
-                    Сделка не найдена
-                </div>
-            )}
-        </div>
+        </>
     );
 };

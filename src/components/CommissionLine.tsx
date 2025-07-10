@@ -6,7 +6,7 @@ interface CommissionLineProps {
     value: number;
     decimals?: number;
     suffix?: string;       // добавляем суффикс валюты
-    bold?: boolean;
+    total?: boolean;
 }
 
 export const CommissionLine: React.FC<CommissionLineProps> = ({
@@ -14,11 +14,11 @@ export const CommissionLine: React.FC<CommissionLineProps> = ({
     value,
     decimals = 6,
     suffix,
-    bold = false,
+    total = false,
 }) => (
-    <div className={`flex justify-between items-center py-1 border-b ${bold ? 'font-bold' : ''}`}>
-        <span className="italic">{label}</span>
-        <span>
+    <div className={`info-line ${total ? 'total-line' : ''}`}>
+        <span className="info-label">{label}</span>
+        <span className="info-value">
             {value.toFixed(decimals)}{suffix ? ` ${suffix}` : ''}
         </span>
     </div>

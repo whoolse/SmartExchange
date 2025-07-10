@@ -103,33 +103,42 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     };
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('sending')}</h2>
+        <div className="asset-block">
+            <h2 className="block-title">{t('sending')}</h2>
 
-            <SelectField
-                label={t('asset')}
-                options={assetOptions}
-                value={asset}
-                onChange={onAssetChange}
-            />
+            <div className="asset-selector">
+                <div className="asset-row">
+                    <SelectField
+                        label={t('asset')}
+                        options={assetOptions}
+                        value={asset}
+                        onChange={onAssetChange}
+                    />
 
-            <InputField
-                label={t('willSend')}
-                type="number"
-                value={sendAmount}
-                onChange={handleSendChange}
-                error={errSend}
-            />
+                    <InputField
+                        label={t('willSend')}
+                        type="number"
+                        value={sendAmount}
+                        onChange={handleSendChange}
+                        error={errSend}
+                    />
+                </div>
+
+                <div className="second-row">
+                    <div className="wallet-balance">
+                        {817}
+                    </div>
+                    <InputField
+                        label={t('willReceivePartner')}
+                        type="number"
+                        value={partnerReceive}
+                        onChange={handleReceiveChange}
+                        error={errRecv}
+                    />
+                </div>
+            </div>
 
             <CommissionSection asset={asset} amount={sendAmount} />
-
-            <InputField
-                label={t('willReceivePartner')}
-                type="number"
-                value={partnerReceive}
-                onChange={handleReceiveChange}
-                error={errRecv}
-            />
 
             <CreateDealButton
                 sendAsset={asset}

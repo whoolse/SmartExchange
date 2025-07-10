@@ -11,7 +11,7 @@ const AppPage: React.FC = () => {
   const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-6">
+    <div className="container">
       <Header title="Smart Exchange" />
 
       <JettonsList

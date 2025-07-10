@@ -14,8 +14,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     value,
     onChange,
 }) => (
-    <div className="mb-4">
-        <label className="block mb-1 font-medium">{label}</label>
+    <div className="asset-dropdown-container">
+        {/* <label className="block mb-1 font-medium">{label}</label> */}
         <select
             value={value}
             onChange={e => onChange(e.target.value)}

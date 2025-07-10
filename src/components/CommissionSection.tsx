@@ -21,7 +21,7 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
 
     if (asset === 'TON') {
         return (
-            <div className="my-4">
+            <div className="info-lines">
                 <CommissionLine
                     label={t('networkFee')}
                     value={networkFee}
@@ -39,14 +39,14 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
                     value={totalFee}
                     decimals={5}
                     suffix="TON"
-                    bold
+                    total={true}
                 />
             </div>
         );
     }
 
     return (
-        <div className="my-4">
+        <div className="info-lines">
             <CommissionLine
                 label={t('commissionInAsset').replace('{{asset}}', asset)}
                 value={serviceFee}
@@ -57,7 +57,7 @@ export const CommissionSection: React.FC<CommissionSectionProps> = ({
                 label={t('networkFee')}
                 value={networkFee}
                 decimals={3}
-                suffix="TON"
+                suffix="TON"                
             />
         </div>
     );

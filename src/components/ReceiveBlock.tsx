@@ -69,31 +69,34 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     const assetOptions = useMemo(() => assets, []);
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow my-4">
-            <h2 className="text-xl font-semibold mb-4">{t('receiving')}</h2>
+        <div className="asset-block">
+            <h2 className="block-title">{t('sending')}</h2>
+            <div className="asset-selector">
+                <div className="asset-row">
+                    <SelectField
+                        label={t('asset')}
+                        options={assetOptions}
+                        value={asset}
+                        onChange={onAssetChange}
+                    />
 
-            <SelectField
-                label={t('asset')}
-                options={assetOptions}
-                value={asset}
-                onChange={onAssetChange}
-            />
-
-            <InputField
-                label={t('willSend')}
-                type="number"
-                value={sendAmount}
-                onChange={handleSendChange}
-            />
+                    <InputField
+                        label={t('willSend')}
+                        type="number"
+                        value={sendAmount}
+                        onChange={handleSendChange}
+                    />
+                </div>
+                <InputField
+                    label={t('IWillGet')}
+                    type="number"
+                    value={receiveAmount}
+                    onChange={handleReceiveChange}
+                />
+            </div>
 
             <CommissionSection asset={asset} amount={sendAmount} />
 
-            <InputField
-                label={t('IWillGet')}
-                type="number"
-                value={receiveAmount}
-                onChange={handleReceiveChange}
-            />
         </div>
     );
 };
