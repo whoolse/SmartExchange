@@ -1,0 +1,68 @@
+.dropdownContainer {
+    position: relative;
+    width: 180px;
+}
+
+.selected {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    transition: border 0.2s;
+    min-height: 40px;
+}
+
+.arrow {
+    margin-left: auto;
+    color: #a6adc8;
+    pointer-events: none;
+}
+
+.menu {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    width: 100%;
+    background: #181f36;
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+    z-index: 20;
+    padding: 4px 0;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.15s;
+    border-radius: 8px;
+}
+
+.option:hover,
+.optionActive {
+    background: #232a45;
+}
+
+.iconCircle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #20293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}

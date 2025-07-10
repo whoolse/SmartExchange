@@ -103,7 +103,7 @@ export const DealCreate: React.FC<{
                     onValidationChange={setDisableCreate}
                 />
                 <div className="exchange-arrow">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M7 17L17 7M17 7H7M17 7V17"></path>
                     </svg>
                 </div>
@@ -115,22 +115,24 @@ export const DealCreate: React.FC<{
                     onReceiveAmountChange={setRecReceive}
                     onAssetChange={handleRA}
                     onValidate={setValidRec}
-                />            
+                />
 
                 {dealNotFound && (
                     <div className="mt-2 text-red-500">
                         Сделка не найдена
                     </div>
-                )}
+                )}            
+                
+                <CreateDealButton
+                    sendAsset={sendAsset}
+                    sendAmount={sendAmount}
+                    receiveAsset={receiveAsset}
+                    receiveAmount={partnerReceive}
+                    partnerAddress=""
+                    disabled={disableCreate}
+                />
             </div>
-            <CreateDealButton
-                sendAsset={sendAsset}
-                sendAmount={sendAmount}
-                receiveAsset={receiveAsset}
-                receiveAmount={partnerReceive}
-                partnerAddress=""
-                disabled={disableCreate}
-            />
+
             <DealControl onDealData={onDealData} />
 
         </>

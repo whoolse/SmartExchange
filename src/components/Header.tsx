@@ -44,9 +44,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     }, [address, api, setBalance]);
 
     return (
-        <header className="flex flex-col sm:flex-row justify-between items-center bg-white bg-opacity-80 backdrop-blur-md p-6 rounded-2xl shadow-lg space-y-2 sm:space-y-0">
+        <header className="header">
             <div className="flex items-center space-x-4">
-                <h1 className="text-3xl font-extrabold text-indigo-600">
+                <h1 className="logo">
                     {title ?? t('title')}
                 </h1>
                 <label className="flex items-center space-x-2 text-sm text-gray-600">

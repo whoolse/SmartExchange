@@ -78,7 +78,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
             </div>
             <ul className="space-y-2">
                 {jettons.map(j => (
-                    <li key={j.jetton.address.toString()} className="flex justify-between">
+                    <li key={j.jetton.address.toString()} className="flex justify-between border-b border-gray-600 pb-2 mb-2">
                         <span>
                             {j.jetton.symbol} ({j.jetton.name})
                         </span>
