@@ -9,6 +9,7 @@ import { assets } from '../constants/constants';
 import { useT } from '../i18n';
 import { calcBack, calcPartner } from "../utils/utils";
 
+
 interface SendBlockProps {
     asset: string;
     sendAmount: string;
@@ -132,8 +133,22 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                 </div>
 
                 <div className="second-row">
-                    <div className="wallet-balance">
-                        {817}
+                    <div
+                        className="wallet-balance"
+                        style={{ cursor: "pointer" }}
+                        title={maxBalance.toString()}
+                        onClick={() => onSendAmountChange(maxBalance.toString())}
+                    >
+                        <svg
+                            className="wallet-icon"
+                            viewBox="0 0 24 24"
+                            width={18}
+                            height={18}
+                            style={{ marginRight: 4, fill: "#6a6bf6" }}
+                        >
+                            <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                        </svg>
+                        {maxBalance}
                     </div>
                     <InputField
                         label={t('willReceivePartner')}

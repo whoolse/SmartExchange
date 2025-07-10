@@ -47,3 +47,4 @@ export const serviceComission = 0.999;
 
 /** Сетевая комиссия для TON (фиксированная) */
 export const networkFee = 0.018;
+
