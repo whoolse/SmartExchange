@@ -17,8 +17,8 @@ import StormIcon from '../assets/currencies/STORM.webp';
 import DogsIcon from '../assets/currencies/DOGS.webp';
 import CatiIcon from '../assets/currencies/CATI.webp';
 import HmstrIcon from '../assets/currencies/HMSTR.webp';
-import SE1 from '../assets/currencies/SE1.png';
-import SE2 from '../assets/currencies/SE1.png';
+import SE1 from '../assets/currencies/SE1.webp';
+import SE2 from '../assets/currencies/SE1.webp';
 
 export const currencies: Record<string, Currency> = {
   SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 1, icon: SE1 },

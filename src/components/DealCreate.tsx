@@ -86,6 +86,19 @@ export const DealCreate: React.FC<{
         setReceiveAsset(a);
     };
 
+    const handleSwap = () => {
+        // Меняем активы
+        setSendAsset(receiveAsset);
+        setReceiveAsset(sendAsset);
+
+        // Меняем суммы
+        setSendAmount(recSend);
+        setPartnerReceive(recReceive);
+
+        setRecSend(sendAmount);
+        setRecReceive(partnerReceive);
+    };
+
     return (
         <>
             <div className="main-content">
@@ -102,11 +115,13 @@ export const DealCreate: React.FC<{
                     jettonBalances={jettonBalances}
                     onValidationChange={setDisableCreate}
                 />
-                <div className="exchange-arrow">
+                <button type="button"
+                    onClick={handleSwap} 
+                    className="exchange-arrow">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M7 17L17 7M17 7H7M17 7V17"></path>
                     </svg>
-                </div>
+                </button>
                 <ReceiveBlock
                     asset={receiveAsset}
                     sendAmount={recSend}
@@ -121,8 +136,8 @@ export const DealCreate: React.FC<{
                     <div className="mt-2 text-red-500">
                         Сделка не найдена
                     </div>
-                )}            
-                
+                )}
+
                 <CreateDealButton
                     sendAsset={sendAsset}
                     sendAmount={sendAmount}
