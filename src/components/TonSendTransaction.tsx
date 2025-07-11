@@ -18,6 +18,7 @@ interface TonSendTransactionProps {
     receiveAmount: string;
     /** Адрес партнёра */
     partnerAddress: string;
+    dealId: number; 
     /** Колбэк с результатом транзакции */
     onResult?: (res: any) => void;
     /** Рендер-проп: получает функцию отправки */
@@ -39,6 +40,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
     receiveAsset,
     receiveAmount,
     partnerAddress,
+    dealId,
     onResult,
     children,
 }) => {
@@ -61,7 +63,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
 
         try {
             const dealParams: DealParameters = {
-                dealId: 3,
+                dealId,
                 sendedCurrencyName: sendAsset,
                 sendedAmount: +sendAmount,
                 expectedAmount: +receiveAmount,

@@ -41,6 +41,10 @@ export const DealCreate: React.FC<{
         return l;
     }, [userJettons, sendAsset]);
 
+    const [dealId, setDealId] = useState<string>(
+        () => (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
+    );
+
     const onDealData = (info: DealInfo | null) => {
         // Если инфа о сделке отсутствует
         if (info == null) {
@@ -105,6 +109,7 @@ export const DealCreate: React.FC<{
                     userJettons={userJettons}
                     jettonBalances={jettonBalances}
                     onValidationChange={setDisableCreate}
+                    dealId={dealId}
                 />
                 <button type="button"
                     onClick={handleSwap}
@@ -133,6 +138,7 @@ export const DealCreate: React.FC<{
                     receiveAmount={partnerReceive}
                     partnerAddress=""
                     disabled={disableCreate}
+                    dealId={+dealId}
                 />
 
             </div>
@@ -142,7 +148,7 @@ export const DealCreate: React.FC<{
                 </div>
             )}
 
-            <DealControl onDealData={onDealData} disabled={disabled} />
+            <DealControl onDealData={onDealData} disabled={disabled} onSetDealId={setDealId} />
 
         </>
     );

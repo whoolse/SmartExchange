@@ -11,6 +11,7 @@ interface DealControlProps {
     /** Вызывается при получении данных сделки или null */
     onDealData: (data: any | null) => void;
     disabled?: boolean;
+    onSetDealId?: (id: string) => void;
 }
 
 const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
@@ -43,7 +44,8 @@ async function getDeals(): Promise<any | null> {
 
 export const DealControl: React.FC<DealControlProps> = ({
     onDealData,
-    disabled = false
+    disabled = false,
+    onSetDealId
 }) => {
     // Возьмём id из URL — работает как с BrowserRouter, так и с HashRouter
     const { id } = useParams<{ id: string }>();
@@ -55,6 +57,7 @@ export const DealControl: React.FC<DealControlProps> = ({
             fetchedDealIds.add(id);
             setError(null);
             setDealId(id);
+            onSetDealId?.(id);
             getDealById(id)
                 .then(res => onDealData(res))
                 .catch(e => {
@@ -68,6 +71,7 @@ export const DealControl: React.FC<DealControlProps> = ({
         if (!dealId) return;
         try {
             setError(null);
+            onSetDealId?.(dealId);
             const res = await getDealById(dealId);
             onDealData(res);
         } catch (e: any) {

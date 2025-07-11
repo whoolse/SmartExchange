@@ -30,7 +30,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         width: '100%',
         padding: '8px 10px',
         border: error ? '1px solid #ef4444' : '1px solid #d1d5db',
-        cursor: disabled ? 'not-allowed' : 'text',
+        // cursor: disabled ? 'not-allowed' : 'text',
         opacity: disabled ? 0.6 : 1,
       }}
     />

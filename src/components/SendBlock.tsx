@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TonApiClient } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
@@ -22,6 +22,7 @@ interface SendBlockProps {
     jettonBalances: any[];
     onValidationChange?: (disabled: boolean) => void;
     disabled?: boolean;
+    dealId: string
 }
 
 export const SendBlock: React.FC<SendBlockProps> = ({
@@ -34,6 +35,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     onValidationChange,
     userJettons,
     jettonBalances,
+    dealId,
     disabled = false
 }) => {
     const t = useT();
@@ -62,7 +64,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         const intPart = raw.length > d ? raw.slice(0, -d) : '0';
         const fracPart = (raw.length > d ? raw.slice(-d) : raw)
             .padStart(d, '0')
-            .replace(/0+$/, '');
+            .replace(/0$/, '');
         return parseFloat(fracPart ? `${intPart}.${fracPart}` : intPart) || 0;
     }, [asset, tonBalance, jettonBalances]);
 
@@ -132,6 +134,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                         error={errSend}
                         disabled={disabled}
                     />
+
                 </div>
 
                 <div className="second-row">
@@ -160,11 +163,18 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                         disabled={disabled}
                     />
                 </div>
+                <InputField
+                    label={t('idDeal')}
+                    type="text"
+                    value={dealId}
+                    onChange={() => { }}
+                    disabled={true}
+                />
             </div>
 
             <CommissionSection asset={asset} amount={sendAmount} />
 
- 
+
         </div>
     );
 };

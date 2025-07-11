@@ -18,6 +18,7 @@ export interface CreateDealButtonProps {
     disabled?: boolean;
     /** Обработчик результата транзакции */
     onResult?: (res: any) => void;
+    dealId: number;
 }
 
 export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
@@ -26,6 +27,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
     receiveAsset,
     receiveAmount,
     partnerAddress,
+    dealId,
     disabled = false,
     onResult,
 }) => {
@@ -38,6 +40,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
             receiveAsset={receiveAsset}
             receiveAmount={receiveAmount}
             partnerAddress={partnerAddress}
+            dealId={dealId}
             onResult={onResult}
         >
             {send => (
