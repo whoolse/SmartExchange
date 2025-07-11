@@ -19,6 +19,7 @@ import CatiIcon from '../assets/currencies/CATI.webp';
 import HmstrIcon from '../assets/currencies/HMSTR.webp';
 import SE1 from '../assets/currencies/SE1.webp';
 import SE2 from '../assets/currencies/SE1.webp';
+import { Address } from 'cluster';
 
 export const currencies: Record<string, Currency> = {
   SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 1, icon: SE1 },
@@ -38,7 +39,7 @@ export const assets = Object.keys(currencies) as Array<keyof typeof currencies>;
 
 export type Asset = typeof assets[number];
 
-export const myContractAddress = 'kQDDQfgiIO5K12M_VApgv2B_Lb2L-dowzBqdNF1tfRm0eKz6';
+export const myContractAddress = 'kQCYronPMoKHvZpSZWNq0h5KvCcAYr_xZIJN1CsUDQmovUCh';
 
 export const tonApiBaseUrl = 'https://testnet.tonapi.io';
 
@@ -47,4 +48,3 @@ export const serviceComission = 0.999;
 
 /** Сетевая комиссия для TON (фиксированная) */
 export const networkFee = 0.018;
-

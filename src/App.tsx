@@ -4,7 +4,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { JettonsList } from './components/JettonsList';
 import { DealCreate } from './components/DealCreate';
-import { type JettonsBalances } from '@ton-api/client';
+import { JettonsBalances } from '@ton-api/client';
+import { DealsList } from './components/DealsList';
 
 const AppPage: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
@@ -23,6 +24,10 @@ const AppPage: React.FC = () => {
         userJettons={userJettons}
         jettonBalances={jettonBalances}
       />
+      <div style={{ marginTop: 32 }}>
+        <h2 className="block-title">Существующие сделки</h2>
+        <DealsList />
+      </div>
     </div>
   );
 };

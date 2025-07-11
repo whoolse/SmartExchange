@@ -1,28 +1,17 @@
 // src/components/DealCreate.tsx
 import React, { useState, useMemo } from 'react';
-import { Address, fromNano } from '@ton/core';
-import { assets, currencies } from '../constants/constants';
+import { fromNano } from '@ton/core';
+import { assets, } from '../constants/constants';
 import { SendBlock } from './SendBlock';
 import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
 import { type JettonsBalances } from '@ton-api/client';
 import { calcBack, getCurrencyKeyById } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
-import { useParams } from 'react-router-dom';
+import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 
 const DEF_SEND = 'TON';
 const DEF_RECEIVE = 'USDT';
-
-interface DealInfo {
-    senderAddress: Address;
-    sendedAmount: number;
-    sendedCurrencyId: number;
-    partnerWillReceive: number;
-    expectedCurrencyId: number;
-    expectedAmount: number;
-    myJettonWallet: Address | null;
-    partnerAddressString: string | null;
-}
 
 export const DealCreate: React.FC<{
     userJettons: string[];

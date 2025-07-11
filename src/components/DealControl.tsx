@@ -1,8 +1,8 @@
 // src/components/DealControl.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';      // ← обязательно
-import { Address, TupleReader } from '@ton/core';
-import { loadTupleDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
+import { Address, Dictionary, TupleReader } from '@ton/core';
+import { dictValueParserDealInfo, loadTupleDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { MethodExecutionResult, TonApiClient } from '@ton-api/client';
 import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
 import { fromNano } from '@ton/core';
@@ -24,10 +24,22 @@ async function getDealById(dealId: string): Promise<any | null> {
         'dealById',
         { args: [dealId] }
     );
-    const reader = new TupleReader(res.stack);
-    const tupleOpt = reader.readTupleOpt();
-    return tupleOpt ? loadTupleDealInfo(tupleOpt) : null;
+    const source = new TupleReader(res.stack);
+    const result_p = source.readTupleOpt();
+    return result_p ? loadTupleDealInfo(result_p) : null;
 }
+
+
+async function getDeals(): Promise<any | null> {
+    const res = await ta.blockchain.execGetMethodForBlockchainAccount(
+        Address.parse(myContractAddress),
+        'deals'
+    );
+    const source = new TupleReader(res.stack);
+    const result = Dictionary.loadDirect(Dictionary.Keys.BigInt(32), dictValueParserDealInfo(), source.readCellOpt());
+    console.log(result);
+}
+
 
 export const DealControl: React.FC<DealControlProps> = ({
     onDealData,
@@ -52,7 +64,7 @@ export const DealControl: React.FC<DealControlProps> = ({
         }
     }, [id, onDealData]);
 
-    const handleFetch = async () => {
+    const handleGetDeal = async () => {
         if (!dealId) return;
         try {
             setError(null);
@@ -62,6 +74,10 @@ export const DealControl: React.FC<DealControlProps> = ({
             console.error(e);
             setError(e.message ?? 'Unknown error');
         }
+    };
+
+    const handleGetDeals = async () => {
+        const res = await getDeals();
     };
 
     return (
@@ -80,11 +96,18 @@ export const DealControl: React.FC<DealControlProps> = ({
                     placeholder="Введите ID"
                 />
                 <button
-                    onClick={handleFetch}
+                    onClick={handleGetDeal}
                     disabled={disabled}
                     className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
                 >
-                    получить
+                    получить сделку по id
+                </button>
+                <button
+                    onClick={handleGetDeals}
+                    disabled={disabled}
+                    className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
+                >
+                    получить все сделки
                 </button>
             </div>
             {error && (
