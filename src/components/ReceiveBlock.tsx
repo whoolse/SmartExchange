@@ -30,6 +30,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 }) => {
     const t = useT();
     const lastChange = useRef<'send' | 'receive' | ''>('');
+    const assetOptions = useMemo(() => assets, []);
 
     // Валидация полей
     useEffect(() => {
@@ -68,8 +69,6 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
         }
     };
 
-    const assetOptions = useMemo(() => assets, []);
-
     return (
         <div className="asset-block">
             <h2 className="block-title">{t('sending')}</h2>
@@ -104,10 +103,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                     />
                 </div>
             </div>
-
-
             <CommissionSection asset={asset} amount={sendAmount} />
-
         </div>
     );
 };

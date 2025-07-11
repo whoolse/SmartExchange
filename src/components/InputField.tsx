@@ -25,10 +25,14 @@ export const InputField: React.FC<InputFieldProps> = ({
       value={value}
       onChange={e => onChange(e.target.value)}
       readOnly={disabled}
-      className={`amount-input ${error
-        ? 'border-red-500 focus:ring-red-300'
-        : 'border-gray-300 focus:ring-indigo-300'
-        }  ${disabled ? { cursor: 'not-allowed', opacity: 0.6 } : undefined}`}
+      className={`amount-input`}
+      style={{
+        width: '100%',
+        padding: '8px 10px',
+        border: error ? '1px solid #ef4444' : '1px solid #d1d5db',
+        cursor: disabled ? 'not-allowed' : 'text',
+        opacity: disabled ? 0.6 : 1,
+      }}
     />
   </div>
 );
