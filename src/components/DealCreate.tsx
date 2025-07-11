@@ -42,7 +42,7 @@ export const DealCreate: React.FC<{
     const [dealNotFound, setDealNotFound] = useState<boolean>(false);
 
     const [disableCreate, setDisableCreate] = useState(false);
-    const [locked, setLocked] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
@@ -59,7 +59,7 @@ export const DealCreate: React.FC<{
             return;
         }
         setDealNotFound(false);
-        setLocked(true);
+        setDisabled(true);
         // Обновляем поля на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
@@ -105,9 +105,8 @@ export const DealCreate: React.FC<{
         <>
             <div className="main-content">
                 <SendBlock
-                    disabled={locked}
+                    disabled={disabled}
                     asset={sendAsset}
-                    receiveAsset={receiveAsset}
                     sendAmount={sendAmount}
                     onSendAmountChange={setSendAmount}
                     partnerReceive={partnerReceive}
@@ -120,13 +119,14 @@ export const DealCreate: React.FC<{
                 />
                 <button type="button"
                     onClick={handleSwap} 
+                    disabled={disabled}
                     className="exchange-arrow">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M7 17L17 7M17 7H7M17 7V17"></path>
                     </svg>
                 </button>
                 <ReceiveBlock
-                    disabled={locked}
+                    disabled={disabled}
                     asset={receiveAsset}
                     sendAmount={recSend}
                     onSendAmountChange={setRecSend}
@@ -152,7 +152,7 @@ export const DealCreate: React.FC<{
                 />
             </div>
 
-            <DealControl onDealData={onDealData} disabled={locked} />
+            <DealControl onDealData={onDealData} disabled={disabled} />
 
         </>
     );

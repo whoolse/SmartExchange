@@ -16,7 +16,6 @@ interface SendBlockProps {
     onSendAmountChange: (val: string) => void;
     partnerReceive: string;
     onPartnerReceiveChange: (val: string) => void;
-    receiveAsset: string;
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
@@ -31,7 +30,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     onSendAmountChange,
     partnerReceive,
     onPartnerReceiveChange,
-    receiveAsset,
     onAssetChange,
     onValidationChange,
     userJettons,

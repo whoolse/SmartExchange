@@ -6,7 +6,6 @@ interface InputFieldProps {
   value: string;
   onChange: (val: string) => void;
   type?: string;
-  readOnly?: boolean;
   error?: boolean;
   disabled?: boolean;
 }
@@ -16,7 +15,6 @@ export const InputField: React.FC<InputFieldProps> = ({
   value,
   onChange,
   type = 'text',
-  readOnly = false,
   error = false,
   disabled = false,
 }) => (
@@ -26,8 +24,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       type={type}
       value={value}
       onChange={e => onChange(e.target.value)}
-      readOnly={readOnly}
-      disabled={disabled}
+      readOnly={disabled}
       className={`amount-input ${error
         ? 'border-red-500 focus:ring-red-300'
         : 'border-gray-300 focus:ring-indigo-300'

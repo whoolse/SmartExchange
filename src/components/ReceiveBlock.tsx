@@ -88,7 +88,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                         type="number"
                         value={sendAmount}
                         onChange={handleSendChange}
-                        readOnly={disabled}
+                        disabled={disabled}
                     />
                 </div>
                 <div className="second-row">
