@@ -1,21 +1,10 @@
 // src/components/TonSendTransaction.tsx
 import React from 'react';
 import {
-    SendTransactionRequest,
-    TonConnectUI,
     useTonAddress,
     useTonConnectUI,
 } from '@tonconnect/ui-react';
-import { Address, beginCell, toNano } from '@ton/core';
-import {
-    JettonTransfer,
-    storeJettonTransfer,
-} from '../smartContract/JettonReceiver_JettonReceiver';
-import {
-    myContractAddress,
-    tonApiBaseUrl,
-    currencies,
-} from '../constants/constants';
+import { Address, toNano } from '@ton/core';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
 
 interface TonSendTransactionProps {
@@ -43,9 +32,6 @@ export interface DealParameters {
     expectedCurrencyName: string;
     partnerAddress?: string;
 }
-
-
-const tonConnectWrapper = new TonConnectWrapper()
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
     sendAsset,
@@ -84,10 +70,10 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
             };
             console.log(dealParams);
             if (sendAsset == "TON")
-                await tonConnectWrapper.sendTon(dealParams, tonConnectUI)
+                await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
             else
-                await tonConnectWrapper.sendJetton(dealParams, tonConnectUI, Address.parse(address!));
-     
+                await TonConnectWrapper.sendJettonDeal(dealParams, tonConnectUI, Address.parse(address!));
+
             onResult?.({ success: true });
         } catch (e) {
             console.error('Ошибка sendTransaction:', e);

@@ -1,11 +1,12 @@
 // src/components/DealsList.tsx
 import React, { useState } from 'react';
 import { Address, Dictionary, TupleReader } from '@ton/core';
-import {DealInfo, dictValueParserDealInfo} from '../smartContract/JettonReceiver_JettonReceiver';
+import { DealInfo, dictValueParserDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { TonApiClient } from '@ton-api/client';
 import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
 import { DealItem } from './DealItem';
-import { useTonAddress } from '@tonconnect/ui-react';
+import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
+import { TonConnectWrapper } from '../services/tonConnectWrapper';
 
 const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
 
@@ -27,11 +28,21 @@ async function fetchDeals(): Promise<Record<string, DealInfo>> {
     return result;
 }
 
+async function cancelDealById(dealId: string): Promise<any | null> {
+    await ta.blockchain.execGetMethodForBlockchainAccount(
+        Address.parse(myContractAddress),
+        'cancelDeal',
+        { args: [dealId] }
+    );
+}
+
 export const DealsList: React.FC = () => {
     const address = useTonAddress() ?? '';
     const [deals, setDeals] = useState<Record<string, DealInfo>>({});
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [tonConnectUI] = useTonConnectUI();
+    const [blocked, setBlocked] = useState<boolean>(false);
 
     const loadDeals = async () => {
         setLoading(true);
@@ -54,13 +65,34 @@ export const DealsList: React.FC = () => {
         }
     };
 
+    const handleCancelDeal = async (id: string): Promise<void> => {
+        setBlocked(true);
+        setError(null);
+        try {
+            await TonConnectWrapper.cancelDealById(id, tonConnectUI);
+            setTimeout(async () => {
+                await loadDeals();
+                setBlocked(false);
+            }, 5000);
+        } catch (e: any) {
+            setError(e.message || 'Ошибка при отмене сделки');
+            setBlocked(false);
+            return;
+        }
+        // через 5 секунд перезагрузить список и снять блокировку
+        // setTimeout(async () => {
+        //     await loadDeals();
+        //     setBlocked(false);
+        // }, 5000);
+    };
+
     const entries = Object.entries(deals);
 
     return (
         <div className="asset-block">
             <button
                 onClick={loadDeals}
-                disabled={loading}
+                disabled={loading || blocked}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded"
             >
                 {loading ? 'Загрузка…' : 'Получить список сделок'}
@@ -73,8 +105,13 @@ export const DealsList: React.FC = () => {
             )}
 
             {entries.map(([id, info]) => (
-                <DealItem key={id} id={id} info={info} onCancel={() => { /* TODO: отмена */ }} />
-            ))}
+                <DealItem
+                    key={id}
+                    id={id}
+                    info={info}
+                    onCancel={handleCancelDeal}
+                    disabled={blocked}
+                />))}
         </div>
     );
 };

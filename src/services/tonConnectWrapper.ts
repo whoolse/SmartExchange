@@ -3,16 +3,12 @@
 import { Address, beginCell, toNano } from "@ton/core";
 import { currencies, myContractAddress, tonApiBaseUrl } from "../constants/constants";
 import { SendTransactionRequest, TonConnectUI } from "@tonconnect/ui-react";
-import { JettonTransfer, storeJettonTransfer, AddDealWithTon, storeAddDealWithTon } from "../smartContract/JettonReceiver_JettonReceiver";
+import { JettonTransfer, storeJettonTransfer, AddDealWithTon, storeAddDealWithTon, CancelDeal, storeCancelDeal } from "../smartContract/JettonReceiver_JettonReceiver";
 import { DealParameters } from "../components/TonSendTransaction";
 
 
 export class TonConnectWrapper {
-    constructor() {
-
-    }
-
-    async sendJetton(
+    static async sendJettonDeal(
         dealParams: DealParameters,
         tonConnectUI: TonConnectUI,
         myAddress: Address
@@ -52,24 +48,10 @@ export class TonConnectWrapper {
             customPayload: null,
         };
         const payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell().toBoc().toString("base64");
-
-        const validUntil = Math.floor(Date.now() / 1000) + 60;
-        const transaction: SendTransactionRequest = {
-            validUntil,
-            messages: [
-                {
-                    address: myJettonWallet.toString(),
-                    amount: toNano('0.4').toString(),
-                    // payload: createCell()
-                    payload: payload,
-                },
-            ],
-        };
-
-        await tonConnectUI.sendTransaction(transaction);
+        await this.sendTransaction(toNano('0.4'), payload, tonConnectUI, myJettonWallet.toString());
     }
 
-    async sendTon(
+    static async sendTonDeal(
         dealParams: DealParameters,
         tonConnectUI: TonConnectUI
     ) {
@@ -91,14 +73,17 @@ export class TonConnectWrapper {
         };
         console.log(transferMsg)
         const payload = beginCell().store(storeAddDealWithTon(transferMsg)).endCell().toBoc().toString("base64");
+        await this.sendTransaction(toNano(sendedAmount), payload, tonConnectUI);
+    }
 
+    static async sendTransaction(amount: bigint, payload: string, tonConnectUI: TonConnectUI, address: string = myContractAddress) {
         const validUntil = Math.floor(Date.now() / 1000) + 60;
         const transaction: SendTransactionRequest = {
             validUntil,
             messages: [
                 {
-                    address: myContractAddress,
-                    amount: toNano(sendedAmount).toString(),
+                    address: address,
+                    amount: amount.toString(),
                     payload
                 },
             ],
@@ -107,7 +92,16 @@ export class TonConnectWrapper {
         await tonConnectUI.sendTransaction(transaction);
     }
 
-    async getJettonWalletAddressFromTonapi(
+    static async cancelDealById(dealId: string, tonConnectUI: TonConnectUI) {
+        const transferMsg: CancelDeal = {
+            $$type: 'CancelDeal',
+            dealId: BigInt(dealId)
+        };
+        const payload = beginCell().store(storeCancelDeal(transferMsg)).endCell().toBoc().toString("base64");
+        await this.sendTransaction(toNano('0.1'), payload, tonConnectUI);
+    }
+
+    static async getJettonWalletAddressFromTonapi(
         masterAddress: string,
         walletAddress: Address
     ): Promise<Address> {
@@ -117,7 +111,7 @@ export class TonConnectWrapper {
         return Address.parse(data.decoded.jetton_wallet_address);
     }
 
-    createCell(): string {
+    static createCell(): string {
         const body = beginCell()
             .storeUint(0, 32) // write 32 zero bits to indicate that a text comment will follow
             .storeStringTail("TEST") // write our text comment
