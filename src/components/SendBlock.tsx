@@ -131,7 +131,6 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                         onChange={handleSendChange}
                         error={errSend}
                         disabled={disabled}
-
                     />
                 </div>
 
