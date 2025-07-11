@@ -8,6 +8,7 @@ import { DealControl } from './DealControl';
 import { type JettonsBalances } from '@ton-api/client';
 import { calcBack, getCurrencyKeyById } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
+import { useParams } from 'react-router-dom';
 
 const DEF_SEND = 'TON';
 const DEF_RECEIVE = 'USDT';
@@ -41,6 +42,7 @@ export const DealCreate: React.FC<{
     const [dealNotFound, setDealNotFound] = useState<boolean>(false);
 
     const [disableCreate, setDisableCreate] = useState(false);
+    const [locked, setLocked] = useState(false);
 
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
@@ -57,7 +59,7 @@ export const DealCreate: React.FC<{
             return;
         }
         setDealNotFound(false);
-        console.log(info)
+        setLocked(true);
         // Обновляем поля на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
@@ -103,6 +105,7 @@ export const DealCreate: React.FC<{
         <>
             <div className="main-content">
                 <SendBlock
+                    disabled={locked}
                     asset={sendAsset}
                     receiveAsset={receiveAsset}
                     sendAmount={sendAmount}
@@ -123,6 +126,7 @@ export const DealCreate: React.FC<{
                     </svg>
                 </button>
                 <ReceiveBlock
+                    disabled={locked}
                     asset={receiveAsset}
                     sendAmount={recSend}
                     onSendAmountChange={setRecSend}
@@ -148,7 +152,7 @@ export const DealCreate: React.FC<{
                 />
             </div>
 
-            <DealControl onDealData={onDealData} />
+            <DealControl onDealData={onDealData} disabled={locked} />
 
         </>
     );

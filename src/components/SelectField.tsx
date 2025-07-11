@@ -8,6 +8,7 @@ interface SelectFieldProps {
     options: string[];        // массив ключей, например ["TON", "USDT"]
     value: string;            // выбранный ключ, например "TON"
     onChange: (val: string) => void;
+    disabled?: boolean;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -15,6 +16,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     options,
     value,
     onChange,
+    disabled = false,
 }) => {
     const [open, setOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -44,9 +46,12 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     const selected = selectOptions.find(opt => opt.key === value);
 
     return (
-        <div className="dropdownContainer" ref={containerRef}>
+        <div
+            className={`dropdownContainer${disabled ? ' dropdownDisabled' : ''}`}
+            ref={containerRef}
+        >
             {/* <label className="block mb-1 font-medium">{label}</label> */}
-            <div className="selected" onClick={() => setOpen((v) => !v)} tabIndex={0}>
+            <div className="selected" onClick={() => !disabled && setOpen(v => !v)} tabIndex={0}>
                 {selected && (
                     <>
                         <img
@@ -62,7 +67,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
                 )}
                 <span className="arrow">▼</span>
             </div>
-            {open && (
+            {open && !disabled && (
                 <div className="menu">
                     {selectOptions.map(opt => (
                         <div

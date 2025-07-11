@@ -15,6 +15,7 @@ interface ReceiveBlockProps {
     onReceiveAmountChange: (val: string) => void;
     onAssetChange: (asset: string) => void;
     onValidate?: (valid: boolean) => void;
+    disabled?: boolean;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
@@ -25,6 +26,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     onReceiveAmountChange,
     onAssetChange,
     onValidate,
+    disabled = false
 }) => {
     const t = useT();
     const lastChange = useRef<'send' | 'receive' | ''>('');
@@ -78,6 +80,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                         options={assetOptions}
                         value={asset}
                         onChange={onAssetChange}
+                        disabled={disabled}
                     />
 
                     <InputField
@@ -85,6 +88,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                         type="number"
                         value={sendAmount}
                         onChange={handleSendChange}
+                        readOnly={disabled}
                     />
                 </div>
                 <div className="second-row">
@@ -96,6 +100,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                         type="number"
                         value={receiveAmount}
                         onChange={handleReceiveChange}
+                        disabled={disabled}
                     />
                 </div>
             </div>

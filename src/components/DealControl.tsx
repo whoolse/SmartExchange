@@ -10,6 +10,7 @@ import { fromNano } from '@ton/core';
 interface DealControlProps {
     /** Вызывается при получении данных сделки или null */
     onDealData: (data: any | null) => void;
+    disabled?: boolean;
 }
 
 const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
@@ -28,12 +29,14 @@ async function getDealById(dealId: string): Promise<any | null> {
     return tupleOpt ? loadTupleDealInfo(tupleOpt) : null;
 }
 
-export const DealControl: React.FC<DealControlProps> = ({ onDealData }) => {
+export const DealControl: React.FC<DealControlProps> = ({
+    onDealData,
+    disabled = false
+}) => {
     // Возьмём id из URL — работает как с BrowserRouter, так и с HashRouter
     const { id } = useParams<{ id: string }>();
     const [dealId, setDealId] = useState<string>(id ?? '');
     const [error, setError] = useState<string | null>(null);
-
     // Авто-запрос при первом рендере с id из URL
     useEffect(() => {
         if (id && !fetchedDealIds.has(id)) {
@@ -62,7 +65,7 @@ export const DealControl: React.FC<DealControlProps> = ({ onDealData }) => {
     };
 
     return (
-        <div className="mt-4">
+        <div className="mt-4" style={{ opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? 'none' : undefined }}>
             <label htmlFor="deal-id" className="block mb-1 font-medium">
                 id сделки
             </label>
@@ -71,12 +74,14 @@ export const DealControl: React.FC<DealControlProps> = ({ onDealData }) => {
                     id="deal-id"
                     type="text"
                     value={dealId}
+                    disabled={disabled}
                     onChange={e => setDealId(e.target.value)}
                     className="border rounded px-2 py-1 w-[20ch]"
                     placeholder="Введите ID"
                 />
                 <button
                     onClick={handleFetch}
+                    disabled={disabled}
                     className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
                 >
                     получить

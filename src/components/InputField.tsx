@@ -8,6 +8,7 @@ interface InputFieldProps {
   type?: string;
   readOnly?: boolean;
   error?: boolean;
+  disabled?: boolean;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -17,6 +18,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   type = 'text',
   readOnly = false,
   error = false,
+  disabled = false,
 }) => (
   <div className="amount-input-container">
     <label className="input-label">{label}</label>
@@ -25,10 +27,11 @@ export const InputField: React.FC<InputFieldProps> = ({
       value={value}
       onChange={e => onChange(e.target.value)}
       readOnly={readOnly}
+      disabled={disabled}
       className={`amount-input ${error
         ? 'border-red-500 focus:ring-red-300'
         : 'border-gray-300 focus:ring-indigo-300'
-        }`}
+        }  ${disabled ? { cursor: 'not-allowed', opacity: 0.6 } : undefined}`}
     />
   </div>
 );
