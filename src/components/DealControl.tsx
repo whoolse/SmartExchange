@@ -102,13 +102,6 @@ export const DealControl: React.FC<DealControlProps> = ({
                 >
                     получить сделку по id
                 </button>
-                <button
-                    onClick={handleGetDeals}
-                    disabled={disabled}
-                    className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
-                >
-                    получить все сделки
-                </button>
             </div>
             {error && (
                 <div className="mt-1 text-red-500 text-sm">
