@@ -33,6 +33,8 @@ export const DealCreate: React.FC<{
     const [disableCreate, setDisableCreate] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
+    const [isConfirmed, setIsConfirmed] = useState(false);
+
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
@@ -53,6 +55,7 @@ export const DealCreate: React.FC<{
         }
         setDealNotFound(false);
         setDisabled(true);
+        setIsConfirmed(true);
         // Обновляем поля на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
@@ -139,6 +142,7 @@ export const DealCreate: React.FC<{
                     partnerAddress=""
                     disabled={disableCreate}
                     dealId={+dealId}
+                    confirmed={isConfirmed}
                 />
 
             </div>

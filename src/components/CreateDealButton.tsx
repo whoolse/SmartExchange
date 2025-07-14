@@ -19,6 +19,7 @@ export interface CreateDealButtonProps {
     /** Обработчик результата транзакции */
     onResult?: (res: any) => void;
     dealId: number;
+    confirmed?: boolean;
 }
 
 export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
@@ -30,6 +31,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
     dealId,
     disabled = false,
     onResult,
+    confirmed = false,
 }) => {
     const t = useT();
 
@@ -53,7 +55,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
                     disabled={disabled}
                     className="send-button"
                 >
-                    {t('createDeal')}
+                    {confirmed ? t('confirmDeal') : t('createDeal')}
                 </button>
             )}
         </TonSendTransaction>
