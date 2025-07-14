@@ -16,6 +16,8 @@ interface ReceiveBlockProps {
     onAssetChange: (asset: string) => void;
     onValidate?: (valid: boolean) => void;
     disabled?: boolean;
+    showPartnerAddress?: boolean;
+    partnerAddress?: string;
 }
 
 export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
@@ -26,6 +28,8 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
     onReceiveAmountChange,
     onAssetChange,
     onValidate,
+    showPartnerAddress = false,
+    partnerAddress,
     disabled = false
 }) => {
     const t = useT();
@@ -104,6 +108,16 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
                 </div>
             </div>
             <CommissionSection asset={asset} amount={sendAmount} />
+            
+            {showPartnerAddress && partnerAddress != null && (
+                <InputField
+                    label={t('partnerAddress')}
+                    type="text"
+                    value={partnerAddress}
+                    onChange={() => { }}
+                    disabled={true}
+                />
+            )}
         </div>
     );
 };

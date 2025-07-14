@@ -36,6 +36,8 @@ export const DealCreate: React.FC<{
 
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [partnerAddress, setPartnerAddress] = useState<string>('');
+
+    const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
@@ -57,6 +59,9 @@ export const DealCreate: React.FC<{
         setDealNotFound(false);
         setDisabled(true);
         setIsConfirmed(true);
+        if (info.partnerAddress) {
+            setFetchedPartnerAddress(info.partnerAddress.toString());
+        }
         // Обновляем поля на основе данных из смарт-контракта
         setRecSend(fromNano(info.sendedAmount));
         const expectedAmount = +fromNano(info.expectedAmount);
@@ -144,6 +149,8 @@ export const DealCreate: React.FC<{
                     onReceiveAmountChange={setRecReceive}
                     onAssetChange={handleRA}
                     onValidate={setValidRec}
+                    showPartnerAddress={Boolean(fetchedPartnerAddress)}
+                    partnerAddress={fetchedPartnerAddress}
                 />
 
 
