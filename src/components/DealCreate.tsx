@@ -11,8 +11,8 @@ import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
 
-const DEF_SEND = 'TON';
-const DEF_RECEIVE = 'USDT';
+const DEF_SEND = 'SE1';
+const DEF_RECEIVE = 'SE2';
 
 export const DealCreate: React.FC<{
     userJettons: string[];
@@ -21,10 +21,10 @@ export const DealCreate: React.FC<{
     const [sendAsset, setSendAsset] = useState<string>(DEF_SEND);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEF_RECEIVE);
 
-    const [sendAmount, setSendAmount] = useState<string>('1000');
+    const [sendAmount, setSendAmount] = useState<string>('10');
     const [partnerReceive, setPartnerReceive] = useState<string>('0');
 
-    const [recSend, setRecSend] = useState<string>('10');
+    const [recSend, setRecSend] = useState<string>('20');
     const [recReceive, setRecReceive] = useState<string>('0');
 
     const [validRec, setValidRec] = useState<boolean>(true);

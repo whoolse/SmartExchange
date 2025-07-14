@@ -48,10 +48,11 @@ export const DealsList: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const all = await fetchDeals();
+            const allDeals = await fetchDeals();
             const filtered: Record<string, DealInfo> = {};
             let rawAddress = Address.parse(address).toRawString();
-            Object.values(all).forEach(dealInfo => {
+            console.log(allDeals)
+            Object.values(allDeals).forEach(dealInfo => {
                 if (dealInfo.senderAddress.toRawString() == rawAddress) {
                     filtered[dealInfo.id.toString()] = dealInfo;
                 }

@@ -19,19 +19,27 @@ export class TonConnectWrapper {
             sendedCurrencyName,
             expectedAmount,
             expectedCurrencyName,
-            partnerAddress,
+            partnerAddressString,
         } = dealParams;
 
         const expectedCurrencyId = currencies[expectedCurrencyName].id;
         const jettonMasterAddress = currencies[sendedCurrencyName].masterAddress;
         const jettonTransferAmount = toNano(sendedAmount.toString());
 
-        const forwardPayload = beginCell()
+        const jettonTransferForwardPayload = beginCell()
             .storeUint(dealId, 32)
             .storeCoins(toNano(expectedAmount))
             .storeUint(expectedCurrencyId, 16)
-            .endCell();
+        // .endCell();
 
+        if (partnerAddressString && partnerAddressString != '') {
+            const addr = Address.parse(partnerAddressString);
+            const subCell = beginCell()
+                .storeAddress(addr)
+                .endCell();
+            jettonTransferForwardPayload.storeRef(subCell)
+        }
+        
         const myJettonWallet = await this.getJettonWalletAddressFromTonapi(
             jettonMasterAddress,
             myAddress
@@ -43,7 +51,7 @@ export class TonConnectWrapper {
             amount: jettonTransferAmount,
             responseDestination: myAddress,
             forwardTonAmount: toNano('0.06'),
-            forwardPayload: forwardPayload.asSlice(),
+            forwardPayload: jettonTransferForwardPayload.asSlice(),
             destination: Address.parse(myContractAddress),
             customPayload: null,
         };
@@ -60,7 +68,7 @@ export class TonConnectWrapper {
             sendedAmount,
             expectedAmount,
             expectedCurrencyName,
-            partnerAddress,
+            partnerAddressString: partnerAddress,
         } = dealParams;
 
         const expectedJettonId = BigInt(currencies[expectedCurrencyName].id);

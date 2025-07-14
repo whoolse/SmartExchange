@@ -18,7 +18,7 @@ interface TonSendTransactionProps {
     receiveAmount: string;
     /** Адрес партнёра */
     partnerAddress: string;
-    dealId: number; 
+    dealId: number;
     /** Колбэк с результатом транзакции */
     onResult?: (res: any) => void;
     /** Рендер-проп: получает функцию отправки */
@@ -31,7 +31,7 @@ export interface DealParameters {
     sendedCurrencyName: string;
     expectedAmount: number;
     expectedCurrencyName: string;
-    partnerAddress: string;
+    partnerAddressString: string;
 }
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
@@ -68,11 +68,18 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                 sendedAmount: +sendAmount,
                 expectedAmount: +receiveAmount,
                 expectedCurrencyName: receiveAsset,
-                partnerAddress,
+                partnerAddressString: partnerAddress,
             };
             console.log(dealParams);
-            let check = Address.parse(dealParams.partnerAddress)
-            return
+            if (dealParams.partnerAddressString != '') {
+                try {
+                    Address.parse(dealParams.partnerAddressString)
+                }
+                catch (error: any) {
+                    console.error('wrong address')
+                    return
+                }
+            }
             if (sendAsset == "TON")
                 await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
             else
