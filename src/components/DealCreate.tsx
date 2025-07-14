@@ -10,6 +10,7 @@ import { calcBack, getCurrencyKeyById } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
+import { useTonAddress } from '@tonconnect/ui-react';
 
 const DEF_SEND = 'SE1';
 const DEF_RECEIVE = 'SE2';
@@ -49,6 +50,11 @@ export const DealCreate: React.FC<{
     const [dealId, setDealId] = useState<string>(
         () => (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
     );
+    const walletAddress = useTonAddress() ?? '';
+
+    const isPartnerMismatch =
+        fetchedPartnerAddress.trim() !== '' &&
+        fetchedPartnerAddress !== walletAddress;
 
     const onDealData = (info: DealInfo | null) => {
         // Если инфа о сделке отсутствует
@@ -159,7 +165,7 @@ export const DealCreate: React.FC<{
                     sendAmount={sendAmount}
                     receiveAsset={receiveAsset}
                     receiveAmount={recReceive}
-                    disabled={disableCreate || !isAddressValid}
+                    disabled={disableCreate || !isAddressValid || (isConfirmed && isPartnerMismatch)}
                     dealId={+dealId}
                     confirmed={isConfirmed}
                     partnerAddress={partnerAddress}
