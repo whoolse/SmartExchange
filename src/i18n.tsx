@@ -35,6 +35,7 @@ const translations: Record<Lang, Record<string, string>> = {
         commissionInAsset: 'Комиссия',
         noJettons: 'Нет джетонов',
         connectWallet: 'Подключить кошелёк',
+        confirmDeal: 'Подтвердить сделку',
         yourJettons: 'Ваши джетоны'
     },
     en: {
@@ -57,6 +58,7 @@ const translations: Record<Lang, Record<string, string>> = {
         commissionInAsset: 'Commission',
         noJettons: 'No Jettons',
         connectWallet: 'Connect Wallet',
+        confirmDeal: 'Confirm deal',
         yourJettons: 'Your Jettons'
     },
 };
