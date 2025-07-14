@@ -71,7 +71,7 @@ export const ReceiveBlock: React.FC<ReceiveBlockProps> = ({
 
     return (
         <div className="asset-block">
-            <h2 className="block-title">{t('sending')}</h2>
+            <h2 className="block-title">{t('receiving')}</h2>
             <div className="asset-selector">
                 <div className="asset-row">
                     <SelectField

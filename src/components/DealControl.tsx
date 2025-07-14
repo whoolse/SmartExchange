@@ -85,7 +85,7 @@ export const DealControl: React.FC<DealControlProps> = ({
     };
 
     return (
-        <div className="mt-4" style={{ opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? 'none' : undefined }}>
+        <div className="mt-4">
             <label htmlFor="deal-id" className="block mb-1 font-medium">
                 id сделки
             </label>
@@ -94,14 +94,14 @@ export const DealControl: React.FC<DealControlProps> = ({
                     id="deal-id"
                     type="text"
                     value={dealId}
-                    disabled={disabled}
+                    // disabled={disabled}
                     onChange={e => setDealId(e.target.value)}
                     className="border rounded px-2 py-1 w-[20ch]"
                     placeholder="Введите ID"
                 />
                 <button
                     onClick={handleGetDeal}
-                    disabled={disabled}
+                    // disabled={disabled}
                     className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
                 >
                     получить сделку по id

@@ -34,7 +34,7 @@ export const DealCreate: React.FC<{
     const [disabled, setDisabled] = useState(false);
 
     const [isConfirmed, setIsConfirmed] = useState(false);
-
+    const [partnerAddress, setPartnerAddress] = useState<string>('');
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
@@ -113,6 +113,8 @@ export const DealCreate: React.FC<{
                     jettonBalances={jettonBalances}
                     onValidationChange={setDisableCreate}
                     dealId={dealId}
+                    partnerAddress={partnerAddress}
+                    onPartnerAddressChange={setPartnerAddress}
                 />
                 <button type="button"
                     onClick={handleSwap}
@@ -138,11 +140,11 @@ export const DealCreate: React.FC<{
                     sendAsset={sendAsset}
                     sendAmount={sendAmount}
                     receiveAsset={receiveAsset}
-                    receiveAmount={partnerReceive}
-                    partnerAddress=""
+                    receiveAmount={recReceive}
                     disabled={disableCreate}
                     dealId={+dealId}
                     confirmed={isConfirmed}
+                    partnerAddress={partnerAddress}
                 />
 
             </div>

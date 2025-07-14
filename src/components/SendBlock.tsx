@@ -22,6 +22,8 @@ interface SendBlockProps {
     jettonBalances: any[];
     onValidationChange?: (disabled: boolean) => void;
     disabled?: boolean;
+    partnerAddress: string;
+    onPartnerAddressChange: (val: string) => void;
     dealId: string
 }
 
@@ -36,6 +38,8 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     userJettons,
     jettonBalances,
     dealId,
+    partnerAddress,
+    onPartnerAddressChange,
     disabled = false
 }) => {
     const t = useT();
@@ -169,6 +173,13 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                     value={dealId}
                     onChange={() => { }}
                     disabled={true}
+                />
+                <InputField
+                    label={t('partnerAddress')}
+                    type="text"
+                    value={partnerAddress}
+                    onChange={onPartnerAddressChange}
+                    disabled={disabled}
                 />
             </div>
 
