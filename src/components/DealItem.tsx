@@ -36,9 +36,9 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
                     {", ожидает "}
                     {expected} {expectedCurrency}
                 </div>
-                {info.partnerAddressString && (
+                {info.partnerAddress && (
                     <div className="text-gray-400 truncate">
-                        Партнёр: {info.partnerAddressString}
+                        Партнёр: {info.partnerAddress.toString()}
                     </div>
                 )}
             </div>

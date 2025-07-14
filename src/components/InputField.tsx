@@ -8,6 +8,7 @@ interface InputFieldProps {
   type?: string;
   error?: boolean;
   disabled?: boolean;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -17,6 +18,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   type = 'text',
   error = false,
   disabled = false,
+  onBlur
 }) => (
   <div className="amount-input-container">
     <label className="input-label">{label}</label>
@@ -26,6 +28,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       onChange={e => onChange(e.target.value)}
       readOnly={disabled}
       className={`amount-input`}
+      onBlur={onBlur}
       style={{
         width: '100%',
         padding: '8px 10px',

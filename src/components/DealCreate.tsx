@@ -9,6 +9,7 @@ import { type JettonsBalances } from '@ton-api/client';
 import { calcBack, getCurrencyKeyById } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
+import { Address } from '@ton/core';
 
 const DEF_SEND = 'TON';
 const DEF_RECEIVE = 'USDT';
@@ -97,6 +98,16 @@ export const DealCreate: React.FC<{
         setRecReceive(partnerReceive);
     };
 
+    const isAddressValid = (() => {
+        if (partnerAddress.trim() === '') return true;
+        try {
+            Address.parse(partnerAddress);
+            return true;
+        } catch {
+            return false;
+        }
+    })();
+
     return (
         <>
             <div className="main-content">
@@ -141,7 +152,7 @@ export const DealCreate: React.FC<{
                     sendAmount={sendAmount}
                     receiveAsset={receiveAsset}
                     receiveAmount={recReceive}
-                    disabled={disableCreate}
+                    disabled={disableCreate || !isAddressValid}
                     dealId={+dealId}
                     confirmed={isConfirmed}
                     partnerAddress={partnerAddress}

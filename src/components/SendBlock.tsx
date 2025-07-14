@@ -1,3 +1,4 @@
+// src/components/SendBlock.tsx
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TonApiClient } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
@@ -8,6 +9,7 @@ import { CreateDealButton } from './CreateDealButton';
 import { assets } from '../constants/constants';
 import { useT } from '../i18n';
 import { calcBack, calcPartner } from "../utils/utils";
+import { Address } from '@ton/core';
 
 
 interface SendBlockProps {
@@ -46,6 +48,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
     useMemo(() => new TonApiClient({ baseUrl: '' }), []);
     const { balance: tonBalance } = useBalance();
     const lastChange = useRef<'send' | 'receive' | ''>('');
+    const [addressError, setAddressError] = useState<string | null>(null);
 
     // Доступные активы
     const assetOptions = useMemo(() => {
@@ -116,6 +119,16 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         }
     };
 
+    const handlePartnerAddressBlur = () => {
+        // допускаем пустой адрес (будет валидироваться при создании сделки)
+        if (partnerAddress.trim() === '') return;
+        try {
+            Address.parse(partnerAddress);
+        } catch {
+            setAddressError('неправильный адрес');
+        }
+    };
+
     return (
         <div className="asset-block">
             <h2 className="block-title">{t('sending')}</h2>
@@ -178,9 +191,18 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                     label={t('partnerAddress')}
                     type="text"
                     value={partnerAddress}
-                    onChange={onPartnerAddressChange}
+                    onChange={val => {
+                        setAddressError(null);
+                        onPartnerAddressChange(val);
+                    }}
+                    onBlur={handlePartnerAddressBlur}
                     disabled={disabled}
                 />
+                {addressError && (
+                    <div className="text-red-500 text-sm mt-1">
+                        {addressError}
+                    </div>
+                )}
             </div>
 
             <CommissionSection asset={asset} amount={sendAmount} />

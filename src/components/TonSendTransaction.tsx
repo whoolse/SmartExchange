@@ -31,7 +31,7 @@ export interface DealParameters {
     sendedCurrencyName: string;
     expectedAmount: number;
     expectedCurrencyName: string;
-    partnerAddress?: string;
+    partnerAddress: string;
 }
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
@@ -71,6 +71,8 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                 partnerAddress,
             };
             console.log(dealParams);
+            let check = Address.parse(dealParams.partnerAddress)
+            return
             if (sendAsset == "TON")
                 await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
             else

@@ -69,7 +69,8 @@ export class TonConnectWrapper {
             $$type: 'AddDealWithTon',
             dealId: BigInt(dealId),
             expectedAmount: toNano(expectedAmount),
-            expectedJettonId: expectedJettonId
+            expectedJettonId: expectedJettonId,
+            partnerAddress: partnerAddress != '' ? Address.parse(partnerAddress) : null
         };
         console.log(transferMsg)
         const payload = beginCell().store(storeAddDealWithTon(transferMsg)).endCell().toBoc().toString("base64");
