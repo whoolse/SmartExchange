@@ -15,15 +15,16 @@ const AppPage: React.FC = () => {
     <div className="container">
       <Header title="Smart Exchange" />
 
+      <DealCreate
+        userJettons={userJettons}
+        jettonBalances={jettonBalances}
+      />
+
       <JettonsList
         onJettons={setUserJettons}
         onJettonBalances={setJettonBalances}
       />
 
-      <DealCreate
-        userJettons={userJettons}
-        jettonBalances={jettonBalances}
-      />
       <div style={{ marginTop: 32 }}>
         <h2 className="block-title">Существующие сделки</h2>
         <DealsList />

@@ -13,7 +13,7 @@ body {
     min-height: 100vh;
     color: #ffffff;
     overflow-x: hidden;
-} 
+}
 
 .background-effects {
     position: fixed;
@@ -68,7 +68,8 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 12px;
-    height: 100vh;
+    /* height: 100vh; */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -153,6 +154,9 @@ body {
     transition: all 0.3s ease;
     flex-shrink: 0;
     margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .asset-block:hover {
@@ -379,6 +383,8 @@ body {
         margin-bottom: 30px;
         padding: 0;
         overflow-y: visible;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .exchange-arrow {
