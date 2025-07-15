@@ -11,6 +11,7 @@ import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
 import { useTonAddress } from '@tonconnect/ui-react';
+import { SuccessModal } from './SuccessModal';
 
 const DEF_SEND = 'SE1';
 const DEF_RECEIVE = 'SE2';
@@ -39,6 +40,8 @@ export const DealCreate: React.FC<{
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
     const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
@@ -109,6 +112,10 @@ export const DealCreate: React.FC<{
         setRecReceive(partnerReceive);
     };
 
+    const handleTxResult = (result: any) => {
+        console.log("handleTxResult", result)
+    }
+
     const isAddressValid = (() => {
         if (partnerAddress.trim() === '') return true;
         try {
@@ -159,7 +166,6 @@ export const DealCreate: React.FC<{
                     partnerAddress={fetchedPartnerAddress}
                 />
 
-
                 <CreateDealButton
                     sendAsset={sendAsset}
                     sendAmount={sendAmount}
@@ -169,6 +175,7 @@ export const DealCreate: React.FC<{
                     dealId={+dealId}
                     confirmed={isConfirmed}
                     partnerAddress={partnerAddress}
+                    onResult={handleTxResult}
                 />
 
             </div>
@@ -179,6 +186,12 @@ export const DealCreate: React.FC<{
             )}
 
             <DealControl onDealData={onDealData} disabled={disabled} onSetDealId={setDealId} />
+
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                dealId={dealId}
+                onClose={() => setIsSuccessModalOpen(false)}
+            />
 
         </>
     );

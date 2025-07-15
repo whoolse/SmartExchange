@@ -180,13 +180,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                         disabled={disabled}
                     />
                 </div>
-                <InputField
-                    label={t('idDeal')}
-                    type="text"
-                    value={dealId}
-                    onChange={() => { }}
-                    disabled={true}
-                />
+         
                 <InputField
                     label={t('partnerAddress')}
                     type="text"
@@ -198,6 +192,10 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                     onBlur={handlePartnerAddressBlur}
                     disabled={disabled}
                 />
+                <div className="info-line" style={{ marginTop: '10px' }}>
+                    <span className="info-label">{t('idDeal')}</span>
+                    <span className="info-value">{dealId}</span>
+                </div>
                 {addressError && (
                     <div className="text-red-500 text-sm mt-1">
                         {addressError}

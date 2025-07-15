@@ -80,10 +80,11 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                     return
                 }
             }
+            let txResult: any = null
             if (sendAsset == "TON")
-                await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
+                txResult = await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
             else
-                await TonConnectWrapper.sendJettonDeal(dealParams, tonConnectUI, Address.parse(address!));
+                txResult = await TonConnectWrapper.sendJettonDeal(dealParams, tonConnectUI, Address.parse(address!));
 
             onResult?.({ success: true });
         } catch (e) {
