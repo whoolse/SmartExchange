@@ -283,6 +283,7 @@ body {
     min-width: 80px;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 140px;
 }
 
 .wallet-balance:hover {
@@ -625,3 +626,7 @@ body {
         transform: translateY(0);
     }
 }
+
+.deal-create__input {
+    width: 200px;
+    /* подберите вручную под ваш макет */ }
