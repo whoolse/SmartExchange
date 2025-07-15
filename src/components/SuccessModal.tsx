@@ -10,10 +10,30 @@ interface SuccessModalProps {
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onClose }) => {
     if (!isOpen) return null;
+
+    const url = `${window.location.origin}/#/deals/${dealId}`;
+
     const handleCopy = () => {
-        const url = `${window.location.origin}/#/deals/${dealId}`;
         navigator.clipboard.writeText(url);
     };
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Ссылка на сделку',
+                    text: `Перейти к сделке ${dealId}`,
+                    url,
+                });
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
+        } else {
+            // fallback to copy
+            handleCopy();
+        }
+    };
+
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -26,8 +46,11 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                     <button className="modal-close-button" onClick={onClose}>
                         Закрыть
                     </button>
+                    <button className="modal-share-button" onClick={handleShare}>
+                        Поделиться
+                    </button>
                 </div>
             </div>
         </div>
-      );
+    );
 };

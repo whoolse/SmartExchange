@@ -65,3 +65,36 @@
     background-color: #059669;
     transform: translateY(-2px);
 }
+
+.modal-share-button {
+    margin-right: 12px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    background-color: #3b82f6;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.modal-share-button:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+/* Кнопки модального окна в один ряд */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Убираем лишний отступ сверху у кнопок внутри */
+.modal-actions .modal-close-button,
+.modal-actions .modal-copy-button,
+.modal-actions .modal-share-button {
+    margin-top: 0;
+}

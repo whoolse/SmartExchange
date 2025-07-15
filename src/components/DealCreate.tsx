@@ -114,6 +114,7 @@ export const DealCreate: React.FC<{
 
     const handleTxResult = (result: any) => {
         console.log("handleTxResult", result)
+        setIsSuccessModalOpen(true)
     }
 
     const isAddressValid = (() => {
