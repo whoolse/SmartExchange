@@ -39,7 +39,7 @@ export class TonConnectWrapper {
                 .endCell();
             jettonTransferForwardPayload.storeRef(subCell)
         }
-        
+
         const myJettonWallet = await this.getJettonWalletAddressFromTonapi(
             jettonMasterAddress,
             myAddress
@@ -98,7 +98,7 @@ export class TonConnectWrapper {
             ],
         };
 
-        await tonConnectUI.sendTransaction(transaction);
+        await tonConnectUI.sendTransaction(transaction, { returnStrategy: "back" });
     }
 
     static async cancelDealById(dealId: string, tonConnectUI: TonConnectUI) {

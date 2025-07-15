@@ -121,7 +121,7 @@ export class User {
         }
     }
 
-    async sendMessage(address: string, payload: Cell | string, value: string | number = '0.1') {
+    async sendTransaction(address: string, payload: Cell | string, value: string | number = '0.1') {
         const seqno = await this.contract.getSeqno(); // Required for transaction signing
 
 
@@ -146,7 +146,7 @@ export class User {
     }
 
     async sendMessageToContract(payload: Cell | string, value: string | number = '0.01') {
-        await this.sendMessage(this.CONTRACT_ADDRESS, payload, value)
+        await this.sendTransaction(this.CONTRACT_ADDRESS, payload, value)
     }
 
     async getWalletCode(jettonMasterAddress: string): Promise<Cell> {
@@ -252,7 +252,7 @@ export class User {
             customPayload: null,
         }
         let payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell();
-        await this.sendMessage(jettonWallet.toString(), payload, '1');
+        await this.sendTransaction(jettonWallet.toString(), payload, '1');
     }
 
     async sendJettonToContract() {
@@ -279,7 +279,7 @@ export class User {
             customPayload: null,
         }
         let payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell();
-        await this.sendMessage(jettonWallet.toString(), payload, '1');
+        await this.sendTransaction(jettonWallet.toString(), payload, '1');
     }
 
     async sendJetton(destination: Address) { }

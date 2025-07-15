@@ -40,14 +40,15 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                 <h3 className="modal-title">Сделка создана</h3>
                 <p>ID сделки: {dealId}</p>
                 <div className="modal-actions">
-                    <button className="modal-copy-button" onClick={handleCopy}>
+                    <button className="modal-button modal-copy-button" onClick={handleCopy}>
                         Скопировать ссылку
                     </button>
-                    <button className="modal-close-button" onClick={onClose}>
-                        Закрыть
-                    </button>
-                    <button className="modal-share-button" onClick={handleShare}>
+            
+                    <button className="modal-button modal-share-button" onClick={handleShare}>
                         Поделиться
+                    </button>
+                    <button className="modal-button modal-close-button" onClick={onClose}>
+                        Закрыть
                     </button>
                 </div>
             </div>

@@ -28,13 +28,6 @@ async function fetchDeals(): Promise<Record<string, DealInfo>> {
     return result;
 }
 
-async function cancelDealById(dealId: string): Promise<any | null> {
-    await ta.blockchain.execGetMethodForBlockchainAccount(
-        Address.parse(myContractAddress),
-        'cancelDeal',
-        { args: [dealId] }
-    );
-}
 
 export const DealsList: React.FC = () => {
     const address = useTonAddress() ?? '';

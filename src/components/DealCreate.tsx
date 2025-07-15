@@ -10,11 +10,16 @@ import { calcBack, getCurrencyKeyById } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
-import { useTonAddress } from '@tonconnect/ui-react';
+import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { SuccessModal } from './SuccessModal';
 
 const DEF_SEND = 'SE1';
 const DEF_RECEIVE = 'SE2';
+
+interface TxResult {
+    error: any
+    success: boolean
+}
 
 export const DealCreate: React.FC<{
     userJettons: string[];
@@ -41,7 +46,7 @@ export const DealCreate: React.FC<{
 
     const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-
+    const [tonConnectUI, setOptions] = useTonConnectUI();
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));
@@ -112,9 +117,12 @@ export const DealCreate: React.FC<{
         setRecReceive(partnerReceive);
     };
 
-    const handleTxResult = (result: any) => {
+    const handleTxResult = (result: TxResult) => {
         console.log("handleTxResult", result)
+        if (result.error) return
         setIsSuccessModalOpen(true)
+        // let newDealId = (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
+        // setDealId(newDealId);
     }
 
     const isAddressValid = (() => {

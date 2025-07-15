@@ -33,56 +33,6 @@
     font-weight: bold;
 }
 
-.modal-close-button {
-    margin-top: 16px;
-    padding: 8px 16px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    background-color: #4f46e5;
-    color: #fff;
-    cursor: pointer;
-}
-
-.modal-close-button:hover {
-    background-color: #4338ca;
-}
-
-.modal-copy-button {
-    margin-right: 12px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    border: none;
-    border-radius: 6px;
-    background-color: #10b981;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.modal-copy-button:hover {
-    background-color: #059669;
-    transform: translateY(-2px);
-}
-
-.modal-share-button {
-    margin-right: 12px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    border: none;
-    border-radius: 6px;
-    background-color: #3b82f6;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.modal-share-button:hover {
-    background-color: #2563eb;
-    transform: translateY(-2px);
-}
 
 /* Кнопки модального окна в один ряд */
 .modal-actions {
@@ -92,9 +42,43 @@
     margin-top: 24px;
 }
 
-/* Убираем лишний отступ сверху у кнопок внутри */
-.modal-actions .modal-close-button,
-.modal-actions .modal-copy-button,
-.modal-actions .modal-share-button {
-    margin-top: 0;
+/* Общий стиль для кнопок в модальном окне */
+.modal-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    color: #ffffff;
+}
+
+/* Варианты оттенков кнопок */
+.modal-close-button {
+    background-color: #3b82f6;
+}
+
+.modal-copy-button {
+    background-color:#3b82f6;
+}
+
+.modal-share-button {
+    background-color: #4f46e5;
+}
+
+/* Стили при наведении */
+.modal-close-button:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+}
+
+.modal-copy-button:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.modal-share-button:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
 }

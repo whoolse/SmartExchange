@@ -10,7 +10,12 @@ import { BalanceProvider } from './contexts/BalanceContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <TonConnectUIProvider manifestUrl="https://smart-ex.cc/tonconnect-manifest.json">
+    <TonConnectUIProvider
+      manifestUrl="https://smart-ex.cc/tonconnect-manifest.json"
+      actionsConfiguration={{
+        returnStrategy: 'back',
+      }}
+    >
       <I18nProvider>
         <BalanceProvider>
           <HashRouter>
