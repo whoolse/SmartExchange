@@ -199,8 +199,9 @@ export const DealCreate: React.FC<{
                 className="modal-button"
                 style={{
                     margin: '16px auto',
-                    display: 'block',
+                    display: 'none',
                     backgroundColor: '#f59e0b',
+                
                 }}
                 onClick={() => setIsSuccessModalOpen(true)}
             >
