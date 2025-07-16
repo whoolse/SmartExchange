@@ -14,7 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       manifestUrl="https://smart-ex.cc/tonconnect-manifest.json"
       actionsConfiguration={{
         returnStrategy: 'back',
+        twaReturnUrl: "https://t.me/escrowontonbot/smartex"
       }}
+      
     >
       <I18nProvider>
         <BalanceProvider>
