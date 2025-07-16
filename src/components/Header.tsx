@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     }, [address, api, setBalance]);
 
     return (
-        <header className="header">
+        <header className="header header-container">
             <div className="flex items-center space-x-4">
                 <h1 className="logo">
                     {title ?? t('title')}
@@ -60,7 +60,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 </label>
             </div>
 
-            <TonConnectButton />
+            <div className="flex items-center tonconnect-wrapper">
+                <TonConnectButton />
+            </div>
         </header>
     );
 };
