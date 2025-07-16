@@ -59,14 +59,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                     <span>{t('testnet')}</span>
                 </label>
             </div>
-            <div className="flex items-center space-x-4">
-                {address && (
-                    <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg font-medium whitespace-nowrap">
-                        {t('balance')}: {(+balance).toFixed(2)} TON
-                    </div>
-                )}
-                <TonConnectButton />
-            </div>
+
+            <TonConnectButton />
         </header>
     );
 };
