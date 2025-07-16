@@ -1,5 +1,5 @@
 // src/components/DealsList.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Address, Dictionary, TupleReader } from '@ton/core';
 import { DealInfo, dictValueParserDealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { TonApiClient } from '@ton-api/client';
@@ -27,7 +27,6 @@ async function fetchDeals(): Promise<Record<string, DealInfo>> {
     });
     return result;
 }
-
 
 export const DealsList: React.FC = () => {
     const address = useTonAddress() ?? '';
@@ -80,17 +79,13 @@ export const DealsList: React.FC = () => {
     };
 
     const entries = Object.entries(deals);
+    
+    useEffect(() => {
+        loadDeals();
+    }, []);
 
     return (
-        <div className="asset-block">
-            <button
-                onClick={loadDeals}
-                disabled={loading || blocked}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded"
-            >
-                {loading ? 'Загрузка…' : 'Получить список сделок'}
-            </button>
-
+        <div className="asset-block w-full">
             {error && <div className="text-red-500">Ошибка: {error}</div>}
 
             {entries.length === 0 && !loading && !error && (

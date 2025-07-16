@@ -25,11 +25,6 @@ const AppPage: React.FC = () => {
         onJettons={setUserJettons}
         onJettonBalances={setJettonBalances}
       />
-
-      {/* <div style={{ marginTop: 32 }}>
-        <h2 className="block-title">Существующие сделки</h2>
-        <DealsList />
-      </div> */}
     </div>
   );
 };
