@@ -1,7 +1,7 @@
 // src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import App from './App';
 import './index.css';
@@ -18,9 +18,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     >
       <I18nProvider>
         <BalanceProvider>
-          <HashRouter>
+          <BrowserRouter>
             <App />
-          </HashRouter>
+          </BrowserRouter>
         </BalanceProvider>
       </I18nProvider>
     </TonConnectUIProvider>

@@ -21,7 +21,7 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
     const expected = fromNano(info.expectedAmount);
     const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
     // URL сделки для копирования и шаринга
-    const url = `${window.location.origin}/#/deal/${id}`;
+    const url = `${window.location.origin}/deal/${id}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(url);
