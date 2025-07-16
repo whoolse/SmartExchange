@@ -6,6 +6,7 @@ import { JettonsList } from './components/JettonsList';
 import { DealCreate } from './components/DealCreate';
 import { JettonsBalances } from '@ton-api/client';
 import { DealsList } from './components/DealsList';
+import { DealsPage } from './components/DealsPage';
 
 const AppPage: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
@@ -25,10 +26,10 @@ const AppPage: React.FC = () => {
         onJettonBalances={setJettonBalances}
       />
 
-      <div style={{ marginTop: 32 }}>
+      {/* <div style={{ marginTop: 32 }}>
         <h2 className="block-title">Существующие сделки</h2>
         <DealsList />
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -37,6 +38,7 @@ const App: React.FC = () => (
   <Routes>
     <Route path="/" element={<AppPage />} />
     <Route path="/deals/:id" element={<AppPage />} />
+    <Route path="/deals" element={<DealsPage />} />
   </Routes>
 );
 

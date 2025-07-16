@@ -11,7 +11,7 @@ interface SuccessModalProps {
 export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onClose }) => {
     if (!isOpen) return null;
 
-    const url = `${window.location.origin}/#/deals/${dealId}`;
+    const url = `${window.location.origin}/#/deal/${dealId}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(url);

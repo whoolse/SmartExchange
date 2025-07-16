@@ -1,0 +1,53 @@
+.hamburger-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-right: 16px;
+}
+.hamburger-button span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    border-radius: 1px;
+}
+
+/* Контейнер, чтобы навигация привязалась к кнопке */
+.hamburger-container {
+    position: relative;
+    z-index: 51;
+    /* чуть выше header */
+}
+
+/* Само меню */
+.hamburger-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 52;
+    /* поверх всего */
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.hamburger-menu .menu-item {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #333;
+}
+
+.hamburger-menu .menu-item:hover,
+.hamburger-menu .menu-item.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    font-weight: bold; }

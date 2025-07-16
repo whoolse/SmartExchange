@@ -93,12 +93,21 @@ body {
     flex-shrink: 0;
     flex-wrap: nowrap;
     white-space: nowrap;
+    position: relative;
+    z-index: 100;
 }
 
 .header-container {
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    /* overflow: hidden; */
+}
+
+.header-title {
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.2;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -527,7 +536,7 @@ body {
 }
 
 /* Animations */
-.asset-block {
+/* .asset-block {
     animation: slideUp 0.6s ease-out;
 }
 
@@ -537,9 +546,9 @@ body {
 
 .asset-block:nth-child(3) {
     animation-delay: 0.2s;
-}
+} */
 
-@keyframes slideUp {
+/* @keyframes slideUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -549,7 +558,7 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
 .send-button {
     animation: slideUp 0.6s ease-out 0.3s both;
@@ -619,7 +628,7 @@ body {
     background: rgba(96, 165, 250, 0.12);
 }
 
-@keyframes fadeIn {
+/* @keyframes fadeIn {
     from {
         opacity: 0;
         transform: translateY(8px);
@@ -629,7 +638,7 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
 .deal-create__input {
     width: 200px;
@@ -645,11 +654,6 @@ body {
 }
 
 @media (max-width: 640px) {
-    .tonconnect-wrapper {
-
-        /* можно добавить стили */
-
-    }
 
     .tonconnect-wrapper button {
         /* уменьшаем размеры кнопки на мобильных */
@@ -659,3 +663,4 @@ body {
         height: auto !important;
     }
 }
+

@@ -5,6 +5,7 @@ import { TonApiClient } from '@ton-api/client';
 import { Address, fromNano } from '@ton/core';
 import { useT } from '../i18n';
 import { useBalance } from '../contexts/BalanceContext';
+import { HamburgerMenu } from './HamburgerMenu';
 
 interface HeaderProps {
     title?: string;
@@ -16,7 +17,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     const { balance, setBalance } = useBalance();
     // По умолчанию Testnet включён
     const [isTestnet, setIsTestnet] = useState<boolean>(true);
-
+    const [menuOpen, setMenuOpen] = useState(false);
+    
     const api = useMemo(
         () =>
             new TonApiClient({
@@ -44,7 +46,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     }, [address, api, setBalance]);
 
     return (
-        <header className="header header-container">
+        <header className="header header-container relative z-30">
+            <HamburgerMenu />
             <div className="flex items-center space-x-4">
                 <h1 className="logo">
                     {title ?? t('title')}
