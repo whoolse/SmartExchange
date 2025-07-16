@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                         onChange={() => setIsTestnet(prev => !prev)}
                         className="h-4 w-4 accent-indigo-500"
                     />
-                    <span>{t('testnet')}</span>
+                    {/* <span>{t('testnet')}</span> */}
                 </label>
             </div>
 

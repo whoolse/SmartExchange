@@ -67,7 +67,7 @@ body {
     z-index: 1;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 12px;
+    padding: 0 5px;
     /* height: 100vh; */
     /* min-height: 100vh; */
     display: flex;
@@ -379,7 +379,7 @@ body {
 /* Desktop styles */
 @media (min-width: 769px) {
     .container {
-        padding: 0 20px;
+        padding: 0 5px;
         height: auto;
     }
 

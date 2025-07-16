@@ -195,7 +195,17 @@ export const DealCreate: React.FC<{
             )}
 
             <DealControl onDealData={onDealData} disabled={disabled} onSetDealId={setDealId} />
-
+            <button
+                className="modal-button"
+                style={{
+                    margin: '16px auto',
+                    display: 'block',
+                    backgroundColor: '#f59e0b',
+                }}
+                onClick={() => setIsSuccessModalOpen(true)}
+            >
+                Показать модалку
+            </button>
             <SuccessModal
                 isOpen={isSuccessModalOpen}
                 dealId={dealId}

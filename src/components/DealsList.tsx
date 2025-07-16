@@ -43,7 +43,6 @@ export const DealsList: React.FC = () => {
             const allDeals = await fetchDeals();
             const filtered: Record<string, DealInfo> = {};
             let rawAddress = Address.parse(address).toRawString();
-            console.log(allDeals)
             Object.values(allDeals).forEach(dealInfo => {
                 if (dealInfo.senderAddress.toRawString() == rawAddress) {
                     filtered[dealInfo.id.toString()] = dealInfo;
@@ -71,18 +70,15 @@ export const DealsList: React.FC = () => {
             setBlocked(false);
             return;
         }
-        // через 5 секунд перезагрузить список и снять блокировку
-        // setTimeout(async () => {
-        //     await loadDeals();
-        //     setBlocked(false);
-        // }, 5000);
     };
 
     const entries = Object.entries(deals);
     
     useEffect(() => {
-        loadDeals();
-    }, []);
+        if (address) {
+            loadDeals();
+        }
+    }, [address]);
 
     return (
         <div className="asset-block w-full">
