@@ -35,7 +35,8 @@ export const DealsList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [tonConnectUI] = useTonConnectUI();
     const [blocked, setBlocked] = useState<boolean>(false);
-
+    const [lastCancelTime, setLastCancelTime] = useState<number | null>(null);
+    const [refreshDisabled, setRefreshDisabled] = useState<boolean>(false);
     const loadDeals = async () => {
         setLoading(true);
         setError(null);
@@ -61,10 +62,7 @@ export const DealsList: React.FC = () => {
         setError(null);
         try {
             await TonConnectWrapper.cancelDealById(id, tonConnectUI);
-            setTimeout(async () => {
-                await loadDeals();
-                setBlocked(false);
-            }, 5000);
+            setLastCancelTime(Date.now());
         } catch (e: any) {
             setError(e.message || 'Ошибка при отмене сделки');
             setBlocked(false);
@@ -73,14 +71,40 @@ export const DealsList: React.FC = () => {
     };
 
     const entries = Object.entries(deals);
-    
+
     useEffect(() => {
         if (address) {
             loadDeals();
         }
     }, [address]);
 
+    useEffect(() => {
+        if (lastCancelTime && address) {
+            const timer = setTimeout(() => {
+                loadDeals();
+                setBlocked(false);
+                setRefreshDisabled(true)
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [lastCancelTime]);
+
     return (
+        <>
+            {/* Кнопка ручного обновления списка */}
+            <div className="mb-4">
+                <button
+                    onClick={async () => {
+                        setRefreshDisabled(true);
+                        await loadDeals();
+                        setTimeout(() => setRefreshDisabled(false), 10000);
+                    }}
+                    disabled={refreshDisabled || loading}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded"
+                >
+                    Обновить мои сделки
+                </button>
+            </div>
         <div className="asset-block w-full">
             {error && <div className="text-red-500">Ошибка: {error}</div>}
 
@@ -97,5 +121,6 @@ export const DealsList: React.FC = () => {
                     disabled={blocked}
                 />))}
         </div>
+        </>
     );
 };
