@@ -81,7 +81,6 @@ export const DealCreate: React.FC<{
         const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
         const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
 
-        console.log(expectedCurrency, sendedCurrency)
         setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
         setReceiveAsset(sendedCurrency);
         setSendAsset(expectedCurrency);
@@ -117,9 +116,8 @@ export const DealCreate: React.FC<{
     };
 
     const handleTxResult = (result: TxResult) => {
-        console.log("handleTxResult", result)
         if (result.error) return
-        setIsSuccessModalOpen(true)
+        setIsSuccessModalOpen(true && !isConfirmed)
         // let newDealId = (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
         // setDealId(newDealId);
     }
@@ -153,6 +151,7 @@ export const DealCreate: React.FC<{
                     partnerAddress={partnerAddress}
                     onPartnerAddressChange={setPartnerAddress}
                 />
+
                 <button type="button"
                     onClick={handleSwap}
                     disabled={disabled}
@@ -161,6 +160,7 @@ export const DealCreate: React.FC<{
                         <path d="M7 17L17 7M17 7H7M17 7V17"></path>
                     </svg>
                 </button>
+
                 <ReceiveBlock
                     disabled={disabled}
                     asset={receiveAsset}

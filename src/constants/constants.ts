@@ -19,8 +19,6 @@ import CatiIcon from '../assets/currencies/CATI.webp';
 import HmstrIcon from '../assets/currencies/HMSTR.webp';
 import SE1 from '../assets/currencies/SE1.webp';
 import SE2 from '../assets/currencies/SE1.webp';
-import { Address } from 'cluster';
-import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 
 export const currencies: Record<string, Currency> = {
   SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 1, icon: SE1 },
@@ -49,18 +47,3 @@ export const serviceComission = 0.999;
 
 /** Сетевая комиссия для TON (фиксированная) */
 export const networkFee = 0.018;
-
-// export const dealsExample: Array<DealInfo> = [
-//     {
-//         id: 1n,
-//         senderAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo',
-//         amount: 1000,
-//         currency: 'TON',
-//     },
-//     {
-//         id: '2',
-//         senderAddress: 'kQCXBMC_4duteYxznKizeIzhhCiR0ETTEYXIQmuURHLJ7OB0',
-//         amount: 2000,
-//         currency: 'USDT',
-//     },
-// ];
