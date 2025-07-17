@@ -6,6 +6,7 @@ import {
 } from '@tonconnect/ui-react';
 import { Address, toNano } from '@ton/core';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
+import { JettonBalance } from '@ton-api/client';
 
 interface TonSendTransactionProps {
     /** Код актива, который отправляем */
@@ -23,7 +24,10 @@ interface TonSendTransactionProps {
     onResult?: (res: any) => void;
     /** Рендер-проп: получает функцию отправки */
     children: (send: () => Promise<void>) => React.ReactNode;
+    sendCurrency?: JettonBalance;
+
 }
+
 
 export interface DealParameters {
     dealId: number;
@@ -32,6 +36,7 @@ export interface DealParameters {
     expectedAmount: number;
     expectedCurrencyName: string;
     partnerAddressString: string;
+    sendCurrency?: JettonBalance;
 }
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
@@ -43,6 +48,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
     dealId,
     onResult,
     children,
+    sendCurrency
 }) => {
     const [tonConnectUI] = useTonConnectUI();
     const address = useTonAddress();
@@ -68,6 +74,7 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                 expectedAmount: +receiveAmount,
                 expectedCurrencyName: receiveAsset,
                 partnerAddressString: partnerAddress,
+                sendCurrency: sendCurrency
             };
             console.log(dealParams);
             if (dealParams.partnerAddressString != '') {

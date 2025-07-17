@@ -1,12 +1,12 @@
 // src/components/DealCreate.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { fromNano } from '@ton/core';
 import { assets, } from '../constants/constants';
 import { SendBlock } from './SendBlock';
 import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
-import { type JettonsBalances } from '@ton-api/client';
-import { calcBack, getCurrencyKeyById } from '../utils/utils';
+import { JettonBalance, type JettonsBalances } from '@ton-api/client';
+import { calcBack, getCurrencyKeyById, filterJettons } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
@@ -46,14 +46,16 @@ export const DealCreate: React.FC<{
 
     const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+    const [selectedSendBalance, setSelectedSendBalance] = useState<JettonBalance | undefined>(undefined);
+
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
-        console.log(userJettons)
-        const f = assets.filter(a => userJettons.includes(a));
-        const l = ['TON', ...f.filter(a => a !== 'TON')];
+        const l = filterJettons(jettonBalances)
         if (!l.includes(sendAsset)) l.push(sendAsset);
         return l;
     }, [userJettons, sendAsset]);
+
 
     const [dealId, setDealId] = useState<string>(
         () => (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
@@ -119,8 +121,6 @@ export const DealCreate: React.FC<{
     const handleTxResult = (result: TxResult) => {
         if (result.error) return
         setIsSuccessModalOpen(true && !isConfirmed)
-        // let newDealId = (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
-        // setDealId(newDealId);
     }
 
     const isAddressValid = (() => {
@@ -132,6 +132,12 @@ export const DealCreate: React.FC<{
             return false;
         }
     })();
+
+    // При изменении sendAsset находим в jettonBalances нужный объект JettonBalance
+    useEffect(() => {
+        const match = jettonBalances.find(b => b.jetton.symbol === sendAsset);
+        setSelectedSendBalance(match);
+    }, [sendAsset, jettonBalances]);
 
     return (
         <>
@@ -185,6 +191,7 @@ export const DealCreate: React.FC<{
                     confirmed={isConfirmed}
                     partnerAddress={partnerAddress}
                     onResult={handleTxResult}
+                    sendCurrency={selectedSendBalance}
                 />
 
             </div>
@@ -201,7 +208,7 @@ export const DealCreate: React.FC<{
                     margin: '16px auto',
                     display: 'none',
                     backgroundColor: '#f59e0b',
-                
+
                 }}
                 onClick={() => setIsSuccessModalOpen(true)}
             >

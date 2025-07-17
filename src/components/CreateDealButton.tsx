@@ -2,6 +2,7 @@
 import React from 'react';
 import { useT } from '../i18n';
 import { TonSendTransaction } from './TonSendTransaction';
+import { JettonBalance } from '@ton-api/client';
 
 export interface CreateDealButtonProps {
     /** Код актива, который отправляем */
@@ -20,6 +21,7 @@ export interface CreateDealButtonProps {
     onResult?: (res: any) => void;
     dealId: number;
     confirmed?: boolean;
+    sendCurrency?: JettonBalance;
 }
 
 export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
@@ -32,6 +34,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
     disabled = false,
     onResult,
     confirmed = false,
+    sendCurrency
 }) => {
     const t = useT();
 
@@ -44,6 +47,7 @@ export const CreateDealButton: React.FC<CreateDealButtonProps> = ({
             partnerAddress={partnerAddress}
             dealId={dealId}
             onResult={onResult}
+            sendCurrency={sendCurrency}
         >
             {send => (
                 <button

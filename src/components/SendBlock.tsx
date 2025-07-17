@@ -8,7 +8,7 @@ import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
 import { assets, currencies } from '../constants/constants';
 import { useT } from '../i18n';
-import { calcBack, calcPartner } from "../utils/utils";
+import { calcBack, calcPartner, filterJettons } from "../utils/utils";
 import { Address } from '@ton/core';
 
 
@@ -52,14 +52,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
     // Доступные активы
     const assetOptions = useMemo(() => {
-        const filtered: Array<string> = []
-        jettonBalances.forEach(jettonBalance => {
-            let { address, symbol } = jettonBalance.jetton
-            let currency = currencies[symbol]
-            if (currency && currency.masterAddress == address.toString())
-                filtered.push(symbol)
-        });
-        const list = ['TON', ...filtered.filter(a => a !== 'TON')];
+        const list = filterJettons(jettonBalances)
         if (!list.includes(asset)) list.push(asset);
         return list;
     }, [userJettons, asset]);
@@ -85,6 +78,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
         const n = parseFloat(sendAmount);
         return isNaN(n) || n < 0 || n > maxBalance;
     })();
+
     const errRecv = (() => {
         const r = parseFloat(partnerReceive);
         return isNaN(r) || r < 0;

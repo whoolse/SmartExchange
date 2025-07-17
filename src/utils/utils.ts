@@ -1,5 +1,6 @@
 // utils/Utils.ts
 
+import { JettonBalance } from '@ton-api/client';
 import { serviceComission, networkFee, currencies } from '../constants/constants';
 
 export function calcPartner(n: number, asset: string): number {
@@ -23,4 +24,23 @@ export function fromDecimals(amount: bigint, decimals: number): string {
     const whole = amountStr.slice(0, -decimals);
     const fraction = amountStr.slice(-decimals).replace(/0+$/, '');
     return fraction ? `${whole}.${fraction}` : whole;
+}
+
+export function toDecimals(amount: string | number, decimals: number): bigint {
+    const [wholePart, fractionPartRaw = ''] = amount.toString().split('.');
+    const fractionPart = fractionPartRaw.padEnd(decimals, '0').slice(0, decimals);
+    const normalized = wholePart + fractionPart;
+    return BigInt(normalized.replace(/^0+/, '') || '0');
+}
+
+export function filterJettons(jettonBalances: JettonBalance[]): string[] {
+        const filtered: Array<string> = []
+        jettonBalances.forEach(jettonBalance => {
+            let { address, symbol } = jettonBalance.jetton
+            let currency = currencies[symbol]
+            if (currency && currency.masterAddress == address.toString())
+                filtered.push(symbol)
+        });
+        const list = ['TON', ...filtered.filter(a => a !== 'TON')];
+        return list;
 }
