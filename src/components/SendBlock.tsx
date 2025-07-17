@@ -1,12 +1,12 @@
 // src/components/SendBlock.tsx
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { TonApiClient } from '@ton-api/client';
+import { JettonBalance, TonApiClient } from '@ton-api/client';
 import { useBalance } from '../contexts/BalanceContext';
 import { InputField } from './InputField';
 import { SelectField } from './SelectField';
 import { CommissionSection } from './CommissionSection';
 import { CreateDealButton } from './CreateDealButton';
-import { assets } from '../constants/constants';
+import { assets, currencies } from '../constants/constants';
 import { useT } from '../i18n';
 import { calcBack, calcPartner } from "../utils/utils";
 import { Address } from '@ton/core';
@@ -21,7 +21,7 @@ interface SendBlockProps {
     onAssetChange: (asset: string) => void;
     disableCreate?: boolean;
     userJettons: string[];
-    jettonBalances: any[];
+    jettonBalances: JettonBalance[];
     onValidationChange?: (disabled: boolean) => void;
     disabled?: boolean;
     partnerAddress: string;
@@ -52,7 +52,13 @@ export const SendBlock: React.FC<SendBlockProps> = ({
 
     // Доступные активы
     const assetOptions = useMemo(() => {
-        const filtered = assets.filter(a => userJettons.includes(a));
+        const filtered: Array<string> = []
+        jettonBalances.forEach(jettonBalance => {
+            let { address, symbol } = jettonBalance.jetton
+            let currency = currencies[symbol]
+            if (currency && currency.masterAddress == address.toString())
+                filtered.push(symbol)
+        });
         const list = ['TON', ...filtered.filter(a => a !== 'TON')];
         if (!list.includes(asset)) list.push(asset);
         return list;
@@ -180,7 +186,7 @@ export const SendBlock: React.FC<SendBlockProps> = ({
                         disabled={disabled}
                     />
                 </div>
-         
+
                 <InputField
                     label={t('partnerAddress')}
                     type="text"

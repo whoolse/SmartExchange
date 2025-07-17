@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useTonAddress } from '@tonconnect/ui-react';
 import { Address, fromNano } from '@ton/core';
-import { TonApiClient, type JettonsBalances } from '@ton-api/client';
+import { TonApiClient, JettonsBalances, JettonBalance } from '@ton-api/client';
 import { useT } from '../i18n';
 
 interface JettonsListProps {
@@ -20,7 +20,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
     const address = useTonAddress();
     const [jettons, setJettons] = useState<JettonsBalances['balances']>([]);
     const [error, setError] = useState<string | null>(null);
-    const [isTestnet, setIsTestnet] = useState<boolean>(true);
+    const [isTestnet, setIsTestnet] = useState<boolean>(false);
 
     const client = useMemo(
         () =>
@@ -42,6 +42,12 @@ export const JettonsList: React.FC<JettonsListProps> = ({
             .getAccountJettonsBalances(Address.parse(address))
             .then((response: JettonsBalances) => {
                 const arr = response.balances ?? [];
+                let log: Array<any> = []
+                response.balances.forEach(element => {
+                    log.push({ "symbol": element.jetton.symbol, "address": element.jetton.address.toString() })
+                });
+              
+                console.log(log)
                 setJettons(arr);
                 onJettons?.(arr.map(j => j.jetton.symbol));
                 onJettonBalances?.(arr);
@@ -60,7 +66,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
     if (error) {
         return <p className="text-red-600">{error}</p>;
     }
-    return(<></>)
+    // return(<></>)
     return (
         <div className="asset-block p-4">
             <div className="flex justify-between items-center mb-4">

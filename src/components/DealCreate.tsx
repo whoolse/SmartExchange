@@ -48,6 +48,7 @@ export const DealCreate: React.FC<{
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
+        console.log(userJettons)
         const f = assets.filter(a => userJettons.includes(a));
         const l = ['TON', ...f.filter(a => a !== 'TON')];
         if (!l.includes(sendAsset)) l.push(sendAsset);

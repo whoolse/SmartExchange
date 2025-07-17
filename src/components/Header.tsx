@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     const address = useTonAddress();
     const { balance, setBalance } = useBalance();
     // По умолчанию Testnet включён
-    const [isTestnet, setIsTestnet] = useState<boolean>(true);
+    const [isTestnet, setIsTestnet] = useState<boolean>(false);
     const [menuOpen, setMenuOpen] = useState(false);
     
     const api = useMemo(

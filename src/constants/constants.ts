@@ -24,7 +24,7 @@ export const currencies: Record<string, Currency> = {
   SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 1, icon: SE1 },
   SE2: { masterAddress: 'kQCXBMC_4duteYxznKizeIzhhCiR0ETTEYXIQmuURHLJ7OB0', id: 2, icon: SE2 },
   TON: { masterAddress: '', id: 0, icon: TonIcon },
-  USDT: { masterAddress: '', id: 3, icon: USDTIcon },
+  "USD₮": { masterAddress: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', id: 3, icon: USDTIcon },
   USDe: { masterAddress: '', id: 4, icon: USDeIcon },
   tsTON: { masterAddress: '', id: 5, icon: TsTONIcon },
   NOT: { masterAddress: '', id: 6, icon: NotIcon },
@@ -40,7 +40,7 @@ export type Asset = typeof assets[number];
 
 export const myContractAddress = 'kQAivDYSA-quVEdgO1Y2T-BBYrlbYfULGI6iHIiG1-m41p7W';
 
-export const tonApiBaseUrl = 'https://testnet.tonapi.io';
+export const tonApiBaseUrl = 'https://tonapi.io';
 
 /** Коэффициент сервисной комиссии (1 - 0.001 = 0.999) */
 export const serviceComission = 0.999;

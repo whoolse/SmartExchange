@@ -16,23 +16,23 @@ interface DealItemProps {
 // Обработчик отмены — тут пока заглушка, позже привяжите к контракту
 
 
-export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled }) => {
+export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, disabled }) => {
     const sended = fromNano(info.sendedAmount);
     const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
     const expected = fromNano(info.expectedAmount);
     const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
     // URL сделки для копирования и шаринга
-    const url = `${window.location.origin}/deal/${id}`;
+    const url = `${window.location.origin}/deal/${dealId}`;
     const t = useT();
     const handleCopy = () => {
-        navigator.clipboard.writeText(url);
+        navigator.clipboard.writeText(dealId);
     };
 
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
                 title: 'Ссылка на сделку',
-                text: `Перейти к сделке ${id}`,
+                text: `Перейти к сделке ${dealId}`,
                 url,
             }).catch(console.error);
         } else {
@@ -44,7 +44,7 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
             className="flex items-center justify-between p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-10"
         >
             <div className="flex-1 min-w-0 space-y-1">
-                <div className="text-sm text-indigo-300">ID: {id}</div>
+                <div className="text-sm text-indigo-300">ID: {dealId}</div>
                 <div className="text-white truncate">
                     {`${t('sender')}: ${info.senderAddress.toString()}`}
                 </div>
@@ -66,7 +66,7 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
                 style={{ justifyContent: 'start' }}
             >
                 <button
-                    onClick={() => onCancel(id)}
+                    onClick={() => onCancel(dealId)}
                     disabled={disabled}
                     className="px-[5px] py-1 bg-red-600 hover:bg-red-700 text-white rounded transition"
                 >

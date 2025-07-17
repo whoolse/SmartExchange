@@ -15,7 +15,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
     const url = `${window.location.origin}/deal/${dealId}`;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(url);
+        navigator.clipboard.writeText(dealId);
     };
 
     const handleShare = async () => {
