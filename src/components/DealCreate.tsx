@@ -6,7 +6,7 @@ import { SendBlock } from './SendBlock';
 import { ReceiveBlock } from './ReceiveBlock';
 import { DealControl } from './DealControl';
 import { JettonBalance, type JettonsBalances } from '@ton-api/client';
-import { calcBack, getCurrencyKeyById, filterJettons } from '../utils/utils';
+import { calcBack, getCurrencyKeyById, filterJettons, getCurrencyDataById, fromDecimals } from '../utils/utils';
 import { CreateDealButton } from './CreateDealButton';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
@@ -79,14 +79,16 @@ export const DealCreate: React.FC<{
             setFetchedPartnerAddress(info.partnerAddress.toString());
         }
         // Обновляем поля на основе данных из смарт-контракта
-        setRecSend(fromNano(info.sendedAmount));
-        const expectedAmount = +fromNano(info.expectedAmount);
-        const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
-        const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
 
-        setSendAmount(calcBack(expectedAmount, expectedCurrency).toString());
-        setReceiveAsset(sendedCurrency);
-        setSendAsset(expectedCurrency);
+        const expectedCurrencyData = getCurrencyDataById(Number(info.expectedCurrencyId));
+        const sendedCurrency = getCurrencyDataById(Number(info.sendedCurrencyId));
+        debugger
+        setRecSend(fromDecimals(info.sendedAmount, sendedCurrency.decimals));
+        const expectedAmount = +fromDecimals(info.expectedAmount, expectedCurrencyData.decimals);
+
+        setSendAmount(calcBack(expectedAmount, expectedCurrencyData.name).toString());
+        setReceiveAsset(sendedCurrency.name);
+        setSendAsset(expectedCurrencyData.name);
     };
 
     // Автопереключение, если выбранный asset совпадает с receiveAsset/sendAsset

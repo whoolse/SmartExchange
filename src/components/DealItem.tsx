@@ -3,7 +3,7 @@ import React from 'react';
 import { Address } from '@ton/core';
 import { fromNano } from '@ton/core';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
-import { getCurrencyKeyById } from '../utils/utils';
+import { fromDecimals, getCurrencyDataById, getCurrencyKeyById } from '../utils/utils';
 import { useT } from '../i18n';
 
 
@@ -17,8 +17,11 @@ interface DealItemProps {
 
 
 export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, disabled }) => {
-    const sended = fromNano(info.sendedAmount);
-    const sendedCurrency = getCurrencyKeyById(Number(info.sendedCurrencyId));
+    const sendedCurrencyData = getCurrencyDataById(Number(info.sendedCurrencyId));
+    const sendedCurrency = sendedCurrencyData.name
+
+    const sended = fromDecimals(info.sendedAmount, sendedCurrencyData.decimals);
+
     const expected = fromNano(info.expectedAmount);
     const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
     // URL сделки для копирования и шаринга

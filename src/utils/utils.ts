@@ -1,7 +1,7 @@
 // utils/Utils.ts
 
 import { JettonBalance } from '@ton-api/client';
-import { serviceComission, networkFee, currencies } from '../constants/constants';
+import { serviceComission, networkFee, currencies, Currency } from '../constants/constants';
 
 export function calcPartner(n: number, asset: string): number {
     return asset === 'TON'
@@ -19,6 +19,14 @@ export function getCurrencyKeyById(id: number): string {
     return Object.keys(currencies).find(key => currencies[key].id === id) || 'TON';
 }
 
+export function getCurrencyDataById(id: number):  Currency {
+    let curr = Object.entries(currencies).find(([key, currency]) => currency.id == id)
+    if (curr) {
+        return curr[1]
+    }
+    return  currencies.TON;
+}
+
 export function fromDecimals(amount: bigint, decimals: number): string {
     const amountStr = amount.toString().padStart(decimals + 1, '0');
     const whole = amountStr.slice(0, -decimals);
@@ -34,13 +42,13 @@ export function toDecimals(amount: string | number, decimals: number): bigint {
 }
 
 export function filterJettons(jettonBalances: JettonBalance[]): string[] {
-        const filtered: Array<string> = []
-        jettonBalances.forEach(jettonBalance => {
-            let { address, symbol } = jettonBalance.jetton
-            let currency = currencies[symbol]
-            if (currency && currency.masterAddress == address.toString())
-                filtered.push(symbol)
-        });
-        const list = ['TON', ...filtered.filter(a => a !== 'TON')];
-        return list;
+    const filtered: Array<string> = []
+    jettonBalances.forEach(jettonBalance => {
+        let { address, symbol } = jettonBalance.jetton
+        let currency = currencies[symbol]
+        if (currency && currency.masterAddress == address.toString())
+            filtered.push(symbol)
+    });
+    const list = ['TON', ...filtered.filter(a => a !== 'TON')];
+    return list;
 }

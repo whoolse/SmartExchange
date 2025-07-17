@@ -5,7 +5,7 @@ import { currencies, myContractAddress, tonApiBaseUrl } from "../constants/const
 import { SendTransactionRequest, TonConnectUI } from "@tonconnect/ui-react";
 import { JettonTransfer, storeJettonTransfer, AddDealWithTon, storeAddDealWithTon, CancelDeal, storeCancelDeal } from "../smartContract/JettonReceiver_JettonReceiver";
 import { DealParameters } from "../components/TonSendTransaction";
-import { toDecimals } from "../utils/utils";
+import { getCurrencyDataById, toDecimals } from "../utils/utils";
 
 
 export class TonConnectWrapper {
@@ -52,7 +52,7 @@ export class TonConnectWrapper {
             queryId: 0n,
             amount: jettonTransferAmount,
             responseDestination: myAddress,
-            forwardTonAmount: toNano('0.07'),
+            forwardTonAmount: toNano('0.1'),
             forwardPayload: jettonTransferForwardPayload.asSlice(),
             destination: Address.parse(myContractAddress),
             customPayload: null,
@@ -72,14 +72,14 @@ export class TonConnectWrapper {
             expectedCurrencyName,
             partnerAddressString: partnerAddress,
         } = dealParams;
-
-        const expectedJettonId = BigInt(currencies[expectedCurrencyName].id);
+        const currency = currencies[expectedCurrencyName];
+        let jettonId = BigInt(currency.id)
 
         const transferMsg: AddDealWithTon = {
             $$type: 'AddDealWithTon',
             dealId: BigInt(dealId),
-            expectedAmount: toNano(expectedAmount),
-            expectedJettonId: expectedJettonId,
+            expectedAmount: toDecimals(expectedAmount, currency.decimals),
+            expectedJettonId: jettonId,
             partnerAddress: partnerAddress != '' ? Address.parse(partnerAddress) : null
         };
         console.log(transferMsg)
