@@ -4,6 +4,7 @@ import { useTonAddress } from '@tonconnect/ui-react';
 import { Address, fromNano } from '@ton/core';
 import { TonApiClient, JettonsBalances, JettonBalance } from '@ton-api/client';
 import { useT } from '../i18n';
+import { fromDecimals } from '../utils/utils';
 
 interface JettonsListProps {
     /** Символы джеттонов пользователя */
@@ -88,7 +89,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
                             {j.jetton.symbol} ({j.jetton.name})
                         </span>
                         <span>
-                            {fromNano(j.balance)} {j.jetton.symbol}
+                            {fromDecimals(j.balance, j.jetton.decimals)} {j.jetton.symbol}
                         </span>
                     </li>
                 ))}
