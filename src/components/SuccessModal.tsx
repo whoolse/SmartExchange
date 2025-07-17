@@ -1,6 +1,7 @@
 // src/components/SuccessModal.tsx
 import React from 'react';
 import "./SuccessModal.css";
+import { useT } from '../i18n';
 
 interface SuccessModalProps {
     isOpen: boolean;
@@ -33,22 +34,22 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
             handleCopy();
         }
     };
+    const t = useT();
 
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <h3 className="modal-title">Сделка создана</h3>
-                <p>ID сделки: {dealId}</p>
+                <h3 className="modal-title">{t('dealCreated')}</h3>
+                <p>{t('dealId')}: {dealId}</p>
                 <div className="modal-actions">
                     <button className="modal-button modal-copy-button" onClick={handleCopy}>
-                        Скопировать ссылку
+                        {t('copyId')}
                     </button>
-            
                     <button className="modal-button modal-share-button" onClick={handleShare}>
-                        Поделиться
+                        {t('shareDeal')}
                     </button>
                     <button className="modal-button modal-close-button" onClick={onClose}>
-                        Закрыть
+                        {t('close')}
                     </button>
                 </div>
             </div>

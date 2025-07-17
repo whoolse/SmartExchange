@@ -51,7 +51,6 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
             console.error('TonConnect UI не инициализирован');
             return;
         }
-        console.log('TonSendTransaction')
 
         let amountNano: string;
         try {

@@ -6,6 +6,7 @@ import { dictValueParserDealInfo, loadTupleDealInfo } from '../smartContract/Jet
 import { MethodExecutionResult, TonApiClient } from '@ton-api/client';
 import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
 import { fromNano } from '@ton/core';
+import { useT } from '../i18n';
 
 interface DealControlProps {
     /** Вызывается при получении данных сделки или null */
@@ -51,6 +52,8 @@ export const DealControl: React.FC<DealControlProps> = ({
     const { id } = useParams<{ id: string }>();
     const [dealId, setDealId] = useState<string>(id ?? '');
     const [error, setError] = useState<string | null>(null);
+    const t = useT();
+
     // Авто-запрос при первом рендере с id из URL
     useEffect(() => {
         if (id && !fetchedDealIds.has(id)) {
@@ -85,9 +88,9 @@ export const DealControl: React.FC<DealControlProps> = ({
     };
 
     return (
-        <div className="mt-4">
+        <div className="mt-4 pb-15">
             <label htmlFor="deal-id" className="block mb-1 font-medium">
-                id сделки
+                {t('dealId')}
             </label>
             <div className="flex items-center space-x-2">
                 <input

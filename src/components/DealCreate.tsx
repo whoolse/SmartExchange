@@ -46,7 +46,6 @@ export const DealCreate: React.FC<{
 
     const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-    const [tonConnectUI, setOptions] = useTonConnectUI();
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
         const f = assets.filter(a => userJettons.includes(a));

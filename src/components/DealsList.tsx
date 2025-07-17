@@ -7,6 +7,7 @@ import { tonApiBaseUrl, myContractAddress } from '../constants/constants';
 import { DealItem } from './DealItem';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
+import { useT } from '../i18n';
 
 const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
 
@@ -37,6 +38,7 @@ export const DealsList: React.FC = () => {
     const [blocked, setBlocked] = useState<boolean>(false);
     const [lastCancelTime, setLastCancelTime] = useState<number | null>(null);
     const [refreshDisabled, setRefreshDisabled] = useState<boolean>(false);
+    const t = useT();
     const loadDeals = async () => {
         setLoading(true);
         setError(null);
@@ -51,7 +53,7 @@ export const DealsList: React.FC = () => {
             });
             setDeals(filtered);
         } catch (e: any) {
-            setError(e.message || 'Ошибка при загрузке сделок');
+            setError(e.message || t('dealsUpdateError'));
         } finally {
             setLoading(false);
         }
@@ -64,7 +66,7 @@ export const DealsList: React.FC = () => {
             await TonConnectWrapper.cancelDealById(id, tonConnectUI);
             setLastCancelTime(Date.now());
         } catch (e: any) {
-            setError(e.message || 'Ошибка при отмене сделки');
+            setError(e.message || t('dealCancelError'));
             setBlocked(false);
             return;
         }
@@ -102,25 +104,25 @@ export const DealsList: React.FC = () => {
                     disabled={refreshDisabled || loading}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded"
                 >
-                    Обновить мои сделки
+                    {t('updateDeals')}
                 </button>
             </div>
-        <div className="asset-block w-full">
-            {error && <div className="text-red-500">Ошибка: {error}</div>}
+            <div className="asset-block w-full">
+                {error && <div className="text-red-500">{t('errorPrefix')} {error}</div>}
 
-            {entries.length === 0 && !loading && !error && (
-                <div className="text-gray-400">Сделки не загружены или отсутствуют</div>
-            )}
+                {entries.length === 0 && !loading && !error && (
+                    <div className="text-gray-400">{t('noDeals')}</div>
+                )}
 
-            {entries.map(([id, info]) => (
-                <DealItem
-                    key={id}
-                    id={id}
-                    info={info}
-                    onCancel={handleCancelDeal}
-                    disabled={blocked}
-                />))}
-        </div>
+                {entries.map(([id, info]) => (
+                    <DealItem
+                        key={id}
+                        id={id}
+                        info={info}
+                        onCancel={handleCancelDeal}
+                        disabled={blocked}
+                    />))}
+            </div>
         </>
     );
 };

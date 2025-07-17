@@ -166,7 +166,7 @@ body {
     transform: rotate(90deg);
 }
 
-.exchange-arrow:hover {
+.exchange-arrow:active {
     background: rgba(255, 255, 255, 0.2);
     transform: rotate(270deg);
 }
@@ -663,4 +663,3 @@ body {
         height: auto !important;
     }
 }
-

@@ -36,7 +36,25 @@ const translations: Record<Lang, Record<string, string>> = {
         noJettons: 'Нет джетонов',
         connectWallet: 'Подключить кошелёк',
         confirmDeal: 'Подтвердить сделку',
-        yourJettons: 'Ваши джетоны'
+        yourJettons: 'Ваши джетоны',
+        loading: 'Загрузка...',
+        noDeals: 'Сделки не загружены или отсутствуют',
+        errorLoadingDeals: 'Ошибка при загрузке сделок',
+        errorPrefix: 'Ошибка',
+        cancel: 'Отменить',
+        copyId: 'Копировать ID',
+        shareDeal: 'Поделиться',
+        updateDeals: 'Обновить мои сделки',
+        sent: 'Отправил',
+        sender: 'Отправитель',
+        expect: 'ожидает',
+        dealsUpdateError: 'Ошибка при загрузке сделок',
+        dealCancelError: 'Ошибка при отмене сделки',
+        partner: 'Партнёр',
+        dealsList: 'Список сделок',
+        mainPage: 'Главная страница',
+        getDealById: 'Получить сделку по ID',
+
     },
     en: {
         title: 'Smart Exchange',
@@ -59,12 +77,30 @@ const translations: Record<Lang, Record<string, string>> = {
         noJettons: 'No Jettons',
         connectWallet: 'Connect Wallet',
         confirmDeal: 'Confirm deal',
-        yourJettons: 'Your Jettons'
+        yourJettons: 'Your Jettons',
+        loading: 'Loading...',
+        noDeals: 'No deals loaded or available',
+        errorLoadingDeals: 'Failed to load deals',
+        errorPrefix: 'Error',
+        cancel: 'Cancel',
+        copyId: 'Copy ID',
+        shareDeal: 'Share deal',
+        refreshDeals: 'Refresh my deals',
+        sent: 'Sent',
+        expect: 'expect',
+        dealsUpdateError: 'Loading error',
+        dealCancelError: 'Cancel deal error',
+        updateDeals: 'Update my deals',
+        sender: 'Sender',
+        partner: 'Partner',
+        dealsList: 'Deals List',
+        mainPage: 'Main page',
+
     },
 };
 
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const initialLang: Lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+    const initialLang: Lang = navigator.language.startsWith('ru') ? 'en' : 'en';
     const [lang, setLang] = useState<Lang>(initialLang);
 
     return (

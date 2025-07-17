@@ -4,6 +4,7 @@ import { Address } from '@ton/core';
 import { fromNano } from '@ton/core';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { getCurrencyKeyById } from '../utils/utils';
+import { useT } from '../i18n';
 
 
 interface DealItemProps {
@@ -22,7 +23,7 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
     const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
     // URL сделки для копирования и шаринга
     const url = `${window.location.origin}/deal/${id}`;
-
+    const t = useT();
     const handleCopy = () => {
         navigator.clipboard.writeText(url);
     };
@@ -45,17 +46,17 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
             <div className="flex-1 min-w-0 space-y-1">
                 <div className="text-sm text-indigo-300">ID: {id}</div>
                 <div className="text-white truncate">
-                    Отправитель: {info.senderAddress.toString()}
+                    {`${t('sender')}: ${info.senderAddress.toString()}`}
                 </div>
                 <div className="text-gray-300">
-                    {"Отправил "}
+                    {`${t('sent')} `}
                     {sended} {sendedCurrency}
-                    {", ожидает "}
+                    {`, ${t('expect')} `}
                     {expected} {expectedCurrency}
                 </div>
                 {info.partnerAddress && (
                     <div className="text-gray-400 truncate">
-                        Партнёр: {info.partnerAddress.toString()}
+                        {`${t('partner')}: ${info.partnerAddress.toString()}`}
                     </div>
                 )}
             </div>
@@ -69,21 +70,21 @@ export const DealItem: React.FC<DealItemProps> = ({ id, info, onCancel, disabled
                     disabled={disabled}
                     className="px-[5px] py-1 bg-red-600 hover:bg-red-700 text-white rounded transition"
                 >
-                    Отменить
+                    {t('cancel')}
                 </button>
                 <button
                     type="button"
                     onClick={handleCopy}
                     className="px-[5px] py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition"
                 >
-                    Копировать ID
+                    {t('copyId')}
                 </button>
                 <button
                     type="button"
                     onClick={handleShare}
                     className="px-[5px] py-1 bg-green-600 hover:bg-green-700 text-white rounded transition"
                 >
-                    Поделиться
+                    {t('shareDeal')}
                 </button>
             </div>
         </div>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import "./HamburgerMenu.css"
+import { useT } from '../i18n';
 
 export const HamburgerMenu: React.FC = () => {
     const [open, setOpen] = useState(false);
     const toggle = () => setOpen(prev => !prev);
+    const t = useT();
 
     return (
         <div className="hamburger-container">
@@ -16,10 +18,10 @@ export const HamburgerMenu: React.FC = () => {
             {open && (
                 <nav className="hamburger-menu absolute z-50">
                     <NavLink to="/" className="menu-item" onClick={toggle}>
-                        Главная
+                        {t('mainPage')}
                     </NavLink>
                     <NavLink to="/deals" className="menu-item" onClick={toggle}>
-                        Список сделок
+                        {t('dealsList')}
                     </NavLink>
                 </nav>
             )}
