@@ -1,4 +1,3 @@
-// src/i18n.tsx
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 
 export type Lang = 'ru' | 'en';
@@ -8,98 +7,227 @@ interface LangContextType {
     setLang: (lang: Lang) => void;
 }
 
-// Контекст языка с возможностью переключения
+// Контекст для переключения языка
 export const LangContext = createContext<LangContextType>({
     lang: 'ru',
     setLang: () => { },
 });
 
-const translations: Record<Lang, Record<string, string>> = {
-    ru: {
-        title: 'Smart Exchange',
-        sending: 'Отправляю',
-        receiving: 'Получаю',
-        willSend: 'Будет отправлено',
-        willReceivePartner: 'Будет получено партнером',
-        willReceiveMe: 'Будет получено мною',
-        IWillGet: 'получу я',
-        asset: 'Актив',
-        partnerAddress: 'Адрес партнёра',
-        createDeal: 'Создать сделку',
-        idDeal: 'ID сделки',
-        testnet: 'testnet',
-        balance: 'Баланс',
-        networkFee: 'Комиссия сети',
-        serviceFee: 'Комиссия сервиса',
-        totalFee: 'Общая комиссия',
-        commissionInAsset: 'Комиссия',
-        noJettons: 'Нет джетонов',
-        connectWallet: 'Подключить кошелёк',
-        confirmDeal: 'Подтвердить сделку',
-        yourJettons: 'Ваши джетоны',
-        loading: 'Загрузка...',
-        noDeals: 'Сделки не загружены или отсутствуют',
-        errorLoadingDeals: 'Ошибка при загрузке сделок',
-        errorPrefix: 'Ошибка',
-        cancel: 'Отменить',
-        copyId: 'Копировать ID',
-        shareDeal: 'Поделиться',
-        updateDeals: 'Обновить мои сделки',
-        sent: 'Отправил',
-        sender: 'Отправитель',
-        expect: 'ожидает',
-        dealsUpdateError: 'Ошибка при загрузке сделок',
-        dealCancelError: 'Ошибка при отмене сделки',
-        partner: 'Партнёр',
-        dealsList: 'Список сделок',
-        mainPage: 'Главная страница',
-        getDealById: 'Получить сделку по ID',
+type TranslationsType = {
+    [key: string]: {
+        ru: string;
+        en: string;
+    };
+};
 
+// Структура переводов: ключи — идентификаторы строк, значения — объекты с переводами
+const translations: TranslationsType = {
+    title:
+    {
+        ru: 'Smart Exchange',
+        en: 'Smart Exchange'
     },
-    en: {
-        title: 'Smart Exchange',
-        sending: 'I Want to Send',
-        receiving: 'I Want to Get',
-        willSend: 'Sent',
-        willReceivePartner: 'Partner Will Get',
-        willReceiveMe: 'Will Be Received by Me',
-        IWillGet: 'I will get',
-        asset: 'Asset',
-        partnerAddress: 'Partner Address',
-        createDeal: 'Create Exchange',
-        idDeal: 'Exchange ID',
-        testnet: 'testnet',
-        balance: 'Balance',
-        networkFee: 'Blockchain Fee',
-        serviceFee: 'Service Commission',
-        totalFee: 'Total comission',
-        commissionInAsset: 'Commission',
-        noJettons: 'No Jettons',
-        connectWallet: 'Connect Wallet',
-        confirmDeal: 'Confirm deal',
-        yourJettons: 'Your Jettons',
-        loading: 'Loading...',
-        noDeals: 'No deals loaded or available',
-        errorLoadingDeals: 'Failed to load deals',
-        errorPrefix: 'Error',
-        cancel: 'Cancel',
-        copyId: 'Copy ID',
-        shareDeal: 'Share deal',
-        refreshDeals: 'Refresh my deals',
-        sent: 'Sent',
-        expect: 'expect',
-        dealsUpdateError: 'Loading error',
-        dealCancelError: 'Cancel deal error',
-        updateDeals: 'Update my deals',
-        sender: 'Sender',
-        partner: 'Partner',
-        dealsList: 'Deals List',
-        mainPage: 'Main page',
-
+    sending:
+    {
+        ru: 'Отправляю',
+        en: 'I Want to Send'
+    },
+    receiving:
+    {
+        ru: 'Получаю',
+        en: 'I Want to Get'
+    },
+    willSend:
+    {
+        ru: 'Будет отправлено',
+        en: 'Sent'
+    },
+    willReceivePartner:
+    {
+        ru: 'Будет получено партнёром',
+        en: 'Partner Will Get'
+    },
+    willReceiveMe:
+    {
+        ru: 'Будет получено мною',
+        en: 'Will Be Received by Me'
+    },
+    IWillGet:
+    {
+        ru: 'получу я',
+        en: 'I will get'
+    },
+    asset:
+    {
+        ru: 'Актив',
+        en: 'Asset'
+    },
+    partnerAddress:
+    {
+        ru: 'Адрес партнёра',
+        en: 'Partner Address'
+    },
+    createDeal:
+    {
+        ru: 'Создать сделку',
+        en: 'Create Exchange'
+    },
+    idDeal:
+    {
+        ru: 'ID сделки',
+        en: 'Exchange ID'
+    },
+    testnet:
+    {
+        ru: 'testnet',
+        en: 'testnet'
+    },
+    balance:
+    {
+        ru: 'Баланс',
+        en: 'Balance'
+    },
+    networkFee:
+    {
+        ru: 'Комиссия сети',
+        en: 'Blockchain Fee'
+    },
+    serviceFee:
+    {
+        ru: 'Комиссия сервиса',
+        en: 'Service Commission'
+    },
+    totalFee:
+    {
+        ru: 'Общая комиссия',
+        en: 'Total commission'
+    },
+    commissionInAsset:
+    {
+        ru: 'Комиссия',
+        en: 'Commission'
+    },
+    noJettons:
+    {
+        ru: 'Нет джетонов',
+        en: 'No Jettons'
+    },
+    connectWallet:
+    {
+        ru: 'Подключить кошелёк',
+        en: 'Connect Wallet'
+    },
+    confirmDeal:
+    {
+        ru: 'Подтвердить сделку',
+        en: 'Confirm deal'
+    },
+    yourJettons:
+    {
+        ru: 'Ваши джетоны',
+        en: 'Your Jettons'
+    },
+    loading:
+    {
+        ru: 'Загрузка...',
+        en: 'Loading...'
+    },
+    noDeals:
+    {
+        ru: 'Сделки не загружены или отсутствуют',
+        en: 'No deals loaded or available'
+    },
+    errorLoadingDeals:
+    {
+        ru: 'Ошибка при загрузке сделок',
+        en: 'Failed to load deals'
+    },
+    error:
+    {
+        ru: 'Ошибка',
+        en: 'Error'
+    },
+    errorPrefix:
+    {
+        ru: 'Ошибка',
+        en: 'Error'
+    },
+    cancel:
+    {
+        ru: 'Отменить',
+        en: 'Cancel'
+    },
+    copyId:
+    {
+        ru: 'Копировать ID',
+        en: 'Copy ID'
+    },
+    shareDeal:
+    {
+        ru: 'Поделиться',
+        en: 'Share deal'
+    },
+    refreshDeals:
+    {
+        ru: 'Обновить мои сделки',
+        en: 'Refresh my deals'
+    },
+    sent:
+    {
+        ru: 'Отправил',
+        en: 'Sent'
+    },
+    sender:
+    {
+        ru: 'Отправитель',
+        en: 'Sender'
+    },
+    expect:
+    {
+        ru: 'ожидает',
+        en: 'expect'
+    },
+    dealsUpdateError:
+    {
+        ru: 'Ошибка при загрузке сделок',
+        en: 'Loading error'
+    },
+    dealCancelError:
+    {
+        ru: 'Ошибка при отмене сделки',
+        en: 'Cancel deal error'
+    },
+    partner:
+    {
+        ru: 'Партнёр',
+        en: 'Partner'
+    },
+    dealsList:
+    {
+        ru: 'Список сделок',
+        en: 'Deals List'
+    },
+    mainPage:
+    {
+        ru: 'Главная страница',
+        en: 'Main page'
+    },
+    getDealById:
+    {
+        ru: 'Получить сделку по ID',
+        en: 'Get deal by ID'
+    },
+    enterId:
+    {
+        ru: 'Введите ID',
+        en: 'Enter deal ID'
     },
 };
 
-export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+// Провайдер i18n
+export const I18nProvider: React.FC<{
+    children: ReactNode
+}> = ({ children }) => {
     const initialLang: Lang = navigator.language.startsWith('ru') ? 'en' : 'en';
     const [lang, setLang] = useState<Lang>(initialLang);
 
@@ -110,7 +238,7 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 };
 
-// Хук для доступа к языку и функции переключения
+// Хук для доступа к текущему языку и ф-ии переключения
 export function useLang() {
     return useContext(LangContext);
 }
@@ -118,5 +246,8 @@ export function useLang() {
 // Хук для получения перевода по ключу
 export function useT() {
     const { lang } = useContext(LangContext);
-    return (key: string) => translations[lang][key] ?? key;
+    return (key: string): string => {
+        const entry = translations[key];
+        return entry ? entry[lang] : key;
+    };
 }

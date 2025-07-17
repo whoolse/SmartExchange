@@ -113,15 +113,16 @@ export const DealsList: React.FC = () => {
                 {entries.length === 0 && !loading && !error && (
                     <div className="text-gray-400">{t('noDeals')}</div>
                 )}
-
-                {entries.map(([id, info]) => (
-                    <DealItem
-                        key={id}
-                        id={id}
-                        info={info}
-                        onCancel={handleCancelDeal}
-                        disabled={blocked}
-                    />))}
+                <div className="deals-list">
+                    {entries.map(([id, info]) => (
+                        <DealItem
+                            key={id}
+                            id={id}
+                            info={info}
+                            onCancel={handleCancelDeal}
+                            disabled={blocked}
+                        />))}
+                </div>
             </div>
         </>
     );

@@ -663,3 +663,11 @@ body {
         height: auto !important;
     }
 }
+
+.deals-list {
+    display: flex;
+    /* выстраиваем колоночно */
+    flex-direction: column;
+    gap: 16px;
+    /* расстояние между элементами */
+}

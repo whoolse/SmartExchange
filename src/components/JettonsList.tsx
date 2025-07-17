@@ -48,7 +48,6 @@ export const JettonsList: React.FC<JettonsListProps> = ({
             })
             .catch(err => {
                 console.error('Error fetching jettons:', err);
-                setError(t('noJettons'));
                 onJettons?.([]);
                 onJettonBalances?.([]);
             });

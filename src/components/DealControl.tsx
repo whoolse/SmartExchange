@@ -100,19 +100,19 @@ export const DealControl: React.FC<DealControlProps> = ({
                     // disabled={disabled}
                     onChange={e => setDealId(e.target.value)}
                     className="border rounded px-2 py-1 w-[20ch]"
-                    placeholder="Введите ID"
+                    placeholder={t('enterId')}
                 />
                 <button
                     onClick={handleGetDeal}
                     // disabled={disabled}
                     className="px-4 py-1 bg-blue-500 text-white rounded whitespace-nowrap"
                 >
-                    получить сделку по id
+                    {t('getDealById')}
                 </button>
             </div>
             {error && (
                 <div className="mt-1 text-red-500 text-sm">
-                    Ошибка: {error}
+                    {t('error')}: {error}
                 </div>
             )}
         </div>
