@@ -3,7 +3,7 @@ import React from 'react';
 import { Address } from '@ton/core';
 import { fromNano } from '@ton/core';
 import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
-import { fromDecimals, getCurrencyDataById, getCurrencyKeyById } from '../utils/utils';
+import { fromDecimals, getCurrencyDataById, getCurrencyKeyById, isMobile, shareDeal } from '../utils/utils';
 import { useT } from '../i18n';
 
 
@@ -25,25 +25,16 @@ export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, 
     const sended = fromDecimals(info.sendedAmount, sendedCurrencyData.decimals);
 
     const expected = fromDecimals(info.expectedAmount, expectedCurrencyData.decimals);
-    // const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
-    // URL сделки для копирования и шаринга
-    const url = `${window.location.origin}/?tgWebAppStartParam=${dealId}`;
+
     const t = useT();
     const handleCopy = () => {
         navigator.clipboard.writeText(dealId);
     };
 
     const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Ссылка на сделку',
-                text: `Перейти к сделке ${dealId}`,
-                url,
-            }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(url);
-        }
+        shareDeal(dealId)
     };
+
     return (
         <div
             className="flex items-center justify-between p-4 rounded-lg backdrop-blur-sm hover:bg-opacity-10"
@@ -89,7 +80,7 @@ export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, 
                     onClick={handleShare}
                     className="px-[5px] py-1 bg-green-600 hover:bg-green-700 text-white rounded transition"
                 >
-                    {t('shareDeal')}
+                    {isMobile() ? t('shareDeal') : t('copyLink')}
                 </button>
             </div>
         </div>

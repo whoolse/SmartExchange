@@ -40,7 +40,7 @@ const translations: TranslationsType = {
     willSend:
     {
         ru: 'Будет отправлено',
-        en: 'Sent'
+        en: 'Send'
     },
     willReceivePartner:
     {
@@ -69,13 +69,13 @@ const translations: TranslationsType = {
     },
     createDeal:
     {
-        ru: 'Создать сделку',
-        en: 'Create Exchange'
+        ru: 'Предложить обмен',
+        en: 'Offer swap'
     },
     idDeal:
     {
         ru: 'ID сделки',
-        en: 'Exchange ID'
+        en: 'Swap ID'
     },
     testnet:
     {
@@ -120,7 +120,7 @@ const translations: TranslationsType = {
     confirmDeal:
     {
         ru: 'Подтвердить сделку',
-        en: 'Confirm deal'
+        en: 'Confirm swap'
     },
     yourJettons:
     {
@@ -135,12 +135,12 @@ const translations: TranslationsType = {
     noDeals:
     {
         ru: 'Сделки не загружены или отсутствуют',
-        en: 'No deals loaded or available'
+        en: 'No swaps loaded or available'
     },
     errorLoadingDeals:
     {
         ru: 'Ошибка при загрузке сделок',
-        en: 'Failed to load deals'
+        en: 'Failed to load swaps'
     },
     error:
     {
@@ -165,12 +165,17 @@ const translations: TranslationsType = {
     shareDeal:
     {
         ru: 'Поделиться',
-        en: 'Share deal'
+        en: 'Share link'
+    },
+    copyLink:
+    {
+        ru: 'Скоп. ссылку',
+        en: 'Copy link'
     },
     refreshDeals:
     {
         ru: 'Обновить мои сделки',
-        en: 'Refresh my deals'
+        en: 'Refresh my swaps'
     },
     sent:
     {
@@ -205,27 +210,32 @@ const translations: TranslationsType = {
     dealsList:
     {
         ru: 'Список сделок',
-        en: 'Deals List'
+        en: 'Swaps List'
     },
     mainPage:
     {
         ru: 'Главная страница',
-        en: 'Main page'
+        en: 'Create swap'
     },
     getDealById:
     {
         ru: 'Получить сделку по ID',
-        en: 'Get deal by ID'
+        en: 'Get swap by ID'
     },
     enterId:
     {
         ru: 'Введите ID',
-        en: 'Enter deal ID'
+        en: 'Enter swap ID'
+    },
+    swapId:
+    {
+        ru: 'ID сделки',
+        en: 'Swap ID'
     },
     dealNotFound:
     {
         ru: 'Сделка не найдена',
-        en: 'Deal not found'
+        en: 'Swap not found'
     },
 };
 

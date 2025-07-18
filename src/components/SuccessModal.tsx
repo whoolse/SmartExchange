@@ -2,6 +2,7 @@
 import React from 'react';
 import "./SuccessModal.css";
 import { useT } from '../i18n';
+import { isMobile, shareDeal } from '../utils/utils';
 
 interface SuccessModalProps {
     isOpen: boolean;
@@ -12,29 +13,15 @@ interface SuccessModalProps {
 export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onClose }) => {
     if (!isOpen) return null;
 
-    const url = `${window.location.origin}/?tgWebAppStartParam=${dealId}`;
+    const t = useT();
 
     const handleCopy = () => {
         navigator.clipboard.writeText(dealId);
     };
 
-    const handleShare = async () => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Ссылка на сделку',
-                    text: `Перейти к сделке ${dealId}`,
-                    url,
-                });
-            } catch (err) {
-                console.error('Share failed:', err);
-            }
-        } else {
-            // fallback to copy
-            handleCopy();
-        }
+    const handleShare =  () => {
+        shareDeal(dealId)
     };
-    const t = useT();
 
     return (
         <div className="modal-overlay">
@@ -46,7 +33,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                         {t('copyId')}
                     </button>
                     <button className="modal-button modal-share-button" onClick={handleShare}>
-                        {t('shareDeal')}
+                        {isMobile() ? t('shareDeal') : t('copyLink')}
                     </button>
                     <button className="modal-button modal-close-button" onClick={onClose}>
                         {t('close')}

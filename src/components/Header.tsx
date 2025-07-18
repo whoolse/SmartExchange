@@ -54,12 +54,12 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                     {title ?? t('title')}
                 </h1>
                 <label className="flex items-center space-x-2 text-sm text-gray-600">
-                    <input
+                    {/* <input
                         type="checkbox"
                         checked={isTestnet}
                         onChange={() => setTestnet(!isTestnet)}
                         className="h-4 w-4 accent-indigo-500"
-                    />
+                    /> */}
                     {/* <span>{t('testnet')}</span> */}
                 </label>
             </div>

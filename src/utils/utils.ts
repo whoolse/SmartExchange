@@ -20,12 +20,12 @@ export function getCurrencyKeyById(id: number): string {
     return Object.keys(currencies).find(key => currencies[key].id === id) || 'TON';
 }
 
-export function getCurrencyDataById(id: number):  Currency {
+export function getCurrencyDataById(id: number): Currency {
     let curr = Object.entries(currencies).find(([key, currency]) => currency.id == id)
     if (curr) {
         return curr[1]
     }
-    return  currencies.TON;
+    return currencies.TON;
 }
 
 export function fromDecimals(amount: bigint, decimals: number): string {
@@ -52,4 +52,32 @@ export function filterJettons(jettonBalances: JettonBalance[]): string[] {
     });
     const list = ['TON', ...filtered.filter(a => a !== 'TON')];
     return list;
+}
+
+export function isMobile() {
+    let details = navigator.userAgent;
+    let regexp = /android|iphone|kindle|ipad/i;
+    let isMobileDevice = regexp.test(details);
+    return isMobileDevice
+}
+
+export function shareDeal(dealId: string) {
+    let url = ''
+    if (location.href.includes("tgWebAppData"))
+        url = `t.me/escrowontonbot/smartex/?tgWebAppStartParam=${dealId}`
+    else
+        url = `${window.location.origin}/?tgWebAppStartParam=${dealId}`
+
+    if (!isMobile() || !navigator.share) {
+        navigator.clipboard.writeText(url);
+        return
+    }
+    try {
+        navigator.share({
+            url,
+        });
+    } catch (err) {
+        console.error('Share failed:', err);
+        navigator.clipboard.writeText(url);
+    }
 }

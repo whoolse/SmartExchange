@@ -100,9 +100,9 @@ export const DealControl: React.FC<DealControlProps> = ({
 
     return (
         <div className="mt-4 pb-15">
-            <label htmlFor="deal-id" className="block mb-1 font-medium">
-                {t('dealId')}
-            </label>
+            {/* <label htmlFor="deal-id" className="block mb-1 font-medium">
+                {t('swapId')}
+            </label> */}
             <div className="flex items-center space-x-2">
                 <input
                     id="deal-id"
@@ -111,7 +111,7 @@ export const DealControl: React.FC<DealControlProps> = ({
                     // disabled={disabled}
                     onChange={e => setDealId(e.target.value)}
                     className="border rounded px-2 py-1 w-[20ch]"
-                    placeholder={t('enterId')}
+                    placeholder={t('swapId')}
                 />
                 <button
                     onClick={handleGetDeal}

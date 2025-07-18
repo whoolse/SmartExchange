@@ -63,12 +63,12 @@ export const JettonsList: React.FC<JettonsListProps> = ({
     }, [address, client]);
 
     if (!address) {
-        return <p className="text-gray-600">{t('connectWallet')}</p>;
+        // return <p className="text-gray-600">{t('connectWallet')}</p>;
     }
     if (error) {
-        return <p className="text-red-600">{error}</p>;
+        // return <p className="text-red-600">{error}</p>;
     }
-    // return(<></>)
+    return(<></>)
     return (
         <div className="asset-block p-4">
             <div className="flex justify-between items-center mb-4">
