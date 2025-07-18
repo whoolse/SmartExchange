@@ -6,6 +6,7 @@ import { Address, fromNano } from '@ton/core';
 import { useT } from '../i18n';
 import { useBalance } from '../contexts/BalanceContext';
 import { HamburgerMenu } from './HamburgerMenu';
+import { useTestnet } from '../contexts/TestnetContext';
 
 interface HeaderProps {
     title?: string;
@@ -16,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     const address = useTonAddress();
     const { balance, setBalance } = useBalance();
     // По умолчанию Testnet включён
-    const [isTestnet, setIsTestnet] = useState<boolean>(false);
+    const { isTestnet, setTestnet } = useTestnet()
     const [menuOpen, setMenuOpen] = useState(false);
     
     const api = useMemo(
@@ -56,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                     <input
                         type="checkbox"
                         checked={isTestnet}
-                        onChange={() => setIsTestnet(prev => !prev)}
+                        onChange={() => setTestnet(!isTestnet)}
                         className="h-4 w-4 accent-indigo-500"
                     />
                     {/* <span>{t('testnet')}</span> */}

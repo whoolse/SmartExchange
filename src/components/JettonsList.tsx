@@ -5,6 +5,7 @@ import { Address, fromNano } from '@ton/core';
 import { TonApiClient, JettonsBalances, JettonBalance } from '@ton-api/client';
 import { useT } from '../i18n';
 import { fromDecimals } from '../utils/utils';
+import { useTestnet } from '../contexts/TestnetContext';
 
 interface JettonsListProps {
     /** Символы джеттонов пользователя */
@@ -21,7 +22,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
     const address = useTonAddress();
     const [jettons, setJettons] = useState<JettonsBalances['balances']>([]);
     const [error, setError] = useState<string | null>(null);
-    const [isTestnet, setIsTestnet] = useState<boolean>(false);
+    const { isTestnet, setTestnet } = useTestnet()
 
     const client = useMemo(
         () =>
@@ -76,7 +77,7 @@ export const JettonsList: React.FC<JettonsListProps> = ({
                     <input
                         type="checkbox"
                         checked={isTestnet}
-                        onChange={() => setIsTestnet(prev => !prev)}
+                        onChange={() => setTestnet(!isTestnet)}
                         className="h-4 w-4 accent-indigo-500"
                     />
                     <span>{t('testnet')}</span>

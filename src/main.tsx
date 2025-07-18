@@ -7,6 +7,7 @@ import App from './App';
 import './index.css';
 import { I18nProvider } from './i18n';
 import { BalanceProvider } from './contexts/BalanceContext';
+import { TestnetProvider } from './contexts/TestnetContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -20,9 +21,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     >
       <I18nProvider>
         <BalanceProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <TestnetProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </TestnetProvider>
         </BalanceProvider>
       </I18nProvider>
     </TonConnectUIProvider>

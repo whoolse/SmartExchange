@@ -5,7 +5,6 @@ import { Header } from './components/Header';
 import { JettonsList } from './components/JettonsList';
 import { DealCreate } from './components/DealCreate';
 import { JettonsBalances } from '@ton-api/client';
-import { DealsList } from './components/DealsList';
 import { DealsPage } from './components/DealsPage';
 
 const AppPage: React.FC = () => {
