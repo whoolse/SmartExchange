@@ -57,9 +57,8 @@ export const DealControl: React.FC<DealControlProps> = ({
 
     const getIdFromUrl = (): string | null => {
         let id = params.get('dealId')
-        console.log(id);
         if (!id) 
-            id = params.get('startapp')
+            id = params.get('tgWebAppStartParam')
         if (isNaN(Number(id))) return null;
         return id;
     };

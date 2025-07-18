@@ -222,6 +222,11 @@ const translations: TranslationsType = {
         ru: 'Введите ID',
         en: 'Enter deal ID'
     },
+    dealNotFound:
+    {
+        ru: 'Сделка не найдена',
+        en: 'Deal not found'
+    },
 };
 
 // Провайдер i18n

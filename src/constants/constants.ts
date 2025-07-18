@@ -33,9 +33,9 @@ export const currencies: Record<string, Currency> = {
   DOGS: { masterAddress: 'EQCvxJy4eG8hyHBFsZ7eePxrRsUQSFE_jpptRAYBmcG_DOGS', id: 6, icon: DogsIcon, decimals: 6, name: "DOGS"},
   CATI: { masterAddress: 'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', id: 7, icon: CatiIcon, decimals: 6, name: "CATI"},
   HMSTR: { masterAddress: 'EQAJ8uWd7EBqsmpSWaRdf_I-8R8-XHwh3gsNKhy-UrdrPcUo', id: 8, icon: HmstrIcon, decimals: 6, name: "HMSTR" },
-  SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 90, icon: SE1, decimals: 9, name: "SE1" },
-  SE2: { masterAddress: 'kQCXBMC_4duteYxznKizeIzhhCiR0ETTEYXIQmuURHLJ7OB0', id: 91, icon: SE2, decimals: 9, name: "SE2" },
-  PD: { masterAddress: 'kQC6GAd96G6qkAIfJJUN8an-ByDMBCHS6VqipKlSgYvjXOl9', id: 93, icon: HmstrIcon, decimals: 6, name: "PD"},
+  // SE1: { masterAddress: 'kQBQaekJ-eLhMwSjKUvCWouTyxBOQlLcb7Z-J7gQwdrqt-mo', id: 90, icon: SE1, decimals: 9, name: "SE1" },
+  // SE2: { masterAddress: 'kQCXBMC_4duteYxznKizeIzhhCiR0ETTEYXIQmuURHLJ7OB0', id: 91, icon: SE2, decimals: 9, name: "SE2" },
+  // PD: { masterAddress: 'kQC6GAd96G6qkAIfJJUN8an-ByDMBCHS6VqipKlSgYvjXOl9', id: 93, icon: HmstrIcon, decimals: 6, name: "PD"},
 };
 
 export const assets = Object.keys(currencies) as Array<keyof typeof currencies>;

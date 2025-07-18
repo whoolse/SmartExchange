@@ -12,9 +12,10 @@ import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { Address } from '@ton/core';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { SuccessModal } from './SuccessModal';
+import { useT } from '../i18n';
 
-const DEF_SEND = 'SE1';
-const DEF_RECEIVE = 'SE2';
+const DEF_SEND = "USD₮";
+const DEF_RECEIVE = 'TON';
 
 interface TxResult {
     error: any
@@ -48,6 +49,7 @@ export const DealCreate: React.FC<{
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
     const [selectedSendBalance, setSelectedSendBalance] = useState<JettonBalance | undefined>(undefined);
+    const t = useT();
 
     // TON + те, что у пользователя
     const sendList = useMemo(() => {
@@ -199,7 +201,7 @@ export const DealCreate: React.FC<{
             </div>
             {dealNotFound && (
                 <div className="mt-2 text-red-500">
-                    Сделка не найдена
+                    {t('dealNotFound')}
                 </div>
             )}
 
