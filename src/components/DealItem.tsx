@@ -19,11 +19,13 @@ interface DealItemProps {
 export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, disabled }) => {
     const sendedCurrencyData = getCurrencyDataById(Number(info.sendedCurrencyId));
     const sendedCurrency = sendedCurrencyData.name
+    const expectedCurrencyData = getCurrencyDataById(Number(info.expectedCurrencyId));
+    const expectedCurrency = expectedCurrencyData.name
 
     const sended = fromDecimals(info.sendedAmount, sendedCurrencyData.decimals);
 
-    const expected = fromNano(info.expectedAmount);
-    const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
+    const expected = fromDecimals(info.expectedAmount, expectedCurrencyData.decimals);
+    // const expectedCurrency = getCurrencyKeyById(Number(info.expectedCurrencyId));
     // URL сделки для копирования и шаринга
     const url = `${window.location.origin}/deal/${dealId}`;
     const t = useT();

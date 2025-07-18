@@ -49,13 +49,25 @@ export const DealControl: React.FC<DealControlProps> = ({
     onSetDealId
 }) => {
     // Возьмём id из URL — работает как с BrowserRouter, так и с HashRouter
-    const { id } = useParams<{ id: string }>();
+    const params = new URLSearchParams(location.search);
+    const id = params.get('dealId') ?? '';
     const [dealId, setDealId] = useState<string>(id ?? '');
     const [error, setError] = useState<string | null>(null);
     const t = useT();
 
+    const getIdFromUrl = (): string | null => {
+        let id = params.get('dealId')
+        console.log(id);
+        if (!id) 
+            id = params.get('startapp')
+        if (isNaN(Number(id))) return null;
+        return id;
+    };
+
     // Авто-запрос при первом рендере с id из URL
     useEffect(() => {
+        let id = getIdFromUrl();
+        if (!id) return;
         if (id && !fetchedDealIds.has(id)) {
             fetchedDealIds.add(id);
             setError(null);

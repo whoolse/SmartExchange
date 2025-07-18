@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { JettonsList } from './components/JettonsList';
@@ -10,6 +10,15 @@ import { DealsPage } from './components/DealsPage';
 const AppPage: React.FC = () => {
   const [userJettons, setUserJettons] = useState<string[]>([]);
   const [jettonBalances, setJettonBalances] = useState<JettonsBalances['balances']>([]);
+  const [openDealId, setOpenDealId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const dealId = params.get('dealId');
+    if (dealId) {
+      setOpenDealId(dealId);
+    }
+  }, [location.search]);
 
   return (
     <div className="container">
@@ -31,7 +40,7 @@ const AppPage: React.FC = () => {
 const App: React.FC = () => (
   <Routes>
     <Route path="/" element={<AppPage />} />
-    <Route path="/deal/:id" element={<AppPage />} />
+    {/* <Route path="/deal/:id" element={<AppPage />} /> */}
     <Route path="/deals" element={<DealsPage />} />
   </Routes>
 );

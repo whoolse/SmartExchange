@@ -44,7 +44,6 @@ export function toDecimals(amount: string | number, decimals: number): bigint {
 
 export function filterJettons(jettonBalances: JettonBalance[]): string[] {
     const filtered: Array<string> = []
-    console.log(jettonBalances)
     jettonBalances.forEach(jettonBalance => {
         let { address, symbol } = jettonBalance.jetton
         let currency = currencies[symbol]
