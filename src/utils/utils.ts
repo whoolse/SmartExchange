@@ -2,6 +2,7 @@
 
 import { JettonBalance } from '@ton-api/client';
 import { serviceComission, networkFee, currencies, Currency } from '../constants/constants';
+import { Address } from '@ton/core';
 
 export function calcPartner(n: number, asset: string): number {
     return asset === 'TON'
@@ -43,10 +44,11 @@ export function toDecimals(amount: string | number, decimals: number): bigint {
 
 export function filterJettons(jettonBalances: JettonBalance[]): string[] {
     const filtered: Array<string> = []
+    console.log(jettonBalances)
     jettonBalances.forEach(jettonBalance => {
         let { address, symbol } = jettonBalance.jetton
         let currency = currencies[symbol]
-        if (currency && currency.masterAddress == address.toString())
+        if (currency && Address.parse(currency.masterAddress).toString() == address.toString())
             filtered.push(symbol)
     });
     const list = ['TON', ...filtered.filter(a => a !== 'TON')];
