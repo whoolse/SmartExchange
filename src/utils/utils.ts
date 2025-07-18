@@ -63,10 +63,12 @@ export function isMobile() {
 
 export function shareDeal(dealId: string) {
     let url = ''
-    if (location.href.includes("tgWebAppData"))
-        url = `t.me/escrowontonbot/smartex/?tgWebAppStartParam=${dealId}`
+    console.log(location.href.includes("app"))
+    if (location.href.includes("app"))
+        url = `https://t.me/escrowontonbot/smartex/?startapp=${dealId}`
     else
-        url = `${window.location.origin}/?tgWebAppStartParam=${dealId}`
+        url = `${window.location.origin}/?dealId=${dealId}`
+    console.log(url)
 
     if (!isMobile() || !navigator.share) {
         navigator.clipboard.writeText(url);
@@ -74,7 +76,7 @@ export function shareDeal(dealId: string) {
     }
     try {
         navigator.share({
-            url,
+            text: url
         });
     } catch (err) {
         console.error('Share failed:', err);

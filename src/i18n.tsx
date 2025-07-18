@@ -237,8 +237,12 @@ const translations: TranslationsType = {
         ru: 'Сделка не найдена',
         en: 'Swap not found'
     },
-};
-
+    updateDeals:
+    {
+        ru: 'Сделка не найдена',
+        en: 'Update swaps'
+    },
+}
 // Провайдер i18n
 export const I18nProvider: React.FC<{
     children: ReactNode
