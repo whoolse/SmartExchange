@@ -1,11 +1,11 @@
 // src/services/tonConnectWrapper.tsx
 
-import { Address, beginCell, toNano } from "@ton/core";
+import { Address, beginCell, Cell, toNano } from "@ton/core";
 import { currencies, myContractAddress, tonApiBaseUrl } from "../constants/constants";
-import { SendTransactionRequest, TonConnectUI } from "@tonconnect/ui-react";
+import { SendTransactionRequest, SendTransactionResponse, TonConnectUI } from "@tonconnect/ui-react";
 import { JettonTransfer, storeJettonTransfer, AddDealWithTon, storeAddDealWithTon, CancelDeal, storeCancelDeal } from "../smartContract/JettonReceiver_JettonReceiver";
 import { DealParameters } from "../components/TonSendTransaction";
-import { getCurrencyDataById, toDecimals } from "../utils/utils";
+import { getCurrencyDataById, sleep, toDecimals } from "../utils/utils";
 
 
 export class TonConnectWrapper {
@@ -100,7 +100,45 @@ export class TonConnectWrapper {
             ],
         };
 
-        await tonConnectUI.sendTransaction(transaction, { returnStrategy: "back" });
+        let tx: SendTransactionResponse = await tonConnectUI.sendTransaction(transaction, { returnStrategy: "back" });
+        let id = await this.getTxIdWithPolling(tx.boc);
+        console.log('succes!!!', id)
+    }
+
+
+    /**
+     * Опрос TonAPI: пауза 2 с перед первым запросом,
+     * далее каждые 2 с, общий лимит на ожидание ответа — 10 с.
+     */
+    static async pollTransaction(
+        msgHash: string,
+        intervalMs = 2000,   // 2 с
+        timeoutMs = 10000   // 10 с
+    ): Promise<{ hash: string; lt: string }> {
+
+        await sleep(intervalMs);          // Пауза перед первым fetch
+        const start = Date.now();         // Таймаут считаем после начальной задержки
+
+        while (true) {
+            const res = await fetch(`${tonApiBaseUrl}/v2/blockchain/messages/${msgHash}/transaction`);
+            if (res.ok) {
+                const json = await res.json();
+                if (json.hash && json.lt) return { hash: json.hash, lt: json.lt };
+            }
+
+            if (Date.now() - start >= timeoutMs) {
+                throw new Error('Таймаут 10 с: транзакция не найдена');
+            }
+
+            await sleep(intervalMs);
+        }
+    }
+
+    /* Обёртка: BoC → hash → poll */
+    static async getTxIdWithPolling(bocBase64: string) {
+        const cell = Cell.fromBoc(Buffer.from(bocBase64, 'base64'))[0];
+        const msgHash = Buffer.from(cell.hash()).toString('hex');
+        return this.pollTransaction(msgHash);      // максимум 4 попытки (2 с * 4 = 8 с)
     }
 
     static async cancelDealById(dealId: string, tonConnectUI: TonConnectUI) {
