@@ -5,8 +5,10 @@ import { useT } from '../i18n';
 import { isMobile, shareDeal } from '../utils/utils';
 import { useTestnet } from '../contexts/TestnetContext';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
-import { Spin } from 'antd';
+import { Spin, Button } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import tonExplorerIcon from '../assets/tonviewer.png';
+import { CloseOutlined } from '@ant-design/icons';
 
 interface SuccessModalProps {
     isOpen: boolean;
@@ -67,12 +69,21 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                     </div>
                     <div className="modal-actions">
                         {!loading && txInfo && (
-                            <button
-                                className="modal-button modal-close-button"
+                            <Button
+                                type="primary"
+                                // в качестве icon передаём <img>
+                                icon={
+                                    <img
+                                        src={tonExplorerIcon}
+                                        alt="TonExplorer"
+                                        style={{ width: 16, height: 16 }}
+                                    />
+                                }
                                 onClick={() => window.open(link, '_blank')}
+                                disabled={!txInfo}
                             >
                                 {t('openTransaction')}
-                            </button>
+                            </Button>
                         )}
                         {/* <button className="modal-button modal-close-button" onClick={onClose}>
                             Закрыть
@@ -82,7 +93,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
 
                 <div style={{ display: isAcceptingDeal ? 'none' : '' }}>
                     <h3 className="modal-title">{t('dealCreated')}</h3>
-                    <p>{t('dealId')}: {dealId}</p>
+                    <p>{t('swapId')}: {dealId}</p>
                     <div className="modal-actions">
                         <button className="modal-button modal-copy-button" onClick={handleCopy}>
                             {t('copyId')}
@@ -95,9 +106,14 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                         </button> */}
                     </div>
                 </div>
-                <button className="modal-button modal-close-button m-5" onClick={onClose}>
+                <Button
+                    type="default"
+                    icon={<CloseOutlined />}
+                    onClick={onClose}
+                    className="modal-close-button mt-10"
+                >
                     {t('close')}
-                </button>
+                </Button>
             </div>
 
         </div>
