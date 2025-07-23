@@ -78,6 +78,12 @@ export const DealsList: React.FC = () => {
         }
     };
 
+    const handleCloseModal = async () => {
+        setIsModalOpen(false)
+        loadDeals();
+    };
+
+
     const entries = Object.entries(deals);
 
     useEffect(() => {
@@ -136,7 +142,7 @@ export const DealsList: React.FC = () => {
             <SuccessModal
                 isOpen={isModalOpen}
                 dealId={''}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleCloseModal}
                 isAcceptingDeal={true}
                 boc={txBoc}
             />

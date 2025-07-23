@@ -5,6 +5,8 @@ import { useT } from '../i18n';
 import { isMobile, shareDeal } from '../utils/utils';
 import { useTestnet } from '../contexts/TestnetContext';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
+import { Spin } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
 interface SuccessModalProps {
     isOpen: boolean;
@@ -40,9 +42,8 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
             .finally(() => setLoading(false));
     }, [isOpen, boc]);
 
-    const network = isTestnet ? 'testnet' : 'mainnet';
     const link = txInfo
-        ? `https://tonscan.org/external-message/${encodeURIComponent(txInfo.hash)}?network=${network}`
+        ? `https://${isTestnet ? 'testnet.' : ''}tonviewer.com/transaction/${txInfo.hash}`
         : '';
 
     if (!isOpen) return null;
@@ -52,21 +53,25 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
         <div className="modal-overlay">
             <div className="modal-content">
                 <div>
-                    <h2 className="modal-header">Транзакция</h2>
+                    <h2 className="modal-header">{t('transactionProcessing')}</h2>
                     <div className="modal-body">
                         {loading ? (
-                            <p>Ожидание транзакции...</p>
+                            <div className="modal-spinner">
+                                <Spin size="large" />
+                            </div>
                         ) : (
-                            <p>Транзакция подтверждена</p>
+                            <div className="modal-confirmed-icon">
+                                <CheckCircleOutlined />
+                            </div>
                         )}
                     </div>
                     <div className="modal-actions">
                         {!loading && txInfo && (
                             <button
-                                className="modal-button  modal-close-button"
+                                className="modal-button modal-close-button"
                                 onClick={() => window.open(link, '_blank')}
                             >
-                                Показать транзакцию
+                                {t('openTransaction')}
                             </button>
                         )}
                         {/* <button className="modal-button modal-close-button" onClick={onClose}>
@@ -94,7 +99,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                     {t('close')}
                 </button>
             </div>
-       
+
         </div>
     );
 };

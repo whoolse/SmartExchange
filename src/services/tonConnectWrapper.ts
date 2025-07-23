@@ -111,11 +111,11 @@ export class TonConnectWrapper {
      */
     static async pollTransaction(
         msgHash: string,
-        intervalMs = 2000,   // 2 с
-        timeoutMs = 10000   // 10 с
+        intervalMs = 3000,   
+        timeoutMs = 15000   
     ): Promise<{ hash: string; lt: string }> {
 
-        await sleep(intervalMs);          // Пауза перед первым fetch
+        await sleep(intervalMs * 2);          // Пауза перед первым fetch
         const start = Date.now();         // Таймаут считаем после начальной задержки
 
         while (true) {

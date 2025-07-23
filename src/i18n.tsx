@@ -247,6 +247,21 @@ const translations: TranslationsType = {
         ru: 'Сделка создана',
         en: 'Swap created'
     },
+    openTransaction:
+    {
+        ru: 'Показать транзакцию',
+        en: 'Show transaction'
+    },
+    waitingTransaction:
+    {
+        ru: 'Ожидание транзакции...',
+        en: 'Transaction pending...'
+    },
+    transactionProcessing:
+    {
+        ru: 'Обработка траназакции',
+        en: 'Transaction processing'
+    },
 }
 // Провайдер i18n
 export const I18nProvider: React.FC<{

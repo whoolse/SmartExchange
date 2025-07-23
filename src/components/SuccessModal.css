@@ -90,3 +90,9 @@
     background-color: #2563eb;
     transform: translateY(-2px);
 }
+
+.modal-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0;
+}
