@@ -13,14 +13,13 @@ import { Address } from '@ton/core';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { SuccessModal } from './SuccessModal';
 import { useT } from '../i18n';
+import { TransactionModal } from './TransactionModal';
 
-const DEF_SEND = "USD₮";
-const DEF_RECEIVE = 'TON';
+const DEF_SEND = "TON";
+const DEF_RECEIVE = 'USD₮';
 
-interface TxResult {
-    error: any
-    success: boolean
-}
+// Use the TxResult type from TonSendTransaction for compatibility
+import type { TxResult } from './TonSendTransaction';
 
 export const DealCreate: React.FC<{
     userJettons: string[];
@@ -29,7 +28,7 @@ export const DealCreate: React.FC<{
     const [sendAsset, setSendAsset] = useState<string>(DEF_SEND);
     const [receiveAsset, setReceiveAsset] = useState<string>(DEF_RECEIVE);
 
-    const [sendAmount, setSendAmount] = useState<string>('10');
+    const [sendAmount, setSendAmount] = useState<string>('1');
     const [partnerReceive, setPartnerReceive] = useState<string>('0');
 
     const [recSend, setRecSend] = useState<string>('20');
@@ -42,11 +41,12 @@ export const DealCreate: React.FC<{
     const [disableCreate, setDisableCreate] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
-    const [isConfirmed, setIsConfirmed] = useState(false);
+    const [isAcceptingDeal, setIsAcceptingDeal] = useState(false);
     const [partnerAddress, setPartnerAddress] = useState<string>('');
 
     const [fetchedPartnerAddress, setFetchedPartnerAddress] = useState<string>('');
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [txBoc, setTxBoc] = useState<string>('');
 
     const [selectedSendBalance, setSelectedSendBalance] = useState<JettonBalance | undefined>(undefined);
     const t = useT();
@@ -76,7 +76,7 @@ export const DealCreate: React.FC<{
         }
         setDealNotFound(false);
         setDisabled(true);
-        setIsConfirmed(true);
+        setIsAcceptingDeal(true);
         if (info.partnerAddress) {
             setFetchedPartnerAddress(info.partnerAddress.toString());
         }
@@ -84,7 +84,6 @@ export const DealCreate: React.FC<{
 
         const expectedCurrencyData = getCurrencyDataById(Number(info.expectedCurrencyId));
         const sendedCurrency = getCurrencyDataById(Number(info.sendedCurrencyId));
-        debugger
         setRecSend(fromDecimals(info.sendedAmount, sendedCurrency.decimals));
         const expectedAmount = +fromDecimals(info.expectedAmount, expectedCurrencyData.decimals);
 
@@ -122,9 +121,12 @@ export const DealCreate: React.FC<{
         setRecReceive(partnerReceive);
     };
 
-    const handleTxResult = (result: TxResult) => {
-        if (result.error) return
-        setIsSuccessModalOpen(true && !isConfirmed)
+    const handleTxResult = (res: TxResult) => {
+        let { error, boc } = res;
+        if (error) return
+        setIsModalOpen(true)
+        if (boc)
+            setTxBoc(boc)
     }
 
     const isAddressValid = (() => {
@@ -190,9 +192,9 @@ export const DealCreate: React.FC<{
                     sendAmount={sendAmount}
                     receiveAsset={receiveAsset}
                     receiveAmount={recReceive}
-                    disabled={disableCreate || !isAddressValid || (isConfirmed && isPartnerMismatch)}
+                    disabled={disableCreate || !isAddressValid || (isAcceptingDeal && isPartnerMismatch)}
                     dealId={+dealId}
-                    confirmed={isConfirmed}
+                    confirmed={isAcceptingDeal}
                     partnerAddress={partnerAddress}
                     onResult={handleTxResult}
                     sendCurrency={selectedSendBalance}
@@ -214,16 +216,17 @@ export const DealCreate: React.FC<{
                     backgroundColor: '#f59e0b',
 
                 }}
-                onClick={() => setIsSuccessModalOpen(true)}
+                onClick={() => setIsModalOpen(true)}
             >
                 Показать модалку
             </button>
             <SuccessModal
-                isOpen={isSuccessModalOpen}
+                isOpen={isModalOpen}
                 dealId={dealId}
-                onClose={() => setIsSuccessModalOpen(false)}
+                onClose={() => setIsModalOpen(false)}
+                isAcceptingDeal={isAcceptingDeal}
+                boc={txBoc}
             />
-
         </>
     );
 };

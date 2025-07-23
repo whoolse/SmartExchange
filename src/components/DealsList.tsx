@@ -8,6 +8,7 @@ import { DealItem } from './DealItem';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { TonConnectWrapper } from '../services/tonConnectWrapper';
 import { useT } from '../i18n';
+import { SuccessModal } from './SuccessModal';
 
 const ta = new TonApiClient({ baseUrl: tonApiBaseUrl });
 
@@ -38,6 +39,9 @@ export const DealsList: React.FC = () => {
     const [blocked, setBlocked] = useState<boolean>(false);
     const [lastCancelTime, setLastCancelTime] = useState<number | null>(null);
     const [refreshDisabled, setRefreshDisabled] = useState<boolean>(false);
+    const [txBoc, setTxBoc] = useState<string>('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const t = useT();
     const loadDeals = async () => {
         setLoading(true);
@@ -63,7 +67,9 @@ export const DealsList: React.FC = () => {
         setBlocked(true);
         setError(null);
         try {
-            await TonConnectWrapper.cancelDealById(id, tonConnectUI);
+            let boc = await TonConnectWrapper.cancelDealById(id, tonConnectUI);
+            setTxBoc(boc)
+            setIsModalOpen(true)
             setLastCancelTime(Date.now());
         } catch (e: any) {
             setError(e.message || t('dealCancelError'));
@@ -107,6 +113,7 @@ export const DealsList: React.FC = () => {
                     {t('updateDeals')}
                 </button>
             </div>
+
             <div className="asset-block w-full">
                 {error && <div className="text-red-500">{t('errorPrefix')} {error}</div>}
 
@@ -121,9 +128,18 @@ export const DealsList: React.FC = () => {
                             info={info}
                             onCancel={handleCancelDeal}
                             disabled={blocked}
-                        />))}
+                        />))
+                    }
                 </div>
             </div>
+            {/* Модалка отмены сделки, без dealId */}
+            <SuccessModal
+                isOpen={isModalOpen}
+                dealId={''}
+                onClose={() => setIsModalOpen(false)}
+                isAcceptingDeal={true}
+                boc={txBoc}
+            />
         </>
     );
 };

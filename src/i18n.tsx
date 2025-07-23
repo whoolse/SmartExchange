@@ -242,6 +242,11 @@ const translations: TranslationsType = {
         ru: 'Сделка не найдена',
         en: 'Update swaps'
     },
+    dealCreated:
+    {
+        ru: 'Сделка создана',
+        en: 'Swap created'
+    },
 }
 // Провайдер i18n
 export const I18nProvider: React.FC<{

@@ -21,7 +21,7 @@ interface TonSendTransactionProps {
     partnerAddress: string;
     dealId: number;
     /** Колбэк с результатом транзакции */
-    onResult?: (res: any) => void;
+    onResult?: (res: TxResult) => void;
     /** Рендер-проп: получает функцию отправки */
     children: (send: () => Promise<void>) => React.ReactNode;
     sendCurrency?: JettonBalance;
@@ -37,6 +37,11 @@ export interface DealParameters {
     expectedCurrencyName: string;
     partnerAddressString: string;
     sendCurrency?: JettonBalance;
+}
+
+export interface TxResult {
+    error?: string;
+    boc?: string;
 }
 
 export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
@@ -86,16 +91,16 @@ export const TonSendTransaction: React.FC<TonSendTransactionProps> = ({
                     return
                 }
             }
-            let txResult: any = null
+            let boc: string = ''
             if (sendAsset == "TON")
-                txResult = await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
+                boc = await TonConnectWrapper.sendTonDeal(dealParams, tonConnectUI)
             else
-                txResult = await TonConnectWrapper.sendJettonDeal(dealParams, tonConnectUI, Address.parse(address!));
+                boc = await TonConnectWrapper.sendJettonDeal(dealParams, tonConnectUI, Address.parse(address!));
 
-            onResult?.({ success: true });
-        } catch (e) {
+            onResult?.({ boc });
+        } catch (e: unknown) {
             console.error('Ошибка sendTransaction:', e);
-            onResult?.({ error: e });
+            onResult?.({ error: e as string });
         }
     };
 

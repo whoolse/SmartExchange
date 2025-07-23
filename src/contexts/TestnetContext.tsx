@@ -8,7 +8,7 @@ interface TestnetContextValue {
 const TestnetContext = createContext<TestnetContextValue | undefined>(undefined);
 
 export const TestnetProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isTestnet, setTestnet] = useState(false); // по умолчанию mainnet
+    const [isTestnet, setTestnet] = useState(true);
 
     return (
         <TestnetContext.Provider value={{ isTestnet, setTestnet }}>

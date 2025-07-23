@@ -13,7 +13,7 @@ export class TonConnectWrapper {
         dealParams: DealParameters,
         tonConnectUI: TonConnectUI,
         myAddress: Address
-    ) {
+    ): Promise<string> {
         const {
             dealId,
             sendedAmount,
@@ -52,19 +52,19 @@ export class TonConnectWrapper {
             queryId: 0n,
             amount: jettonTransferAmount,
             responseDestination: myAddress,
-            forwardTonAmount: toNano('0.1'),
+            forwardTonAmount: toNano('0.06'),
             forwardPayload: jettonTransferForwardPayload.asSlice(),
             destination: Address.parse(myContractAddress),
             customPayload: null,
         };
         const payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell().toBoc().toString("base64");
-        await this.sendTransaction(toNano('1'), payload, tonConnectUI, myJettonWallet.toString());
+        return await this.sendTransaction(toNano('1'), payload, tonConnectUI, myJettonWallet.toString());
     }
 
     static async sendTonDeal(
         dealParams: DealParameters,
         tonConnectUI: TonConnectUI
-    ) {
+    ): Promise<string> {
         const {
             dealId,
             sendedAmount,
@@ -84,10 +84,10 @@ export class TonConnectWrapper {
         };
         console.log(transferMsg)
         const payload = beginCell().store(storeAddDealWithTon(transferMsg)).endCell().toBoc().toString("base64");
-        await this.sendTransaction(toNano(sendedAmount), payload, tonConnectUI);
+        return await this.sendTransaction(toNano(sendedAmount), payload, tonConnectUI);
     }
 
-    static async sendTransaction(amount: bigint, payload: string, tonConnectUI: TonConnectUI, address: string = myContractAddress) {
+    static async sendTransaction(amount: bigint, payload: string, tonConnectUI: TonConnectUI, address: string = myContractAddress): Promise<string> {
         const validUntil = Math.floor(Date.now() / 1000) + 60;
         const transaction: SendTransactionRequest = {
             validUntil,
@@ -101,8 +101,7 @@ export class TonConnectWrapper {
         };
 
         let tx: SendTransactionResponse = await tonConnectUI.sendTransaction(transaction, { returnStrategy: "back" });
-        let id = await this.getTxIdWithPolling(tx.boc);
-        console.log('succes!!!', id)
+        return tx.boc
     }
 
 
@@ -141,13 +140,13 @@ export class TonConnectWrapper {
         return this.pollTransaction(msgHash);      // максимум 4 попытки (2 с * 4 = 8 с)
     }
 
-    static async cancelDealById(dealId: string, tonConnectUI: TonConnectUI) {
+    static async cancelDealById(dealId: string, tonConnectUI: TonConnectUI): Promise<string> {
         const transferMsg: CancelDeal = {
             $$type: 'CancelDeal',
             dealId: BigInt(dealId)
         };
         const payload = beginCell().store(storeCancelDeal(transferMsg)).endCell().toBoc().toString("base64");
-        await this.sendTransaction(toNano('0.1'), payload, tonConnectUI);
+        return await this.sendTransaction(toNano('0.1'), payload, tonConnectUI);
     }
 
     static async getJettonWalletAddressFromTonapi(

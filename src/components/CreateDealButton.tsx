@@ -1,7 +1,7 @@
 // src/components/CreateDealButton.tsx
 import React from 'react';
 import { useT } from '../i18n';
-import { TonSendTransaction } from './TonSendTransaction';
+import { TonSendTransaction, TxResult } from './TonSendTransaction';
 import { JettonBalance } from '@ton-api/client';
 
 export interface CreateDealButtonProps {
@@ -18,7 +18,7 @@ export interface CreateDealButtonProps {
     /** Блокировка кнопки */
     disabled?: boolean;
     /** Обработчик результата транзакции */
-    onResult?: (res: any) => void;
+     onResult?: (res: TxResult) => void;
     dealId: number;
     confirmed?: boolean;
     sendCurrency?: JettonBalance;
