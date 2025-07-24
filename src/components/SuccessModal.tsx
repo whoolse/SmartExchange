@@ -55,7 +55,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
         <div className="modal-overlay">
             <div className="modal-content">
                 <div>
-                    <h2 className="modal-header">{t('transactionProcessing')}</h2>
+                    <h2 className="modal-header">{loading ? t('transactionProcessing') : t('transactionSuccess')}</h2>
                     <div className="modal-body">
                         {loading ? (
                             <div className="modal-spinner">

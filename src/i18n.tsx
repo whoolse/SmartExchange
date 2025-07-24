@@ -262,6 +262,11 @@ const translations: TranslationsType = {
         ru: 'Обработка траназакции',
         en: 'Transaction processing'
     },
+    transactionSuccess:
+    {
+        ru: 'Обработка траназакции',
+        en: 'Transaction successful'
+    },
 }
 // Провайдер i18n
 export const I18nProvider: React.FC<{
