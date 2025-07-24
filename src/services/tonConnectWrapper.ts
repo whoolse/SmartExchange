@@ -58,7 +58,7 @@ export class TonConnectWrapper {
             customPayload: null,
         };
         const payload = beginCell().store(storeJettonTransfer(transferMsg)).endCell().toBoc().toString("base64");
-        return await this.sendTransaction(toNano('1'), payload, tonConnectUI, myJettonWallet.toString());
+        return await this.sendTransaction(toNano('0.1'), payload, tonConnectUI, myJettonWallet.toString());
     }
 
     static async sendTonDeal(
