@@ -9,8 +9,8 @@ export interface Currency {
   decimals: number
   name: string
 }
-// export const myContractAddress = 'EQCtf89xrg00t5hayAUSwEXdcz7EPcn5lH7stQjVwoMv9Bxa';
-export const myContractAddress = 'kQCtf89xrg00t5hayAUSwEXdcz7EPcn5lH7stQjVwoMv9KfQ';
+export const myContractAddress = 'EQCtf89xrg00t5hayAUSwEXdcz7EPcn5lH7stQjVwoMv9Bxa';
+// export const myContractAddress = 'kQCtf89xrg00t5hayAUSwEXdcz7EPcn5lH7stQjVwoMv9KfQ';
 
 import TonIcon from '../assets/currencies/TON.webp';
 import USDTIcon from '../assets/currencies/USDT.webp';
@@ -52,8 +52,8 @@ export const assets = Object.keys(currencies) as Array<keyof typeof currencies>;
 export type Asset = typeof assets[number];
 
 
-// export let tonApiBaseUrl = 'https://tonapi.io';
-export let tonApiBaseUrl = 'https://testnet.tonapi.io';
+export let tonApiBaseUrl = 'https://tonapi.io';
+// export let tonApiBaseUrl = 'https://testnet.tonapi.io';
 
 /** Коэффициент сервисной комиссии (1 - 0.001 = 0.999) */
 export const serviceComission = 0.999;
