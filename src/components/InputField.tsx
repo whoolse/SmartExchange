@@ -16,20 +16,22 @@ export const InputField: React.FC<InputFieldProps> = ({
   onChange,
   error = false,
   disabled = false,
-  onBlur
+  onBlur,
+  type
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    if (input === '' || /^\d*\.?\d*$/.test(input)) {
-      onChange(input);
+    if (type == 'number') {
+      input === '' || /^\d*\.?\d*$/.test(input)
     }
+    onChange(input);
   };
 
   return (
     <div className="amount-input-container">
       <label className="input-label">{label}</label>
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={handleChange}
         readOnly={disabled}
