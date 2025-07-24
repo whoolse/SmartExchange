@@ -6,6 +6,8 @@ import { DealInfo } from '../smartContract/JettonReceiver_JettonReceiver';
 import { fromDecimals, getCurrencyDataById, getCurrencyKeyById, isMobile, shareDeal } from '../utils/utils';
 import { useT } from '../i18n';
 
+import { Button } from 'antd';
+import { CopyOutlined, ShareAltOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 interface DealItemProps {
     id: string;
@@ -61,27 +63,34 @@ export const DealItem: React.FC<DealItemProps> = ({ id: dealId, info, onCancel, 
                 className="mt-4 inline-grid grid-flow-row grid-cols-[max-content] gap-2"
                 style={{ justifyContent: 'start' }}
             >
-                <button
+                {/* Cancel button — primary + danger */}
+                <Button
+                    type="primary"
+                    danger
+                    icon={<CloseCircleOutlined />}
                     onClick={() => onCancel(dealId)}
                     disabled={disabled}
-                    className="px-[5px] py-1 bg-red-600 hover:bg-red-700 text-white rounded transition"
                 >
                     {t('cancel')}
-                </button>
-                <button
-                    type="button"
+                </Button>
+
+                {/* Copy ID */}
+                <Button
+                    type="default"
+                    icon={<CopyOutlined />}
                     onClick={handleCopy}
-                    className="px-[5px] py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition"
                 >
                     {t('copyId')}
-                </button>
-                <button
-                    type="button"
+                </Button>
+
+                {/* Share / Copy link */}
+                <Button
+                    type="default"
+                    icon={<ShareAltOutlined />}
                     onClick={handleShare}
-                    className="px-[5px] py-1 bg-green-600 hover:bg-green-700 text-white rounded transition"
                 >
                     {isMobile() ? t('shareDeal') : t('copyLink')}
-                </button>
+                </Button>
             </div>
         </div>
 

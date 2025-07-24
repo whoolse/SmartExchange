@@ -71,7 +71,6 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                         {!loading && txInfo && (
                             <Button
                                 type="primary"
-                                // в качестве icon передаём <img>
                                 icon={
                                     <img
                                         src={tonExplorerIcon}
@@ -85,9 +84,6 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                                 {t('openTransaction')}
                             </Button>
                         )}
-                        {/* <button className="modal-button modal-close-button" onClick={onClose}>
-                            Закрыть
-                        </button> */}
                     </div>
                 </div>
 
@@ -101,9 +97,6 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, dealId, onCl
                         <button className="modal-button modal-share-button" onClick={handleShare}>
                             {isMobile() ? t('shareDeal') : t('copyLink')}
                         </button>
-                        {/* <button className="modal-button modal-close-button" onClick={onClose}>
-                            {t('close')}
-                        </button> */}
                     </div>
                 </div>
                 <Button
