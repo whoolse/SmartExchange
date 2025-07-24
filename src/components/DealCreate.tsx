@@ -13,7 +13,6 @@ import { Address } from '@ton/core';
 import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react';
 import { SuccessModal } from './SuccessModal';
 import { useT } from '../i18n';
-import { TransactionModal } from './TransactionModal';
 
 const DEF_SEND = "TON";
 const DEF_RECEIVE = 'USD₮';
@@ -60,13 +59,13 @@ export const DealCreate: React.FC<{
 
 
     const [dealId, setDealId] = useState<string>(
-        () => (Math.floor(Math.random() * Math.pow(2, 32)) + 1).toString()
+        () => (Math.floor(Math.random() * Math.pow(2, 25)) + 1).toString()
     );
     const walletAddress = useTonAddress() ?? '';
 
     const isPartnerMismatch =
         fetchedPartnerAddress.trim() !== '' &&
-        fetchedPartnerAddress !== walletAddress;
+        Address.parse(fetchedPartnerAddress).toString() !== Address.parse(walletAddress).toString();
 
     const onDealData = (info: DealInfo | null) => {
         // Если инфа о сделке отсутствует
@@ -79,6 +78,8 @@ export const DealCreate: React.FC<{
         setIsAcceptingDeal(true);
         if (info.partnerAddress) {
             setFetchedPartnerAddress(info.partnerAddress.toString());
+            console.log("Address.parse(fetchedPartnerAddress) !== Address.parse(walletAddress)")
+            console.log(Address.parse(info.partnerAddress.toString()).toString() == Address.parse(walletAddress).toString())
         }
         // Обновляем поля на основе данных из смарт-контракта
 
@@ -96,6 +97,7 @@ export const DealCreate: React.FC<{
     const handleSA = (a: string) => {
         if (a === receiveAsset) {
             const idx = sendList.indexOf(a);
+            let result = sendList[(idx + 1) % sendList.length]
             setReceiveAsset(sendList[(idx + 1) % sendList.length]);
         }
         setSendAsset(a);
@@ -103,7 +105,8 @@ export const DealCreate: React.FC<{
     const handleRA = (a: string) => {
         if (a === sendAsset) {
             const idx = sendList.indexOf(a);
-            setSendAsset(sendList[(idx + 1) % sendList.length]);
+            let result = sendList[(idx + 1) % sendList.length]
+            setSendAsset(result);
         }
         setReceiveAsset(a);
     };
